@@ -13,9 +13,12 @@ export interface Group {
   createdAt: string
 }
 
+export type TransactionType = 'expense' | 'income'
+
 export interface Expense {
   id: string
   groupId: string
+  type: TransactionType
   amount: number
   category: string
   description: string
@@ -39,8 +42,31 @@ export interface Settlement {
   amount: number
 }
 
+export type PlanRecurrence = 'monthly' | 'once'
+
+export interface PlannedExpense {
+  id: string
+  groupId: string
+  category: string
+  amount: number
+  recurrence: PlanRecurrence
+  description: string
+  spent: number
+  remaining: number
+  percent: number
+  createdAt: string
+}
+
+export interface FinancialSummary {
+  totalIncome: number
+  totalExpenses: number
+  plannedRemaining: number
+  currentBalance: number
+}
+
 export interface GroupBalance {
   members: MemberBalance[]
   settlements: Settlement[]
   totalExpenses: number
+  totalIncome: number
 }

@@ -1,4 +1,13 @@
-import type { Expense, Group, GroupBalance, User } from './types'
+import type {
+  Expense,
+  FinancialSummary,
+  Group,
+  GroupBalance,
+  PlannedExpense,
+  PlanRecurrence,
+  TransactionType,
+  User,
+} from './types'
 
 class ApiError extends Error {
   status: number
@@ -78,6 +87,7 @@ export const api = {
 
   createExpense(payload: {
     groupId: string
+    type?: TransactionType
     amount: number
     category: string
     description?: string
@@ -89,8 +99,40 @@ export const api = {
     })
   },
 
+  deleteExpense(expenseId: string) {
+    return request<{ ok: boolean }>(`/api/expenses/${expenseId}`, {
+      method: 'DELETE',
+    })
+  },
+
   getBalance(groupId: string) {
     return request<{ balance: GroupBalance }>(`/api/groups/${groupId}/balance`)
+  },
+
+  getPlans(groupId: string) {
+    return request<{ plans: PlannedExpense[]; summary: FinancialSummary }>(
+      `/api/plans?groupId=${groupId}`,
+    )
+  },
+
+  createPlan(payload: {
+    groupId: string
+    category: string
+    amount: number
+    recurrence: PlanRecurrence
+    description?: string
+  }) {
+    return request<{ plan: PlannedExpense; summary: FinancialSummary }>('/api/plans', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    })
+  },
+
+  deletePlan(planId: string) {
+    return request<{ plans: PlannedExpense[]; summary: FinancialSummary }>(
+      `/api/plans/${planId}`,
+      { method: 'DELETE' },
+    )
   },
 }
 

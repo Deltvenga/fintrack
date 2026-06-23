@@ -1,16 +1,27 @@
 import type { FormEvent } from 'react'
 import { useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { api } from '../lib/api'
+import {
+  EXPENSE_CATEGORIES,
+  INCOME_CATEGORIES,
+  type Category,
+} from '../lib/categories'
+import type { TransactionType } from '../lib/types'
 import { BottomNav } from '../components/BottomNav'
-
-const CATEGORIES = ['Еда', 'Транспорт', 'Жильё', 'Развлечения', 'Покупки', 'Другое']
+import { CategoryIcon } from '../components/CategoryIcon'
 
 export function AddExpensePage() {
   const { groupId } = useParams<{ groupId: string }>()
+  const [searchParams] = useSearchParams()
   const navigate = useNavigate()
+  const initialType: TransactionType = searchParams.get('type') === 'income' ? 'income' : 'expense'
+
+  const [transactionType, setTransactionType] = useState<TransactionType>(initialType)
   const [amount, setAmount] = useState('')
-  const [category, setCategory] = useState(CATEGORIES[0])
+  const [category, setCategory] = useState(
+    initialType === 'income' ? INCOME_CATEGORIES[0].id : EXPENSE_CATEGORIES[0].id,
+  )
   const [description, setDescription] = useState('')
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10))
   const [error, setError] = useState('')
@@ -18,6 +29,16 @@ export function AddExpensePage() {
 
   if (!groupId) {
     return null
+  }
+
+  const categories: Category[] =
+    transactionType === 'income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES
+  const isIncome = transactionType === 'income'
+
+  function switchType(nextType: TransactionType) {
+    setTransactionType(nextType)
+    setCategory(nextType === 'income' ? INCOME_CATEGORIES[0].id : EXPENSE_CATEGORIES[0].id)
+    setError('')
   }
 
   async function handleSubmit(event: FormEvent) {
@@ -35,6 +56,7 @@ export function AddExpensePage() {
     try {
       await api.createExpense({
         groupId: groupId!,
+        type: transactionType,
         amount: parsedAmount,
         category,
         description,
@@ -42,7 +64,11 @@ export function AddExpensePage() {
       })
       navigate(`/groups/${groupId}`)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Не удалось добавить расход')
+      setError(
+        err instanceof Error
+          ? err.message
+          : `Не удалось добавить ${isIncome ? 'доход' : 'расход'}`,
+      )
     } finally {
       setLoading(false)
     }
@@ -54,8 +80,31 @@ export function AddExpensePage() {
         <Link to={`/groups/${groupId}`} className="text-sm font-medium text-emerald-700">
           ← Назад
         </Link>
-        <h1 className="mt-3 text-2xl font-bold text-slate-900">Новый расход</h1>
+        <h1 className="mt-3 text-2xl font-bold text-slate-900">
+          {isIncome ? 'Новый доход' : 'Новый расход'}
+        </h1>
       </header>
+
+      <div className="mb-4 grid grid-cols-2 gap-2 rounded-2xl bg-slate-100 p-1">
+        <button
+          type="button"
+          onClick={() => switchType('expense')}
+          className={`rounded-xl px-4 py-2.5 text-sm font-semibold transition ${
+            !isIncome ? 'bg-white text-rose-600 shadow-sm' : 'text-slate-600'
+          }`}
+        >
+          Расход
+        </button>
+        <button
+          type="button"
+          onClick={() => switchType('income')}
+          className={`rounded-xl px-4 py-2.5 text-sm font-semibold transition ${
+            isIncome ? 'bg-white text-sky-600 shadow-sm' : 'text-slate-600'
+          }`}
+        >
+          Доход
+        </button>
+      </div>
 
       <form
         onSubmit={handleSubmit}
@@ -78,17 +127,23 @@ export function AddExpensePage() {
 
         <div>
           <label className="mb-2 block text-sm font-medium text-slate-700">Категория</label>
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-emerald-500"
-          >
-            {CATEGORIES.map((item) => (
-              <option key={item} value={item}>
-                {item}
-              </option>
+          <div className="grid grid-cols-2 gap-2">
+            {categories.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => setCategory(item.id)}
+                className={`flex items-center gap-2 rounded-xl border px-3 py-3 text-left text-sm transition ${
+                  category === item.id
+                    ? 'border-emerald-500 bg-emerald-50 ring-2 ring-emerald-100'
+                    : 'border-slate-200 hover:border-slate-300'
+                }`}
+              >
+                <CategoryIcon category={item.id} type={transactionType} size="sm" />
+                <span className="font-medium text-slate-800">{item.id}</span>
+              </button>
             ))}
-          </select>
+          </div>
         </div>
 
         <div>
@@ -118,9 +173,17 @@ export function AddExpensePage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-xl bg-emerald-600 px-4 py-3 font-semibold text-white transition hover:bg-emerald-700 disabled:opacity-60"
+          className={`w-full rounded-xl px-4 py-3 font-semibold text-white transition disabled:opacity-60 ${
+            isIncome
+              ? 'bg-sky-600 hover:bg-sky-700'
+              : 'bg-emerald-600 hover:bg-emerald-700'
+          }`}
         >
-          {loading ? 'Сохранение...' : 'Добавить расход'}
+          {loading
+            ? 'Сохранение...'
+            : isIncome
+              ? 'Добавить доход'
+              : 'Добавить расход'}
         </button>
       </form>
 

@@ -28,9 +28,15 @@ export function BalanceCard({ balance, loading }: BalanceCardProps) {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-2xl bg-emerald-600 p-5 text-white shadow-sm">
-        <p className="text-sm text-emerald-100">Всего расходов</p>
-        <p className="mt-1 text-3xl font-bold">{formatMoney(balance.totalExpenses)}</p>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="rounded-2xl bg-rose-600 p-5 text-white shadow-sm">
+          <p className="text-sm text-rose-100">Расходы</p>
+          <p className="mt-1 text-2xl font-bold">{formatMoney(balance.totalExpenses)}</p>
+        </div>
+        <div className="rounded-2xl bg-sky-600 p-5 text-white shadow-sm">
+          <p className="text-sm text-sky-100">Доходы</p>
+          <p className="mt-1 text-2xl font-bold">{formatMoney(balance.totalIncome ?? 0)}</p>
+        </div>
       </div>
 
       <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-100">

@@ -8,7 +8,9 @@ import { AddExpensePage } from './pages/AddExpensePage'
 import { GroupPage } from './pages/GroupPage'
 import { GroupsPage } from './pages/GroupsPage'
 import { LoginPage } from './pages/LoginPage'
+import { PlanningPage } from './pages/PlanningPage'
 import { RegisterPage } from './pages/RegisterPage'
+import { SummaryPage } from './pages/SummaryPage'
 
 export default function App() {
   return (
@@ -26,6 +28,8 @@ export default function App() {
             <Route element={<ProtectedRoute />}>
               <Route path="/groups" element={<GroupsPage />} />
               <Route path="/groups/:groupId" element={<GroupPage />} />
+              <Route path="/groups/:groupId/summary" element={<SummaryPage />} />
+              <Route path="/groups/:groupId/planning" element={<PlanningPage />} />
               <Route path="/groups/:groupId/add" element={<AddExpensePage />} />
             </Route>
 

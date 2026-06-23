@@ -1,7 +1,74 @@
 {
-  "version": 1,
-  "users": [],
-  "sessions": [],
-  "groups": [],
-  "expenses": []
+  "version": 8,
+  "users": [
+    {
+      "id": "a0692b41-d056-4fcb-82ff-b6a0e9d1ec50",
+      "username": "test",
+      "passwordHash": "$2b$10$hCyCrfiZdQ65Bk0EcedXVez7mJl..ZVMrgx39tDLbI306kykY6QYy",
+      "createdAt": "2026-06-23T18:09:01.051Z"
+    }
+  ],
+  "sessions": [
+    {
+      "token": "cb0c7d1160dba4a68d95e4e6b61139ba2f8f58395d66c78e3e22cf936bdb3f6f",
+      "userId": "a0692b41-d056-4fcb-82ff-b6a0e9d1ec50",
+      "expiresAt": "2026-07-23T18:09:01.054Z"
+    }
+  ],
+  "groups": [
+    {
+      "id": "0e359723-8339-4184-aeef-f9ddfd9eb584",
+      "name": "test",
+      "inviteCode": "Q9XFZ3",
+      "memberIds": [
+        "a0692b41-d056-4fcb-82ff-b6a0e9d1ec50"
+      ],
+      "createdAt": "2026-06-23T18:09:08.910Z"
+    }
+  ],
+  "expenses": [
+    {
+      "id": "e4b9392d-c414-4000-9537-5e1838d4748b",
+      "groupId": "0e359723-8339-4184-aeef-f9ddfd9eb584",
+      "amount": 12,
+      "category": "Жильё",
+      "description": "12",
+      "paidByUserId": "a0692b41-d056-4fcb-82ff-b6a0e9d1ec50",
+      "date": "2026-06-23",
+      "createdAt": "2026-06-23T18:09:22.602Z"
+    },
+    {
+      "id": "1cf51e2b-8e8d-4b27-8757-07150a1253af",
+      "groupId": "0e359723-8339-4184-aeef-f9ddfd9eb584",
+      "type": "income",
+      "amount": 555,
+      "category": "Другое",
+      "description": "",
+      "paidByUserId": "a0692b41-d056-4fcb-82ff-b6a0e9d1ec50",
+      "date": "2026-06-23",
+      "createdAt": "2026-06-23T18:12:00.011Z"
+    },
+    {
+      "id": "3dd3ddfa-67ba-44e6-a29d-bfb710175855",
+      "groupId": "0e359723-8339-4184-aeef-f9ddfd9eb584",
+      "type": "expense",
+      "amount": 12,
+      "category": "Транспорт",
+      "description": "qeqeqwe",
+      "paidByUserId": "a0692b41-d056-4fcb-82ff-b6a0e9d1ec50",
+      "date": "2026-06-23",
+      "createdAt": "2026-06-23T18:12:21.927Z"
+    }
+  ],
+  "plans": [
+    {
+      "id": "92d96470-864d-49b7-83a6-7491f8a0a394",
+      "groupId": "0e359723-8339-4184-aeef-f9ddfd9eb584",
+      "category": "Другое",
+      "amount": 5000,
+      "recurrence": "monthly",
+      "description": "уборщица",
+      "createdAt": "2026-06-23T18:22:47.491Z"
+    }
+  ]
 }

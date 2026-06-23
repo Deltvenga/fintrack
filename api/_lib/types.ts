@@ -19,14 +19,29 @@ export interface Group {
   createdAt: string
 }
 
+export type TransactionType = 'expense' | 'income'
+
 export interface Expense {
   id: string
   groupId: string
+  type: TransactionType
   amount: number
   category: string
   description: string
   paidByUserId: string
   date: string
+  createdAt: string
+}
+
+export type PlanRecurrence = 'monthly' | 'once'
+
+export interface PlannedExpense {
+  id: string
+  groupId: string
+  category: string
+  amount: number
+  recurrence: PlanRecurrence
+  description: string
   createdAt: string
 }
 
@@ -36,6 +51,7 @@ export interface Database {
   sessions: Session[]
   groups: Group[]
   expenses: Expense[]
+  plans: PlannedExpense[]
 }
 
 export class DbConflictError extends Error {

@@ -11,6 +11,7 @@ import { readDb, updateDb } from '../_lib/db.js'
 
 interface CreateExpenseBody {
   groupId?: string
+  type?: 'expense' | 'income'
   amount?: number
   category?: string
   description?: string
@@ -31,6 +32,7 @@ function mapExpense(
   return {
     id: expense.id,
     groupId: expense.groupId,
+    type: expense.type ?? 'expense',
     amount: expense.amount,
     category: expense.category,
     description: expense.description,
@@ -68,12 +70,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   if (req.method === 'POST') {
-    const { groupId, amount, category, description, date } =
+    const { groupId, type, amount, category, description, date } =
       parseBody<CreateExpenseBody>(req)
 
     if (!groupId) {
       return error(res, 400, 'groupId is required')
     }
+
+    const transactionType = type === 'income' ? 'income' : 'expense'
 
     if (!amount || amount <= 0) {
       return error(res, 400, 'Amount must be greater than 0')
@@ -96,6 +100,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       freshDb.expenses.push({
         id: expenseId,
         groupId,
+        type: transactionType,
         amount: Math.round(amount * 100) / 100,
         category: category.trim(),
         description: description?.trim() ?? '',

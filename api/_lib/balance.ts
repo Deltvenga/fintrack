@@ -18,6 +18,7 @@ export interface GroupBalance {
   members: MemberBalance[]
   settlements: Settlement[]
   totalExpenses: number
+  totalIncome: number
 }
 
 function roundMoney(value: number): number {
@@ -40,17 +41,24 @@ export function calculateGroupBalance(db: Database, groupId: string): GroupBalan
     nets.set(memberId, 0)
   }
 
-  const expenses = db.expenses.filter((e) => e.groupId === groupId)
+  const transactions = db.expenses.filter((e) => e.groupId === groupId)
   let totalExpenses = 0
+  let totalIncome = 0
 
-  for (const expense of expenses) {
-    totalExpenses += expense.amount
-    const share = expense.amount / memberCount
+  for (const transaction of transactions) {
+    const type = transaction.type ?? 'expense'
+    if (type === 'income') {
+      totalIncome += transaction.amount
+    } else {
+      totalExpenses += transaction.amount
+    }
+
+    const share = transaction.amount / memberCount
 
     for (const memberId of group.memberIds) {
       const current = nets.get(memberId) ?? 0
-      if (memberId === expense.paidByUserId) {
-        nets.set(memberId, current + expense.amount - share)
+      if (memberId === transaction.paidByUserId) {
+        nets.set(memberId, current + transaction.amount - share)
       } else {
         nets.set(memberId, current - share)
       }
@@ -100,5 +108,6 @@ export function calculateGroupBalance(db: Database, groupId: string): GroupBalan
     members,
     settlements,
     totalExpenses: roundMoney(totalExpenses),
+    totalIncome: roundMoney(totalIncome),
   }
 }

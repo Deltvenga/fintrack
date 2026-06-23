@@ -76,6 +76,7 @@ function emptyDb(): Database {
     sessions: [],
     groups: [],
     expenses: [],
+    plans: [],
   }
 }
 
@@ -91,7 +92,11 @@ async function readFromBlob(): Promise<Database> {
       const result = await get(DB_BLOB_PATH, blobOptions(access))
       if (result?.statusCode === 200 && result.stream) {
         const text = await streamToText(result.stream)
-        return JSON.parse(text) as Database
+        const db = JSON.parse(text) as Database
+        if (!db.plans) {
+          db.plans = []
+        }
+        return db
       }
     } catch (error) {
       if (!(error instanceof Error) || !error.message.includes('404')) {
@@ -135,7 +140,11 @@ function readFromLocal(): Database {
   }
 
   const raw = readFileSync(LOCAL_DB_PATH, 'utf-8')
-  return JSON.parse(raw) as Database
+  const db = JSON.parse(raw) as Database
+  if (!db.plans) {
+    db.plans = []
+  }
+  return db
 }
 
 function writeToLocal(db: Database): void {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { api } from '../lib/api'
 import type { Expense, GroupBalance } from '../lib/types'
@@ -14,36 +14,46 @@ export function GroupPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
+  const loadData = useCallback(async (currentGroupId: string) => {
+    setLoading(true)
+    setError('')
+
+    try {
+      const [expensesRes, balanceRes, groupsRes] = await Promise.all([
+        api.getExpenses(currentGroupId),
+        api.getBalance(currentGroupId),
+        api.getGroups(),
+      ])
+
+      setExpenses(expensesRes.expenses)
+      setBalance(balanceRes.balance)
+
+      const group = groupsRes.groups.find((g) => g.id === currentGroupId)
+      if (group) {
+        setInviteCode(group.inviteCode)
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Не удалось загрузить данные')
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
   useEffect(() => {
     if (!groupId) return
+    loadData(groupId)
+  }, [groupId, loadData])
 
-    async function load(currentGroupId: string) {
-      setLoading(true)
-      setError('')
-
-      try {
-        const [expensesRes, balanceRes, groupsRes] = await Promise.all([
-          api.getExpenses(currentGroupId),
-          api.getBalance(currentGroupId),
-          api.getGroups(),
-        ])
-
-        setExpenses(expensesRes.expenses)
-        setBalance(balanceRes.balance)
-
-        const group = groupsRes.groups.find((g) => g.id === currentGroupId)
-        if (group) {
-          setInviteCode(group.inviteCode)
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Не удалось загрузить данные')
-      } finally {
-        setLoading(false)
-      }
+  async function handleDeleted(expenseId: string) {
+    if (!groupId) return
+    setExpenses((prev) => prev.filter((e) => e.id !== expenseId))
+    try {
+      const balanceRes = await api.getBalance(groupId)
+      setBalance(balanceRes.balance)
+    } catch {
+      await loadData(groupId)
     }
-
-    load(groupId)
-  }, [groupId])
+  }
 
   if (!groupId) {
     return null
@@ -69,8 +79,24 @@ export function GroupPage() {
       </section>
 
       <section>
-        <h2 className="mb-3 text-lg font-semibold text-slate-900">Расходы</h2>
-        <ExpenseList expenses={expenses} loading={loading} />
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-slate-900">Операции</h2>
+          <div className="flex gap-2">
+            <Link
+              to={`/groups/${groupId}/add?type=income`}
+              className="rounded-lg bg-sky-100 px-3 py-1.5 text-xs font-semibold text-sky-700"
+            >
+              + Доход
+            </Link>
+            <Link
+              to={`/groups/${groupId}/add`}
+              className="rounded-lg bg-emerald-100 px-3 py-1.5 text-xs font-semibold text-emerald-700"
+            >
+              + Расход
+            </Link>
+          </div>
+        </div>
+        <ExpenseList expenses={expenses} loading={loading} onDeleted={handleDeleted} />
       </section>
 
       <BottomNav groupId={groupId} />
