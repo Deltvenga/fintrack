@@ -1,5 +1,5 @@
 {
-  "version": 16,
+  "version": 17,
   "users": [
     {
       "id": "a0692b41-d056-4fcb-82ff-b6a0e9d1ec50",
@@ -59,6 +59,17 @@
       "paidByUserId": "a0692b41-d056-4fcb-82ff-b6a0e9d1ec50",
       "date": "2026-06-23",
       "createdAt": "2026-06-23T18:31:28.805Z"
+    },
+    {
+      "id": "855d529d-3148-463c-b012-b1bf5cfc596a",
+      "groupId": "0e359723-8339-4184-aeef-f9ddfd9eb584",
+      "type": "expense",
+      "amount": 5231,
+      "category": "Покупки",
+      "description": "",
+      "paidByUserId": "a0692b41-d056-4fcb-82ff-b6a0e9d1ec50",
+      "date": "2026-06-23",
+      "createdAt": "2026-06-23T19:55:52.557Z"
     }
   ],
   "plans": [

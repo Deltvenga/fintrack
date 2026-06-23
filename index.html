@@ -10,6 +10,12 @@
     />
     <meta name="theme-color" content="#059669" />
     <meta name="description" content="Совместный учёт расходов" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Fintrack" />
@@ -21,6 +27,13 @@
       ;(function () {
         var key = 'fintrack-theme'
         var stored = localStorage.getItem(key)
+        if (stored === 'girly') {
+          document.documentElement.classList.add('girly')
+          document.documentElement.style.colorScheme = 'light'
+          var meta = document.querySelector('meta[name="theme-color"]')
+          if (meta) meta.setAttribute('content', '#e879f9')
+          return
+        }
         var dark =
           stored === 'dark' ||
           (stored !== 'light' &&

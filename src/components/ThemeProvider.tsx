@@ -5,12 +5,13 @@ import {
   getStoredTheme,
   resolveTheme,
   THEME_STORAGE_KEY,
+  type ResolvedTheme,
   type Theme,
 } from '../lib/theme'
 
 interface ThemeContextValue {
   theme: Theme
-  resolved: 'light' | 'dark'
+  resolved: ResolvedTheme
   setTheme: (theme: Theme) => void
   toggleTheme: () => void
 }
@@ -27,7 +28,7 @@ export function useTheme() {
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>(() => getStoredTheme())
-  const [resolved, setResolved] = useState<'light' | 'dark'>(() => resolveTheme(getStoredTheme()))
+  const [resolved, setResolved] = useState<ResolvedTheme>(() => resolveTheme(getStoredTheme()))
 
   useEffect(() => {
     applyTheme(theme)

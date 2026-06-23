@@ -1,0 +1,368 @@
+/* Девчачья тема — пиксельно-милый стиль в розово-фиолетовых тонах */
+
+.girly {
+  --girly-bg: #fff0f9;
+  --girly-bg-soft: #fde8f5;
+  --girly-surface: #fff7fc;
+  --girly-surface-muted: #fce7f6;
+  --girly-border: #e879f9;
+  --girly-border-dark: #c026d3;
+  --girly-text: #701a75;
+  --girly-text-soft: #a21caf;
+  --girly-text-muted: #c026d3;
+  --girly-accent: #ec4899;
+  --girly-accent-deep: #db2777;
+  --girly-violet: #a855f7;
+  --girly-shadow: #be185d;
+  --girly-pixel: 3px;
+
+  color: var(--girly-text);
+  background-color: var(--girly-bg);
+  color-scheme: light;
+  font-family: 'Pixelify Sans', 'Segoe UI', sans-serif;
+  image-rendering: pixelated;
+
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(244, 114, 182, 0.22) 2px, transparent 2px),
+    radial-gradient(circle at 78% 72%, rgba(192, 132, 252, 0.2) 2px, transparent 2px),
+    radial-gradient(circle at 44% 88%, rgba(249, 168, 212, 0.18) 1.5px, transparent 1.5px),
+    linear-gradient(180deg, #fff5fc 0%, #fde8f7 45%, #fae8ff 100%);
+  background-size:
+    28px 28px,
+    32px 32px,
+    20px 20px,
+    auto;
+}
+
+.girly h1,
+.girly h2,
+.girly h3 {
+  letter-spacing: 0.02em;
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.85);
+}
+
+.girly .theme-toggle {
+  border-radius: 4px !important;
+  border: var(--girly-pixel) solid var(--girly-border) !important;
+  background: linear-gradient(180deg, #fff7fc 0%, #fce7f6 100%) !important;
+  box-shadow: 3px 3px 0 0 var(--girly-shadow) !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+.girly .theme-toggle:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 0 var(--girly-shadow) !important;
+}
+
+/* Пиксельные карточки и панели */
+.girly :is(
+    [class*='rounded-2xl'],
+    [class*='rounded-3xl'],
+    [class*='rounded-xl']:not(.theme-toggle):not([class*='rounded-full'])
+  ) {
+  border-radius: 4px !important;
+}
+
+.girly :is(
+    .rounded-2xl,
+    .rounded-3xl,
+    .rounded-xl
+  ):not(.rounded-full):not(.theme-toggle) {
+  border: var(--girly-pixel) solid var(--girly-border) !important;
+  box-shadow: 4px 4px 0 0 var(--girly-shadow) !important;
+}
+
+.girly .shadow-sm,
+.girly .shadow-md,
+.girly .shadow-xl {
+  box-shadow: 4px 4px 0 0 var(--girly-shadow) !important;
+}
+
+/* Фоны */
+.girly .bg-slate-50 {
+  background-color: var(--girly-bg) !important;
+}
+
+.girly .bg-white,
+.girly .bg-white\/95 {
+  background-color: var(--girly-surface) !important;
+}
+
+.girly .bg-slate-100 {
+  background: linear-gradient(180deg, #fce7f6 0%, #f5d0fe 100%) !important;
+  border: 2px solid #f0abfc;
+}
+
+.girly .bg-slate-50.dark\:bg-slate-950,
+.girly .bg-white.dark\:bg-slate-900,
+.girly .bg-slate-100.dark\:bg-slate-800 {
+  background: var(--girly-surface-muted) !important;
+}
+
+/* Текст */
+.girly .text-slate-900,
+.girly .text-slate-800 {
+  color: var(--girly-text) !important;
+}
+
+.girly .text-slate-700,
+.girly .text-slate-600 {
+  color: var(--girly-text-soft) !important;
+}
+
+.girly .text-slate-500,
+.girly .text-slate-400 {
+  color: var(--girly-text-muted) !important;
+}
+
+.girly .text-emerald-700 {
+  color: #be185d !important;
+}
+
+.girly .text-violet-700,
+.girly .text-violet-600 {
+  color: #a21caf !important;
+}
+
+.girly .text-sky-600,
+.girly .text-sky-700 {
+  color: #7c3aed !important;
+}
+
+.girly .text-rose-600,
+.girly .text-rose-700 {
+  color: #db2777 !important;
+}
+
+/* Рамки и кольца */
+.girly .border-slate-200,
+.girly .border-slate-300,
+.girly .ring-slate-100,
+.girly .ring-slate-200 {
+  border-color: #f0abfc !important;
+  --tw-ring-color: #f0abfc !important;
+}
+
+.girly .hover\:border-slate-300:hover,
+.girly .hover\:border-slate-400:hover {
+  border-color: var(--girly-border) !important;
+}
+
+/* Кнопки и акценты */
+.girly .bg-emerald-600,
+.girly .bg-emerald-600:hover,
+.girly .hover\:bg-emerald-700:hover {
+  background: linear-gradient(180deg, #f472b6 0%, #ec4899 55%, #db2777 100%) !important;
+  border: var(--girly-pixel) solid #be185d !important;
+  box-shadow: 3px 3px 0 0 #9d174d !important;
+  color: #fff !important;
+  border-radius: 4px !important;
+}
+
+.girly .bg-violet-600,
+.girly .bg-violet-600:hover,
+.girly .hover\:bg-violet-700:hover {
+  background: linear-gradient(180deg, #d8b4fe 0%, #c084fc 45%, #a855f7 100%) !important;
+  border: var(--girly-pixel) solid #7e22ce !important;
+  box-shadow: 3px 3px 0 0 #6b21a8 !important;
+  color: #fff !important;
+}
+
+.girly .bg-sky-600,
+.girly .hover\:bg-sky-700:hover {
+  background: linear-gradient(180deg, #c4b5fd 0%, #a78bfa 55%, #8b5cf6 100%) !important;
+  border: var(--girly-pixel) solid #6d28d9 !important;
+  box-shadow: 3px 3px 0 0 #5b21b6 !important;
+}
+
+.girly .bg-rose-600,
+.girly .hover\:bg-rose-700:hover {
+  background: linear-gradient(180deg, #fb7185 0%, #f43f5e 55%, #e11d48 100%) !important;
+  border: var(--girly-pixel) solid #be123c !important;
+  box-shadow: 3px 3px 0 0 #9f1239 !important;
+}
+
+.girly .bg-emerald-100,
+.girly .bg-violet-100,
+.girly .bg-sky-100,
+.girly .bg-rose-100 {
+  background: #fce7f6 !important;
+  border: 2px solid #f9a8d4 !important;
+  border-radius: 4px !important;
+}
+
+.girly .text-emerald-700,
+.girly .text-violet-700,
+.girly .text-sky-700,
+.girly .text-rose-700 {
+  color: var(--girly-text) !important;
+}
+
+.girly .bg-violet-50,
+.girly .bg-emerald-50,
+.girly .bg-sky-50,
+.girly .bg-rose-50 {
+  background: #fdf2f8 !important;
+  border: 2px dashed #f0abfc !important;
+}
+
+.girly .bg-violet-600.p-5,
+.girly .from-violet-600 {
+  background: linear-gradient(135deg, #e879f9 0%, #c026d3 50%, #a855f7 100%) !important;
+  border: var(--girly-pixel) solid #86198f !important;
+  box-shadow: 5px 5px 0 0 #701a75 !important;
+}
+
+.girly .bg-rose-600.p-5,
+.girly .bg-sky-600.p-5 {
+  border: var(--girly-pixel) solid #9d174d !important;
+  box-shadow: 4px 4px 0 0 #831843 !important;
+}
+
+/* Нижнее меню */
+.girly nav.fixed {
+  background: linear-gradient(180deg, #fff7fc 0%, #fce7f6 100%) !important;
+  border-top: var(--girly-pixel) solid var(--girly-border) !important;
+  box-shadow: 0 -4px 0 0 #f9a8d4 !important;
+}
+
+.girly nav .bg-emerald-600 {
+  background: linear-gradient(180deg, #f9a8d4 0%, #ec4899 100%) !important;
+  border: 2px solid #be185d !important;
+  box-shadow: 2px 2px 0 0 #9d174d !important;
+}
+
+.girly nav .bg-slate-100 {
+  background: #fdf2f8 !important;
+  border: 2px solid #f0abfc !important;
+  color: var(--girly-text-soft) !important;
+}
+
+/* Поля ввода */
+.girly input,
+.girly select,
+.girly textarea {
+  background: #fff7fc !important;
+  border: var(--girly-pixel) solid #f0abfc !important;
+  border-radius: 4px !important;
+  color: var(--girly-text) !important;
+  box-shadow: inset 2px 2px 0 0 rgba(236, 72, 153, 0.12) !important;
+}
+
+.girly input:focus,
+.girly select:focus,
+.girly textarea:focus {
+  border-color: var(--girly-border) !important;
+  outline: 2px dashed #f9a8d4 !important;
+  outline-offset: 2px;
+}
+
+/* Переключатели периода / типа */
+.girly .grid .bg-white.shadow-sm {
+  background: #fff7fc !important;
+  border: 2px solid #e879f9 !important;
+  box-shadow: 2px 2px 0 0 #db2777 !important;
+  color: var(--girly-text) !important;
+}
+
+/* Диалог */
+.girly .fixed.inset-0.z-50 button.absolute.inset-0 {
+  background: rgba(88, 28, 135, 0.45) !important;
+}
+
+.girly .bg-rose-100.text-xl {
+  background: #fce7f6 !important;
+  border: 2px solid #f9a8d4 !important;
+  border-radius: 4px !important;
+}
+
+/* Прогресс-бары */
+.girly .bg-slate-100.rounded-full,
+.girly .h-2.overflow-hidden.rounded-full.bg-slate-100,
+.girly .h-3.overflow-hidden.rounded-full.bg-slate-100 {
+  background: #fce7f6 !important;
+  border: 2px solid #f9a8d4 !important;
+  border-radius: 2px !important;
+}
+
+.girly .rounded-full.transition-all,
+.girly .h-full.rounded-full {
+  border-radius: 2px !important;
+}
+
+/* Ссылки */
+.girly a.text-emerald-700,
+.girly a.text-violet-600,
+.girly a.text-violet-700 {
+  color: #c026d3 !important;
+  text-decoration-style: wavy;
+  text-underline-offset: 3px;
+}
+
+.girly a.text-emerald-700:hover,
+.girly a.text-violet-600:hover,
+.girly a.text-violet-700:hover {
+  color: #db2777 !important;
+}
+
+/* Hover */
+.girly .hover\:bg-slate-50:hover,
+.girly .hover\:bg-slate-100:hover,
+.girly .hover\:bg-slate-200:hover {
+  background: #fce7f6 !important;
+}
+
+.girly .hover\:bg-rose-50:hover {
+  background: #ffe4e6 !important;
+}
+
+.girly .hover\:bg-violet-50:hover {
+  background: #f5d0fe !important;
+}
+
+/* Пайчарт — центр */
+.girly .absolute.inset-6.rounded-full.bg-white {
+  background: #fff7fc !important;
+  border: 2px solid #f0abfc !important;
+}
+
+/* Выбранные категории / планы */
+.girly .border-emerald-500,
+.girly .border-violet-500,
+.girly .border-sky-500 {
+  border-color: #e879f9 !important;
+  background: #fdf2f8 !important;
+}
+
+.girly .ring-emerald-100,
+.girly .ring-violet-100,
+.girly .ring-sky-100 {
+  --tw-ring-color: #f9a8d4 !important;
+}
+
+/* Бейджи */
+.girly .rounded-full.bg-violet-100,
+.girly .rounded-full.bg-emerald-100,
+.girly .rounded-full.bg-slate-100,
+.girly .rounded-full.bg-sky-100,
+.girly .rounded-full.bg-rose-100 {
+  border-radius: 4px !important;
+  border: 2px solid #f0abfc !important;
+}
+
+.girly .rounded-full {
+  border-radius: 4px !important;
+}
+
+/* Градиентные карточки сводки */
+.girly .bg-sky-50,
+.girly .bg-rose-50,
+.girly .bg-violet-50 {
+  box-shadow: 3px 3px 0 0 #f9a8d4 !important;
+}
+
+.girly .ring-sky-100,
+.girly .ring-rose-100,
+.girly .ring-violet-100 {
+  --tw-ring-color: #f0abfc !important;
+}
