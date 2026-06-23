@@ -12,6 +12,7 @@ import {
   calculateFinancialSummary,
   calculatePlansProgress,
 } from '../_lib/plans.js'
+import { getRouteId } from '../_lib/request.js'
 import type { PlanRecurrence } from '../_lib/types.js'
 
 interface CreatePlanBody {
@@ -99,6 +100,47 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     )
 
     return json(res, 201, { plan, summary })
+  }
+
+  if (req.method === 'DELETE') {
+    const planId = getRouteId(req, 'plans')
+    if (!planId) {
+      return error(res, 400, 'Plan id is required')
+    }
+
+    const db = await readDb()
+    const plan = (db.plans ?? []).find((p) => p.id === planId)
+    if (!plan) {
+      return error(res, 404, 'Plan not found')
+    }
+
+    if (!isGroupMember(db, plan.groupId, user.id)) {
+      return error(res, 403, 'Forbidden')
+    }
+
+    const groupId = plan.groupId
+
+    await updateDb((freshDb) => {
+      if (!freshDb.plans) {
+        freshDb.plans = []
+        return
+      }
+
+      const index = freshDb.plans.findIndex((p) => p.id === planId)
+      if (index !== -1) {
+        freshDb.plans.splice(index, 1)
+      }
+    })
+
+    const freshDb = await readDb()
+    const plans = calculatePlansProgress(freshDb.plans ?? [], freshDb.expenses, groupId)
+    const summary = calculateFinancialSummary(
+      freshDb.expenses,
+      freshDb.plans ?? [],
+      groupId,
+    )
+
+    return json(res, 200, { plans, summary })
   }
 
   return error(res, 405, 'Method not allowed')

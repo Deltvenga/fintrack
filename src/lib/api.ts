@@ -101,9 +101,10 @@ export const api = {
   },
 
   deleteExpense(expenseId: string) {
-    return request<{ ok: boolean }>(`/api/expenses/${expenseId}`, {
-      method: 'DELETE',
-    })
+    return request<{ ok: boolean }>(
+      `/api/expenses?id=${encodeURIComponent(expenseId)}`,
+      { method: 'DELETE' },
+    )
   },
 
   getBalance(groupId: string) {
@@ -131,7 +132,7 @@ export const api = {
 
   deletePlan(planId: string) {
     return request<{ plans: PlannedExpense[]; summary: FinancialSummary }>(
-      `/api/plans/${planId}`,
+      `/api/plans?id=${encodeURIComponent(planId)}`,
       { method: 'DELETE' },
     )
   },
