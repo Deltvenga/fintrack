@@ -7,6 +7,68 @@ import { DbConflictError } from './types.js'
 const DB_BLOB_PATH = 'db.json'
 const LOCAL_DB_PATH = join(process.cwd(), 'data', 'db.json')
 
+export class BlobNotConfiguredError extends Error {
+  constructor() {
+    super(
+      'Blob storage is not configured. Link a Blob store to the Vercel project or set BLOB_READ_WRITE_TOKEN.',
+    )
+    this.name = 'BlobNotConfiguredError'
+  }
+}
+
+function isVercelRuntime(): boolean {
+  return process.env.VERCEL === '1'
+}
+
+function getBlobToken(): string | undefined {
+  const token = process.env.BLOB_READ_WRITE_TOKEN?.trim()
+  return token || undefined
+}
+
+function getBlobStoreId(): string | undefined {
+  const storeId =
+    process.env.BLOB_READ_WRITE_TOKEN_STORE_ID?.trim() ||
+    process.env.BLOB_STORE_ID?.trim()
+  return storeId || undefined
+}
+
+function useLocalDb(): boolean {
+  if (isVercelRuntime()) {
+    return false
+  }
+  return !getBlobToken()
+}
+
+function accessModes(): BlobAccessType[] {
+  if (process.env.BLOB_ACCESS === 'public') return ['public']
+  if (process.env.BLOB_ACCESS === 'private') return ['private']
+  return ['private', 'public']
+}
+
+function blobOptions(access: BlobAccessType) {
+  const token = getBlobToken()
+  const storeId = getBlobStoreId()
+
+  return {
+    access,
+    useCache: false as const,
+    ...(token ? { token } : {}),
+    ...(storeId ? { storeId } : {}),
+  }
+}
+
+function assertBlobConfigured(): void {
+  if (!isVercelRuntime()) {
+    return
+  }
+
+  if (getBlobToken() || getBlobStoreId()) {
+    return
+  }
+
+  throw new BlobNotConfiguredError()
+}
+
 function emptyDb(): Database {
   return {
     version: 1,
@@ -17,31 +79,24 @@ function emptyDb(): Database {
   }
 }
 
-function useBlob(): boolean {
-  return Boolean(process.env.BLOB_READ_WRITE_TOKEN)
-}
-
 async function streamToText(stream: ReadableStream<Uint8Array>): Promise<string> {
   return new Response(stream).text()
 }
 
 async function readFromBlob(): Promise<Database> {
-  const modes: BlobAccessType[] =
-    process.env.BLOB_ACCESS === 'public'
-      ? ['public']
-      : process.env.BLOB_ACCESS === 'private'
-        ? ['private']
-        : ['private', 'public']
+  assertBlobConfigured()
 
-  for (const access of modes) {
+  for (const access of accessModes()) {
     try {
-      const result = await get(DB_BLOB_PATH, { access, useCache: false })
+      const result = await get(DB_BLOB_PATH, blobOptions(access))
       if (result?.statusCode === 200 && result.stream) {
         const text = await streamToText(result.stream)
         return JSON.parse(text) as Database
       }
-    } catch {
-      // try next access mode
+    } catch (error) {
+      if (!(error instanceof Error) || !error.message.includes('404')) {
+        console.error('Blob read error:', error)
+      }
     }
   }
 
@@ -49,24 +104,20 @@ async function readFromBlob(): Promise<Database> {
 }
 
 async function writeToBlob(db: Database): Promise<void> {
-  const modes: BlobAccessType[] =
-    process.env.BLOB_ACCESS === 'public'
-      ? ['public']
-      : process.env.BLOB_ACCESS === 'private'
-        ? ['private']
-        : ['private', 'public']
+  assertBlobConfigured()
 
   let lastError: unknown
-  for (const access of modes) {
+  for (const access of accessModes()) {
     try {
       await put(DB_BLOB_PATH, JSON.stringify(db), {
-        access,
+        ...blobOptions(access),
         allowOverwrite: true,
         contentType: 'application/json',
       })
       return
     } catch (error) {
       lastError = error
+      console.error(`Blob write error (${access}):`, error)
     }
   }
 
@@ -96,10 +147,10 @@ function writeToLocal(db: Database): void {
 }
 
 export async function readDb(): Promise<Database> {
-  if (useBlob()) {
-    return readFromBlob()
+  if (useLocalDb()) {
+    return readFromLocal()
   }
-  return readFromLocal()
+  return readFromBlob()
 }
 
 export async function writeDb(db: Database, expectedVersion: number): Promise<void> {
@@ -109,11 +160,12 @@ export async function writeDb(db: Database, expectedVersion: number): Promise<vo
 
   db.version = expectedVersion + 1
 
-  if (useBlob()) {
-    await writeToBlob(db)
-  } else {
+  if (useLocalDb()) {
     writeToLocal(db)
+    return
   }
+
+  await writeToBlob(db)
 }
 
 export async function updateDb(

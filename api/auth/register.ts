@@ -8,7 +8,7 @@ import {
   parseBody,
   setAuthCookie,
 } from '../_lib/auth.js'
-import { updateDb } from '../_lib/db.js'
+import { BlobNotConfiguredError, updateDb } from '../_lib/db.js'
 
 interface RegisterBody {
   username?: string
@@ -64,6 +64,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   } catch (err) {
     if (err instanceof Error && err.message === 'USERNAME_EXISTS') {
       return error(res, 409, 'Username already taken')
+    }
+    if (err instanceof BlobNotConfiguredError) {
+      return error(res, 503, err.message)
     }
     console.error('Register error:', err)
     return error(res, 500, 'Internal server error')
