@@ -50,7 +50,7 @@ export function PlanEditForm({ plan, onSaved, onCancel }: PlanEditFormProps) {
   return (
     <form onSubmit={handleSubmit} className="mt-4 space-y-4 border-t border-slate-100 pt-4">
       <div>
-        <label className="mb-2 block text-sm font-medium text-slate-700">Сумма, ₽</label>
+        <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">Сумма, ₽</label>
         <input
           type="number"
           inputMode="decimal"
@@ -58,32 +58,32 @@ export function PlanEditForm({ plan, onSaved, onCancel }: PlanEditFormProps) {
           step="0.01"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
-          className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-100"
+          className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-3 outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-100 dark:focus:ring-violet-900/40 dark:ring-violet-900 dark:bg-slate-800 dark:text-slate-100"
           required
         />
       </div>
 
       <div>
-        <label className="mb-2 block text-sm font-medium text-slate-700">Месяц</label>
+        <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">Месяц</label>
         <input
           type="month"
           value={targetMonth}
           onChange={(e) => setTargetMonth(e.target.value)}
-          className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-100"
+          className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-3 outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-100 dark:focus:ring-violet-900/40 dark:ring-violet-900 dark:bg-slate-800 dark:text-slate-100"
           required
         />
       </div>
 
       <div>
-        <label className="mb-2 block text-sm font-medium text-slate-700">Периодичность</label>
-        <div className="grid grid-cols-2 gap-2 rounded-2xl bg-slate-100 p-1">
+        <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">Периодичность</label>
+        <div className="grid grid-cols-2 gap-2 rounded-2xl bg-slate-100 dark:bg-slate-800 p-1">
           <button
             type="button"
             onClick={() => setRecurrence('monthly')}
             className={`rounded-xl px-4 py-2.5 text-sm font-semibold transition ${
               recurrence === 'monthly'
-                ? 'bg-white text-violet-700 shadow-sm'
-                : 'text-slate-600'
+                ? 'bg-white dark:bg-slate-900 text-violet-700 dark:text-violet-300 shadow-sm'
+                : 'text-slate-600 dark:text-slate-400'
             }`}
           >
             Ежемесячно
@@ -93,8 +93,8 @@ export function PlanEditForm({ plan, onSaved, onCancel }: PlanEditFormProps) {
             onClick={() => setRecurrence('once')}
             className={`rounded-xl px-4 py-2.5 text-sm font-semibold transition ${
               recurrence === 'once'
-                ? 'bg-white text-violet-700 shadow-sm'
-                : 'text-slate-600'
+                ? 'bg-white dark:bg-slate-900 text-violet-700 dark:text-violet-300 shadow-sm'
+                : 'text-slate-600 dark:text-slate-400'
             }`}
           >
             Разово
@@ -103,26 +103,26 @@ export function PlanEditForm({ plan, onSaved, onCancel }: PlanEditFormProps) {
       </div>
 
       <div>
-        <label className="mb-2 block text-sm font-medium text-slate-700">Описание</label>
+        <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">Описание</label>
         <input
           type="text"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-violet-500"
+          className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-3 outline-none focus:border-violet-500 dark:bg-slate-800 dark:text-slate-100"
           placeholder="Необязательно"
         />
       </div>
 
       <PlanEmojiField value={icon} onChange={setIcon} />
 
-      {error ? <p className="text-sm text-rose-600">{error}</p> : null}
+      {error ? <p className="text-sm text-rose-600 dark:text-rose-400">{error}</p> : null}
 
       <div className="flex gap-2">
         <button
           type="button"
           onClick={onCancel}
           disabled={submitting}
-          className="flex-1 rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 disabled:opacity-50"
+          className="flex-1 rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 text-sm font-semibold text-slate-600 dark:text-slate-400 transition hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50"
         >
           Отмена
         </button>

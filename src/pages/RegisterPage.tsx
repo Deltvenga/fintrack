@@ -32,42 +32,42 @@ export function RegisterPage() {
     <div className="flex min-h-dvh flex-col justify-center px-5 py-10">
       <div className="mx-auto w-full max-w-md">
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold text-slate-900">Регистрация</h1>
-          <p className="mt-2 text-slate-500">Создайте аккаунт для совместного учёта</p>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">Регистрация</h1>
+          <p className="mt-2 text-slate-500 dark:text-slate-400">Создайте аккаунт для совместного учёта</p>
         </div>
 
         <form
           onSubmit={handleSubmit}
-          className="space-y-4 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-100"
+          className="space-y-4 rounded-3xl bg-white dark:bg-slate-900 p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-800"
         >
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">
+            <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
               Имя пользователя
             </label>
             <input
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+              className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-3 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 dark:focus:ring-emerald-900/40 dark:ring-emerald-900 dark:bg-slate-800 dark:text-slate-100"
               autoComplete="username"
               required
             />
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">Пароль</label>
+            <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">Пароль</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+              className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-3 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 dark:focus:ring-emerald-900/40 dark:ring-emerald-900 dark:bg-slate-800 dark:text-slate-100"
               autoComplete="new-password"
               minLength={4}
               required
             />
           </div>
 
-          {error ? <p className="text-sm text-rose-600">{error}</p> : null}
+          {error ? <p className="text-sm text-rose-600 dark:text-rose-400">{error}</p> : null}
 
           <button
             type="submit"
@@ -78,9 +78,9 @@ export function RegisterPage() {
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-slate-500">
+        <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
           Уже есть аккаунт?{' '}
-          <Link to="/login" className="font-semibold text-emerald-700">
+          <Link to="/login" className="font-semibold text-emerald-700 dark:text-emerald-400">
             Войти
           </Link>
         </p>

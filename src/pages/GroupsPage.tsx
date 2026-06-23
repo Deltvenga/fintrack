@@ -88,12 +88,12 @@ export function GroupsPage() {
     <div className="mx-auto min-h-dvh max-w-lg px-4 py-6">
       <header className="mb-6 flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Мои группы</h1>
-          <p className="mt-1 text-sm text-slate-500">Привет, {user?.username}</p>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Мои группы</h1>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Привет, {user?.username}</p>
         </div>
         <button
           onClick={handleLogout}
-          className="rounded-xl px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100"
+          className="mr-12 rounded-xl px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
         >
           Выйти
         </button>
@@ -114,7 +114,7 @@ export function GroupsPage() {
             setShowJoin(true)
             setShowCreate(false)
           }}
-          className="rounded-2xl bg-white px-4 py-4 text-sm font-semibold text-slate-800 ring-1 ring-slate-200"
+          className="rounded-2xl bg-white dark:bg-slate-900 px-4 py-4 text-sm font-semibold text-slate-800 dark:text-slate-200 ring-1 ring-slate-200 dark:ring-slate-700"
         >
           Войти по коду
         </button>
@@ -123,13 +123,13 @@ export function GroupsPage() {
       {showCreate ? (
         <form
           onSubmit={handleCreate}
-          className="mb-6 space-y-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100"
+          className="mb-6 space-y-3 rounded-2xl bg-white dark:bg-slate-900 p-4 shadow-sm ring-1 ring-slate-100 dark:ring-slate-800"
         >
           <input
             value={groupName}
             onChange={(e) => setGroupName(e.target.value)}
             placeholder="Название группы"
-            className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-emerald-500"
+            className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-3 outline-none focus:border-emerald-500 dark:bg-slate-800 dark:text-slate-100"
             required
           />
           <button
@@ -145,13 +145,13 @@ export function GroupsPage() {
       {showJoin ? (
         <form
           onSubmit={handleJoin}
-          className="mb-6 space-y-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100"
+          className="mb-6 space-y-3 rounded-2xl bg-white dark:bg-slate-900 p-4 shadow-sm ring-1 ring-slate-100 dark:ring-slate-800"
         >
           <input
             value={inviteCode}
             onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
             placeholder="Код приглашения"
-            className="w-full rounded-xl border border-slate-200 px-4 py-3 uppercase outline-none focus:border-emerald-500"
+            className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-3 uppercase outline-none focus:border-emerald-500 dark:bg-slate-800 dark:text-slate-100"
             required
           />
           <button
@@ -164,12 +164,12 @@ export function GroupsPage() {
         </form>
       ) : null}
 
-      {error ? <p className="mb-4 text-sm text-rose-600">{error}</p> : null}
+      {error ? <p className="mb-4 text-sm text-rose-600 dark:text-rose-400">{error}</p> : null}
 
       {loading ? (
-        <p className="text-slate-500">Загрузка...</p>
+        <p className="text-slate-500 dark:text-slate-400">Загрузка...</p>
       ) : groups.length === 0 ? (
-        <div className="rounded-2xl bg-white p-6 text-center text-slate-500 shadow-sm">
+        <div className="rounded-2xl bg-white dark:bg-slate-900 p-6 text-center text-slate-500 dark:text-slate-400 shadow-sm">
           Групп пока нет. Создайте новую или присоединитесь по коду.
         </div>
       ) : (
@@ -178,16 +178,16 @@ export function GroupsPage() {
             <Link
               key={group.id}
               to={`/groups/${group.id}`}
-              className="block rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-100 transition hover:ring-emerald-200"
+              className="block rounded-2xl bg-white dark:bg-slate-900 p-5 shadow-sm ring-1 ring-slate-100 dark:ring-slate-800 transition hover:ring-emerald-200"
             >
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <h2 className="text-lg font-semibold text-slate-900">{group.name}</h2>
-                  <p className="mt-1 text-sm text-slate-500">
+                  <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{group.name}</h2>
+                  <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                     {group.memberCount} участн. · код {group.inviteCode}
                   </p>
                 </div>
-                <p className="font-semibold text-emerald-700">
+                <p className="font-semibold text-emerald-700 dark:text-emerald-400">
                   {formatMoney(group.expenseTotal)}
                 </p>
               </div>

@@ -33,7 +33,7 @@ function OverviewRow({
 
   return (
     <div className="flex items-center justify-between gap-3 text-sm">
-      <span className="text-slate-600">{label}</span>
+      <span className="text-slate-600 dark:text-slate-400">{label}</span>
       <div className="text-right">
         <p className={`font-semibold ${colorClass}`}>{formatMoney(amount)}</p>
         <p className="text-xs text-slate-400">осталось {formatMoney(remaining)}</p>
@@ -80,17 +80,17 @@ export function PlanOverviewPage() {
       <header className="mb-6">
         <Link
           to={`/groups/${groupId}/planning`}
-          className="text-sm font-medium text-emerald-700"
+          className="text-sm font-medium text-emerald-700 dark:text-emerald-400"
         >
           ← К планированию
         </Link>
-        <h1 className="mt-3 text-2xl font-bold text-slate-900">Планы по месяцам</h1>
-        <p className="mt-1 text-sm text-slate-500">
+        <h1 className="mt-3 text-2xl font-bold text-slate-900 dark:text-slate-100">Планы по месяцам</h1>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
           Сколько занимают ежемесячные, разовые и все планы в каждом месяце.
         </p>
       </header>
 
-      {error ? <p className="mb-4 text-sm text-rose-600">{error}</p> : null}
+      {error ? <p className="mb-4 text-sm text-rose-600 dark:text-rose-400">{error}</p> : null}
 
       <section className="mb-6 rounded-2xl bg-violet-600 p-5 text-white shadow-sm">
         <p className="text-sm text-violet-100">Всего по всем месяцам</p>
@@ -111,13 +111,13 @@ export function PlanOverviewPage() {
       </section>
 
       {loading ? (
-        <div className="rounded-2xl bg-white p-6 text-center text-slate-500 shadow-sm">
+        <div className="rounded-2xl bg-white dark:bg-slate-900 p-6 text-center text-slate-500 dark:text-slate-400 shadow-sm">
           Загрузка...
         </div>
       ) : months.length === 0 ? (
-        <div className="rounded-2xl bg-white p-6 text-center text-slate-500 shadow-sm">
+        <div className="rounded-2xl bg-white dark:bg-slate-900 p-6 text-center text-slate-500 dark:text-slate-400 shadow-sm">
           Планов пока нет.{' '}
-          <Link to={`/groups/${groupId}/planning`} className="font-medium text-violet-600">
+          <Link to={`/groups/${groupId}/planning`} className="font-medium text-violet-600 dark:text-violet-400">
             Добавьте первый
           </Link>
         </div>
@@ -133,11 +133,11 @@ export function PlanOverviewPage() {
             return (
               <article
                 key={month.targetMonth}
-                className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-100"
+                className="rounded-2xl bg-white dark:bg-slate-900 p-5 shadow-sm ring-1 ring-slate-100 dark:ring-slate-800"
               >
                 <div className="mb-4 flex items-start justify-between gap-3">
                   <div>
-                    <h2 className="text-lg font-semibold capitalize text-slate-900">
+                    <h2 className="text-lg font-semibold capitalize text-slate-900 dark:text-slate-100">
                       {month.label}
                     </h2>
                     <p className="mt-1 text-xs text-slate-400">
@@ -145,14 +145,14 @@ export function PlanOverviewPage() {
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs text-slate-500">Итого</p>
-                    <p className="text-xl font-bold text-violet-700">
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Итого</p>
+                    <p className="text-xl font-bold text-violet-700 dark:text-violet-300">
                       {formatMoney(month.totalAmount)}
                     </p>
                   </div>
                 </div>
 
-                <div className="mb-4 flex h-3 overflow-hidden rounded-full bg-slate-100">
+                <div className="mb-4 flex h-3 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
                   {month.monthlyAmount > 0 ? (
                     <div
                       className="h-full bg-violet-500"
@@ -174,7 +174,7 @@ export function PlanOverviewPage() {
                     label={`Ежемесячные (${month.monthlyCount})`}
                     amount={month.monthlyAmount}
                     remaining={month.monthlyRemaining}
-                    colorClass="text-violet-700"
+                    colorClass="text-violet-700 dark:text-violet-300"
                   />
                   <OverviewRow
                     label={`Разовые (${month.onceCount})`}

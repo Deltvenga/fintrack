@@ -49,7 +49,7 @@ export function ExpenseList({ expenses, customCategories = [], loading, onDelete
 
   if (loading) {
     return (
-      <div className="rounded-2xl bg-white p-6 text-center text-slate-500 shadow-sm">
+      <div className="rounded-2xl bg-white dark:bg-slate-900 p-6 text-center text-slate-500 dark:text-slate-400 shadow-sm">
         Загрузка...
       </div>
     )
@@ -57,7 +57,7 @@ export function ExpenseList({ expenses, customCategories = [], loading, onDelete
 
   if (expenses.length === 0) {
     return (
-      <div className="rounded-2xl bg-white p-6 text-center text-slate-500 shadow-sm">
+      <div className="rounded-2xl bg-white dark:bg-slate-900 p-6 text-center text-slate-500 dark:text-slate-400 shadow-sm">
         Записей пока нет. Добавьте расход или доход!
       </div>
     )
@@ -77,7 +77,7 @@ export function ExpenseList({ expenses, customCategories = [], loading, onDelete
           return (
             <article
               key={expense.id}
-              className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100"
+              className="rounded-2xl bg-white dark:bg-slate-900 p-4 shadow-sm ring-1 ring-slate-100 dark:ring-slate-800"
             >
               <div className="flex items-start gap-3">
                 <CategoryIcon
@@ -91,24 +91,24 @@ export function ExpenseList({ expenses, customCategories = [], loading, onDelete
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
-                        <p className="font-medium text-slate-900">{displayName}</p>
+                        <p className="font-medium text-slate-900 dark:text-slate-100">{displayName}</p>
                         <span
                           className={`rounded-full px-2 py-0.5 text-xs font-medium ${
                             isIncome
-                              ? 'bg-sky-100 text-sky-700'
-                              : 'bg-rose-100 text-rose-700'
+                              ? 'bg-sky-100 dark:bg-sky-950/50 text-sky-700 dark:text-sky-300'
+                              : 'bg-rose-100 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300'
                           }`}
                         >
                           {isIncome ? 'Доход' : 'Расход'}
                         </span>
                         {isPlanned ? (
-                          <span className="rounded-full bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-700">
+                          <span className="rounded-full bg-violet-100 dark:bg-violet-950/50 px-2 py-0.5 text-xs font-medium text-violet-700 dark:text-violet-300">
                             По плану
                           </span>
                         ) : null}
                       </div>
                       {expense.description ? (
-                        <p className="mt-1 text-sm text-slate-500">{expense.description}</p>
+                        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{expense.description}</p>
                       ) : null}
                       <p className="mt-2 text-xs text-slate-400">
                         {formatDate(expense.date)} · {isIncome ? 'получил' : 'оплатил'}{' '}
@@ -119,7 +119,7 @@ export function ExpenseList({ expenses, customCategories = [], loading, onDelete
                     <div className="flex flex-col items-end gap-2">
                       <p
                         className={`text-lg font-semibold ${
-                          isIncome ? 'text-sky-600' : 'text-rose-600'
+                          isIncome ? 'text-sky-600 dark:text-sky-400' : 'text-rose-600 dark:text-rose-400'
                         }`}
                       >
                         {isIncome ? '+' : '−'}
@@ -132,7 +132,7 @@ export function ExpenseList({ expenses, customCategories = [], loading, onDelete
                           setPendingDelete(expense)
                         }}
                         disabled={deletingId === expense.id}
-                        className="rounded-lg px-2 py-1 text-xs font-medium text-slate-400 transition hover:bg-rose-50 hover:text-rose-600 disabled:opacity-50"
+                        className="rounded-lg px-2 py-1 text-xs font-medium text-slate-400 transition hover:bg-rose-50 dark:bg-rose-950/40 dark:hover:bg-rose-950/50 hover:text-rose-600 dark:text-rose-400 dark:hover:text-rose-400 disabled:opacity-50"
                         aria-label={`Удалить ${isIncome ? 'доход' : 'расход'}`}
                       >
                         Удалить

@@ -4,6 +4,8 @@ import {
   GuestRoute,
   ProtectedRoute,
 } from './components/ProtectedRoute'
+import { ThemeProvider } from './components/ThemeProvider'
+import { ThemeToggle } from './components/ThemeToggle'
 import { AddExpensePage } from './pages/AddExpensePage'
 import { GroupPage } from './pages/GroupPage'
 import { GroupsPage } from './pages/GroupsPage'
@@ -15,10 +17,12 @@ import { SummaryPage } from './pages/SummaryPage'
 
 export default function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <div className="min-h-dvh bg-slate-50 text-slate-900">
-          <Routes>
+    <ThemeProvider>
+      <AuthProvider>
+        <BrowserRouter>
+          <div className="min-h-dvh bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+            <ThemeToggle />
+            <Routes>
             <Route path="/" element={<Navigate to="/groups" replace />} />
 
             <Route element={<GuestRoute />}>
@@ -36,9 +40,10 @@ export default function App() {
             </Route>
 
             <Route path="*" element={<Navigate to="/groups" replace />} />
-          </Routes>
-        </div>
-      </BrowserRouter>
-    </AuthProvider>
+            </Routes>
+          </div>
+        </BrowserRouter>
+      </AuthProvider>
+    </ThemeProvider>
   )
 }

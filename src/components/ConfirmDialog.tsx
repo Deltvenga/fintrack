@@ -61,29 +61,29 @@ export function ConfirmDialog({
         role="dialog"
         aria-modal="true"
         aria-labelledby="confirm-dialog-title"
-        className="relative w-full max-w-sm animate-[slideUp_0.2s_ease-out] rounded-3xl bg-white p-6 shadow-xl ring-1 ring-slate-200"
+        className="relative w-full max-w-sm animate-[slideUp_0.2s_ease-out] rounded-3xl bg-white dark:bg-slate-900 p-6 shadow-xl ring-1 ring-slate-200 dark:ring-slate-700"
       >
-        <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-100 text-xl">
+        <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-100 dark:bg-rose-950/50 text-xl">
           🗑️
         </div>
 
-        <h2 id="confirm-dialog-title" className="text-lg font-bold text-slate-900">
+        <h2 id="confirm-dialog-title" className="text-lg font-bold text-slate-900 dark:text-slate-100">
           {title}
         </h2>
-        <p className="mt-2 text-sm text-slate-600">{message}</p>
+        <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">{message}</p>
         {detail ? (
-          <p className="mt-3 rounded-xl bg-slate-50 px-4 py-3 text-sm font-medium text-slate-800">
+          <p className="mt-3 rounded-xl bg-slate-50 dark:bg-slate-950 px-4 py-3 text-sm font-medium text-slate-800 dark:text-slate-200">
             {detail}
           </p>
         ) : null}
-        {error ? <p className="mt-3 text-sm text-rose-600">{error}</p> : null}
+        {error ? <p className="mt-3 text-sm text-rose-600 dark:text-rose-400">{error}</p> : null}
 
         <div className="mt-6 grid grid-cols-2 gap-3">
           <button
             type="button"
             onClick={onCancel}
             disabled={loading}
-            className="rounded-xl bg-slate-100 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-200 disabled:opacity-60"
+            className="rounded-xl bg-slate-100 dark:bg-slate-800 px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-300 transition hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-60"
           >
             {cancelLabel}
           </button>

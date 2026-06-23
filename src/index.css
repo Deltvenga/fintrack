@@ -1,5 +1,7 @@
 @import 'tailwindcss';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   font-family:
     Inter,
@@ -16,6 +18,13 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  color-scheme: light;
+}
+
+.dark {
+  color: #f1f5f9;
+  background-color: #020617;
+  color-scheme: dark;
 }
 
 * {
@@ -36,6 +45,11 @@ input,
 select,
 button {
   font: inherit;
+}
+
+input[type='date'],
+input[type='month'] {
+  color-scheme: inherit;
 }
 
 @keyframes slideUp {

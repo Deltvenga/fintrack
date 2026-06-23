@@ -66,7 +66,7 @@ function buildConicGradient(slices: CategorySlice[]): string {
 export function CategoryPieChart({ expenses, customCategories = [], loading }: CategoryPieChartProps) {
   if (loading) {
     return (
-      <div className="rounded-2xl bg-white p-6 text-center text-slate-500 shadow-sm">
+      <div className="rounded-2xl bg-white dark:bg-slate-900 p-6 text-center text-slate-500 dark:text-slate-400 shadow-sm">
         Загрузка сводки...
       </div>
     )
@@ -77,15 +77,15 @@ export function CategoryPieChart({ expenses, customCategories = [], loading }: C
 
   if (slices.length === 0) {
     return (
-      <div className="rounded-2xl bg-white p-6 text-center text-slate-500 shadow-sm">
+      <div className="rounded-2xl bg-white dark:bg-slate-900 p-6 text-center text-slate-500 dark:text-slate-400 shadow-sm">
         Нет расходов для сводки
       </div>
     )
   }
 
   return (
-    <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-100">
-      <h3 className="font-semibold text-slate-900">Расходы по категориям</h3>
+    <div className="rounded-2xl bg-white dark:bg-slate-900 p-5 shadow-sm ring-1 ring-slate-100 dark:ring-slate-800">
+      <h3 className="font-semibold text-slate-900 dark:text-slate-100">Расходы по категориям</h3>
 
       <div className="mt-5 flex flex-col items-center gap-6 sm:flex-row sm:items-start">
         <div className="relative h-44 w-44 shrink-0">
@@ -93,9 +93,9 @@ export function CategoryPieChart({ expenses, customCategories = [], loading }: C
             className="h-full w-full rounded-full shadow-inner"
             style={{ background: buildConicGradient(slices) }}
           />
-          <div className="absolute inset-6 flex flex-col items-center justify-center rounded-full bg-white text-center shadow-sm">
-            <p className="text-xs text-slate-500">Всего</p>
-            <p className="text-sm font-bold text-slate-900">{formatMoney(total)}</p>
+          <div className="absolute inset-6 flex flex-col items-center justify-center rounded-full bg-white dark:bg-slate-900 text-center shadow-sm">
+            <p className="text-xs text-slate-500 dark:text-slate-400">Всего</p>
+            <p className="text-sm font-bold text-slate-900 dark:text-slate-100">{formatMoney(total)}</p>
           </div>
         </div>
 
@@ -110,10 +110,10 @@ export function CategoryPieChart({ expenses, customCategories = [], loading }: C
                 {slice.icon}
               </span>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium text-slate-900">{slice.category}</p>
-                <p className="text-xs text-slate-500">{slice.percent}%</p>
+                <p className="truncate text-sm font-medium text-slate-900 dark:text-slate-100">{slice.category}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">{slice.percent}%</p>
               </div>
-              <p className="text-sm font-semibold text-slate-900">{formatMoney(slice.amount)}</p>
+              <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{formatMoney(slice.amount)}</p>
             </li>
           ))}
         </ul>

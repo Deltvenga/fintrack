@@ -65,17 +65,17 @@ export function GroupPage() {
   return (
     <div className="mx-auto min-h-dvh max-w-lg px-4 pb-28 pt-6">
       <header className="mb-6">
-        <Link to="/groups" className="text-sm font-medium text-emerald-700">
+        <Link to="/groups" className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
           ← К группам
         </Link>
         {inviteCode ? (
-          <p className="mt-3 rounded-xl bg-slate-100 px-4 py-3 text-sm text-slate-600">
+          <p className="mt-3 rounded-xl bg-slate-100 dark:bg-slate-800 px-4 py-3 text-sm text-slate-600 dark:text-slate-400">
             Код приглашения: <span className="font-bold tracking-widest">{inviteCode}</span>
           </p>
         ) : null}
       </header>
 
-      {error ? <p className="mb-4 text-sm text-rose-600">{error}</p> : null}
+      {error ? <p className="mb-4 text-sm text-rose-600 dark:text-rose-400">{error}</p> : null}
 
       <section className="mb-6">
         <BalanceCard balance={balance} loading={loading} />
@@ -83,17 +83,17 @@ export function GroupPage() {
 
       <section>
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-slate-900">Операции</h2>
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Операции</h2>
           <div className="flex gap-2">
             <Link
               to={`/groups/${groupId}/add?type=income`}
-              className="rounded-lg bg-sky-100 px-3 py-1.5 text-xs font-semibold text-sky-700"
+              className="rounded-lg bg-sky-100 dark:bg-sky-950/50 px-3 py-1.5 text-xs font-semibold text-sky-700 dark:text-sky-300"
             >
               + Доход
             </Link>
             <Link
               to={`/groups/${groupId}/add`}
-              className="rounded-lg bg-emerald-100 px-3 py-1.5 text-xs font-semibold text-emerald-700"
+              className="rounded-lg bg-emerald-100 dark:bg-emerald-950/50 px-3 py-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400"
             >
               + Расход
             </Link>

@@ -99,16 +99,16 @@ export function SummaryPage() {
   return (
     <div className="mx-auto min-h-dvh max-w-lg px-4 pb-28 pt-6">
       <header className="mb-6">
-        <Link to="/groups" className="text-sm font-medium text-emerald-700">
+        <Link to="/groups" className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
           ← К группам
         </Link>
-        <h1 className="mt-3 text-2xl font-bold text-slate-900">Сводка</h1>
+        <h1 className="mt-3 text-2xl font-bold text-slate-900 dark:text-slate-100">Сводка</h1>
       </header>
 
-      {error ? <p className="mb-4 text-sm text-rose-600">{error}</p> : null}
+      {error ? <p className="mb-4 text-sm text-rose-600 dark:text-rose-400">{error}</p> : null}
 
       <section className="mb-4">
-        <div className="grid grid-cols-3 gap-2 rounded-2xl bg-slate-100 p-1">
+        <div className="grid grid-cols-3 gap-2 rounded-2xl bg-slate-100 dark:bg-slate-800 p-1">
           {(Object.keys(PERIOD_LABELS) as SummaryPeriod[]).map((key) => (
             <button
               key={key}
@@ -116,15 +116,15 @@ export function SummaryPage() {
               onClick={() => setPeriod(key)}
               className={`rounded-xl px-3 py-2.5 text-sm font-semibold transition ${
                 period === key
-                  ? 'bg-white text-slate-900 shadow-sm'
-                  : 'text-slate-600 hover:text-slate-800'
+                  ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-sm'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
               }`}
             >
               {PERIOD_LABELS[key]}
             </button>
           ))}
         </div>
-        <p className="mt-2 text-center text-xs text-slate-500">{periodRange.label}</p>
+        <p className="mt-2 text-center text-xs text-slate-500 dark:text-slate-400">{periodRange.label}</p>
       </section>
 
       <section className="mb-6">
@@ -143,40 +143,40 @@ export function SummaryPage() {
         </div>
       </section>
 
-      <section className="mb-6 rounded-2xl bg-slate-100 p-4 ring-1 ring-slate-200">
-        <p className="text-xs font-medium text-slate-500">Всего (с начала)</p>
-        <p className="mt-1 text-lg font-bold text-slate-900">
+      <section className="mb-6 rounded-2xl bg-slate-100 dark:bg-slate-800 p-4 ring-1 ring-slate-200 dark:ring-slate-700">
+        <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Всего (с начала)</p>
+        <p className="mt-1 text-lg font-bold text-slate-900 dark:text-slate-100">
           {formatMoney(summary?.currentBalance ?? 0)}
         </p>
-        <p className="mt-1 text-xs text-slate-500">
+        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
           Доходы − расходы − план на текущий месяц
         </p>
       </section>
 
       <section className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <div className="rounded-2xl bg-sky-50 p-4 ring-1 ring-sky-100">
-          <p className="text-xs text-sky-600">Доходы</p>
-          <p className="mt-1 text-lg font-bold text-sky-700">
+        <div className="rounded-2xl bg-sky-50 dark:bg-sky-950/40 p-4 ring-1 ring-sky-100 dark:ring-sky-900">
+          <p className="text-xs text-sky-600 dark:text-sky-400">Доходы</p>
+          <p className="mt-1 text-lg font-bold text-sky-700 dark:text-sky-300">
             {formatMoney(periodTotals.totalIncome)}
           </p>
         </div>
-        <div className="rounded-2xl bg-rose-50 p-4 ring-1 ring-rose-100">
-          <p className="text-xs text-rose-600">Расходы</p>
-          <p className="mt-1 text-lg font-bold text-rose-700">
+        <div className="rounded-2xl bg-rose-50 dark:bg-rose-950/40 p-4 ring-1 ring-rose-100 dark:ring-rose-900">
+          <p className="text-xs text-rose-600 dark:text-rose-400">Расходы</p>
+          <p className="mt-1 text-lg font-bold text-rose-700 dark:text-rose-300">
             {formatMoney(periodTotals.totalExpenses)}
           </p>
         </div>
-        <div className="rounded-2xl bg-violet-50 p-4 ring-1 ring-violet-100">
-          <p className="text-xs text-violet-600">План</p>
-          <p className="mt-1 text-lg font-bold text-violet-700">
+        <div className="rounded-2xl bg-violet-50 dark:bg-violet-950/40 p-4 ring-1 ring-violet-100 dark:ring-violet-900">
+          <p className="text-xs text-violet-600 dark:text-violet-400">План</p>
+          <p className="mt-1 text-lg font-bold text-violet-700 dark:text-violet-300">
             {formatMoney(periodPlannedRemaining)}
           </p>
         </div>
-        <div className="rounded-2xl bg-slate-100 p-4 ring-1 ring-slate-200">
-          <p className="text-xs text-slate-600">Итого</p>
+        <div className="rounded-2xl bg-slate-100 dark:bg-slate-800 p-4 ring-1 ring-slate-200 dark:ring-slate-700">
+          <p className="text-xs text-slate-600 dark:text-slate-400">Итого</p>
           <p
             className={`mt-1 text-lg font-bold ${
-              periodTotals.net >= 0 ? 'text-emerald-700' : 'text-rose-700'
+              periodTotals.net >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-300'
             }`}
           >
             {periodTotals.net >= 0 ? '+' : ''}

@@ -116,23 +116,23 @@ export function PlanningPage() {
   return (
     <div className="mx-auto min-h-dvh max-w-lg px-4 pb-28 pt-6">
       <header className="mb-6">
-        <Link to="/groups" className="text-sm font-medium text-emerald-700">
+        <Link to="/groups" className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
           ← К группам
         </Link>
-        <h1 className="mt-3 text-2xl font-bold text-slate-900">Планирование</h1>
-        <p className="mt-1 text-sm text-slate-500">
+        <h1 className="mt-3 text-2xl font-bold text-slate-900 dark:text-slate-100">Планирование</h1>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
           Каждый план — отдельная статья расходов. При добавлении траты выберите нужный план,
           чтобы сумма засчиталась именно в него.
         </p>
         <Link
           to={`/groups/${groupId}/planning/overview`}
-          className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-violet-700"
+          className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-violet-700 dark:text-violet-300"
         >
           Обзор по месяцам →
         </Link>
       </header>
 
-      {error ? <p className="mb-4 text-sm text-rose-600">{error}</p> : null}
+      {error ? <p className="mb-4 text-sm text-rose-600 dark:text-rose-400">{error}</p> : null}
 
       {summary ? (
         <section className="mb-6 rounded-2xl bg-violet-600 p-5 text-white shadow-sm">
@@ -158,22 +158,22 @@ export function PlanningPage() {
       {showForm ? (
         <form
           onSubmit={handleSubmit}
-          className="mb-6 space-y-4 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-100"
+          className="mb-6 space-y-4 rounded-3xl bg-white dark:bg-slate-900 p-6 shadow-sm ring-1 ring-slate-100 dark:ring-slate-800"
         >
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">Название</label>
+            <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">Название</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-100"
+              className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-3 outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-100 dark:focus:ring-violet-900/40 dark:ring-violet-900 dark:bg-slate-800 dark:text-slate-100"
               placeholder="Например: Аренда, Интернет, Подписки"
               required
             />
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">Сумма, ₽</label>
+            <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">Сумма, ₽</label>
             <input
               type="number"
               inputMode="decimal"
@@ -181,33 +181,33 @@ export function PlanningPage() {
               step="0.01"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-lg outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-100"
+              className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-3 text-lg outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-100 dark:focus:ring-violet-900/40 dark:ring-violet-900 dark:bg-slate-800 dark:text-slate-100"
               placeholder="0"
               required
             />
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">Месяц</label>
+            <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">Месяц</label>
             <input
               type="month"
               value={targetMonth}
               onChange={(e) => setTargetMonth(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-100"
+              className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-3 outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-100 dark:focus:ring-violet-900/40 dark:ring-violet-900 dark:bg-slate-800 dark:text-slate-100"
               required
             />
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">Периодичность</label>
-            <div className="grid grid-cols-2 gap-2 rounded-2xl bg-slate-100 p-1">
+            <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">Периодичность</label>
+            <div className="grid grid-cols-2 gap-2 rounded-2xl bg-slate-100 dark:bg-slate-800 p-1">
               <button
                 type="button"
                 onClick={() => setRecurrence('monthly')}
                 className={`rounded-xl px-4 py-2.5 text-sm font-semibold transition ${
                   recurrence === 'monthly'
-                    ? 'bg-white text-violet-700 shadow-sm'
-                    : 'text-slate-600'
+                    ? 'bg-white dark:bg-slate-900 text-violet-700 dark:text-violet-300 shadow-sm'
+                    : 'text-slate-600 dark:text-slate-400'
                 }`}
               >
                 Ежемесячно
@@ -217,8 +217,8 @@ export function PlanningPage() {
                 onClick={() => setRecurrence('once')}
                 className={`rounded-xl px-4 py-2.5 text-sm font-semibold transition ${
                   recurrence === 'once'
-                    ? 'bg-white text-violet-700 shadow-sm'
-                    : 'text-slate-600'
+                    ? 'bg-white dark:bg-slate-900 text-violet-700 dark:text-violet-300 shadow-sm'
+                    : 'text-slate-600 dark:text-slate-400'
                 }`}
               >
                 Разово
@@ -227,19 +227,19 @@ export function PlanningPage() {
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">Описание</label>
+            <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">Описание</label>
             <input
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-violet-500"
+              className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-3 outline-none focus:border-violet-500 dark:bg-slate-800 dark:text-slate-100"
               placeholder="Необязательно"
             />
           </div>
 
           <PlanEmojiField value={icon} onChange={setIcon} />
 
-          {formError ? <p className="text-sm text-rose-600">{formError}</p> : null}
+          {formError ? <p className="text-sm text-rose-600 dark:text-rose-400">{formError}</p> : null}
 
           <button
             type="submit"
@@ -252,7 +252,7 @@ export function PlanningPage() {
       ) : null}
 
       <section>
-        <h2 className="mb-3 text-lg font-semibold text-slate-900">Обязательные расходы</h2>
+        <h2 className="mb-3 text-lg font-semibold text-slate-900 dark:text-slate-100">Обязательные расходы</h2>
         <PlanList
           plans={plans}
           groupId={groupId}

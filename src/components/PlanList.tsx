@@ -49,7 +49,7 @@ export function PlanList({ plans, groupId, loading, onDeleted, onUpdated }: Plan
 
   if (loading) {
     return (
-      <div className="rounded-2xl bg-white p-6 text-center text-slate-500 shadow-sm">
+      <div className="rounded-2xl bg-white dark:bg-slate-900 p-6 text-center text-slate-500 dark:text-slate-400 shadow-sm">
         Загрузка планов...
       </div>
     )
@@ -57,7 +57,7 @@ export function PlanList({ plans, groupId, loading, onDeleted, onUpdated }: Plan
 
   if (plans.length === 0) {
     return (
-      <div className="rounded-2xl bg-white p-6 text-center text-slate-500 shadow-sm">
+      <div className="rounded-2xl bg-white dark:bg-slate-900 p-6 text-center text-slate-500 dark:text-slate-400 shadow-sm">
         Обязательных расходов пока нет. Добавьте первый план!
       </div>
     )
@@ -76,7 +76,7 @@ export function PlanList({ plans, groupId, loading, onDeleted, onUpdated }: Plan
           return (
             <article
               key={plan.id}
-              className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100"
+              className="rounded-2xl bg-white dark:bg-slate-900 p-4 shadow-sm ring-1 ring-slate-100 dark:ring-slate-800"
             >
               <div className="flex items-start gap-3">
                 <CategoryIcon category={title} isPlan planIcon={plan.icon} size="md" />
@@ -85,21 +85,21 @@ export function PlanList({ plans, groupId, loading, onDeleted, onUpdated }: Plan
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
-                        <p className="font-medium text-slate-900">{title}</p>
-                      <span className="rounded-full bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-700">
+                        <p className="font-medium text-slate-900 dark:text-slate-100">{title}</p>
+                      <span className="rounded-full bg-violet-100 dark:bg-violet-950/50 px-2 py-0.5 text-xs font-medium text-violet-700 dark:text-violet-300">
                         {formatTargetMonth(plan.targetMonth)}
                       </span>
-                      <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">
+                      <span className="rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-xs font-medium text-slate-600 dark:text-slate-400">
                         {plan.recurrence === 'monthly' ? 'Ежемесячно' : 'Разово'}
                       </span>
                         {isComplete ? (
-                          <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
+                          <span className="rounded-full bg-emerald-100 dark:bg-emerald-950/50 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-400">
                             Выполнено
                           </span>
                         ) : null}
                       </div>
                       {subtitle ? (
-                        <p className="mt-1 text-sm text-slate-500">{subtitle}</p>
+                        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{subtitle}</p>
                       ) : null}
                       <p className="mt-2 text-xs text-slate-400">
                         План: {formatMoney(plan.amount)} · Потрачено: {formatMoney(plan.spent)} ·
@@ -110,7 +110,7 @@ export function PlanList({ plans, groupId, loading, onDeleted, onUpdated }: Plan
                     <div className="flex shrink-0 items-center gap-0.5">
                       <Link
                         to={`/groups/${groupId}/add?planId=${plan.id}`}
-                        className="rounded-md bg-violet-100 px-1.5 py-0.5 text-[11px] font-semibold text-violet-700"
+                        className="rounded-md bg-violet-100 dark:bg-violet-950/50 px-1.5 py-0.5 text-[11px] font-semibold text-violet-700 dark:text-violet-300"
                       >
                         + Расход
                       </Link>
@@ -121,7 +121,7 @@ export function PlanList({ plans, groupId, loading, onDeleted, onUpdated }: Plan
                           setEditingId(isEditing ? null : plan.id)
                         }}
                         disabled={deletingId === plan.id}
-                        className="rounded-md px-1 py-0.5 text-[11px] font-medium text-slate-400 transition hover:text-violet-700 disabled:opacity-50"
+                        className="rounded-md px-1 py-0.5 text-[11px] font-medium text-slate-400 transition hover:text-violet-700 dark:text-violet-300 disabled:opacity-50"
                         aria-label={isEditing ? 'Свернуть редактирование' : 'Изменить план'}
                       >
                         {isEditing ? 'Свернуть' : 'Изм.'}
@@ -134,7 +134,7 @@ export function PlanList({ plans, groupId, loading, onDeleted, onUpdated }: Plan
                           setPendingDelete(plan)
                         }}
                         disabled={deletingId === plan.id}
-                        className="rounded-md px-1 py-0.5 text-[11px] font-medium text-slate-400 transition hover:text-rose-600 disabled:opacity-50"
+                        className="rounded-md px-1 py-0.5 text-[11px] font-medium text-slate-400 transition hover:text-rose-600 dark:text-rose-400 dark:hover:text-rose-400 disabled:opacity-50"
                         aria-label="Удалить план"
                       >
                         Удал.
@@ -144,7 +144,7 @@ export function PlanList({ plans, groupId, loading, onDeleted, onUpdated }: Plan
 
                   {!isEditing ? (
                     <div className="mt-3">
-                      <div className="h-2 overflow-hidden rounded-full bg-slate-100">
+                      <div className="h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
                         <div
                           className="h-full rounded-full transition-all"
                           style={{
@@ -153,7 +153,7 @@ export function PlanList({ plans, groupId, loading, onDeleted, onUpdated }: Plan
                           }}
                         />
                       </div>
-                      <p className="mt-1 text-xs text-slate-500">
+                      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
                         {plan.percent}% — засчитываются только расходы, привязанные к «{title}»
                       </p>
                     </div>

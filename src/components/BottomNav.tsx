@@ -19,7 +19,7 @@ export function BottomNav({ groupId }: BottomNavProps) {
   ]
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-slate-200 bg-white/95 backdrop-blur">
+    <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-slate-200 dark:border-slate-700 bg-white/95 dark:bg-slate-900/95 backdrop-blur">
       <div className="mx-auto flex max-w-lg gap-1.5 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
         {tabs.map((tab) => {
           const active = tab.exact
@@ -33,7 +33,7 @@ export function BottomNav({ groupId }: BottomNavProps) {
               className={`flex-1 rounded-xl px-2 py-3 text-center text-xs font-semibold transition sm:text-sm ${
                 active
                   ? 'bg-emerald-600 text-white'
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
               }`}
             >
               {tab.label}
