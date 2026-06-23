@@ -5,7 +5,7 @@ export type PlanRecurrence = 'monthly' | 'once'
 export interface PlanProgress {
   id: string
   groupId: string
-  category: string
+  name: string
   amount: number
   recurrence: PlanRecurrence
   description: string
@@ -32,35 +32,68 @@ function currentMonthPrefix(): string {
   return `${now.getFullYear()}-${month}`
 }
 
-function getCategorySpentInPeriod(
-  plan: PlannedExpense,
-  expenses: Expense[],
-): number {
-  const categoryExpenses = expenses.filter(
+/** @deprecated old plans used `category` instead of `name` */
+export function getPlanName(plan: PlannedExpense & { category?: string }): string {
+  if (plan.name?.trim()) {
+    return plan.name.trim()
+  }
+  if (plan.description?.trim()) {
+    return plan.description.trim()
+  }
+  if (plan.category?.trim()) {
+    return plan.category.trim()
+  }
+  return 'Без названия'
+}
+
+export function getPlanSubtitle(
+  plan: PlannedExpense & { category?: string },
+  title = getPlanName(plan),
+): string | undefined {
+  const description = plan.description?.trim()
+  if (!description || description === title) {
+    return undefined
+  }
+  return description
+}
+
+export function migrateLegacyPlans(plans: PlannedExpense[]): void {
+  for (const plan of plans as Array<PlannedExpense & { category?: string }>) {
+    if (plan.name?.trim()) {
+      continue
+    }
+
+    const fromDescription = plan.description?.trim()
+    const fromCategory = plan.category?.trim()
+
+    if (fromDescription) {
+      plan.name = fromDescription
+      plan.description = ''
+    } else if (fromCategory) {
+      plan.name = fromCategory
+    }
+  }
+}
+
+function getPlanSpentInPeriod(plan: PlannedExpense, expenses: Expense[]): number {
+  const linkedExpenses = expenses.filter(
     (e) =>
       e.groupId === plan.groupId &&
       (e.type ?? 'expense') === 'expense' &&
-      e.category === plan.category,
+      e.planId === plan.id,
   )
 
   if (plan.recurrence === 'monthly') {
     const prefix = currentMonthPrefix()
-    return categoryExpenses
+    return linkedExpenses
       .filter((e) => e.date.startsWith(prefix))
       .reduce((sum, e) => sum + e.amount, 0)
   }
 
   const planDate = plan.createdAt.slice(0, 10)
-  return categoryExpenses
+  return linkedExpenses
     .filter((e) => e.date >= planDate)
     .reduce((sum, e) => sum + e.amount, 0)
-}
-
-function poolKey(plan: PlannedExpense): string {
-  if (plan.recurrence === 'monthly') {
-    return `${plan.category}:monthly:${currentMonthPrefix()}`
-  }
-  return `${plan.category}:once:${plan.id}`
 }
 
 export function calculatePlansProgress(
@@ -73,18 +106,9 @@ export function calculatePlansProgress(
     .sort((a, b) => a.createdAt.localeCompare(b.createdAt))
 
   const groupExpenses = expenses.filter((e) => e.groupId === groupId)
-  const pools = new Map<string, number>()
 
   return groupPlans.map((plan) => {
-    const key = poolKey(plan)
-    if (!pools.has(key)) {
-      pools.set(key, getCategorySpentInPeriod(plan, groupExpenses))
-    }
-
-    const available = pools.get(key) ?? 0
-    const spent = Math.min(plan.amount, available)
-    pools.set(key, Math.max(0, available - spent))
-
+    const spent = Math.min(plan.amount, getPlanSpentInPeriod(plan, groupExpenses))
     const remaining = Math.max(0, plan.amount - spent)
     const percent =
       plan.amount > 0 ? Math.min(100, Math.round((spent / plan.amount) * 100)) : 0
@@ -92,7 +116,7 @@ export function calculatePlansProgress(
     return {
       id: plan.id,
       groupId: plan.groupId,
-      category: plan.category,
+      name: getPlanName(plan),
       amount: plan.amount,
       recurrence: plan.recurrence,
       description: plan.description,

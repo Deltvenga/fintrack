@@ -27,6 +27,7 @@ export interface Expense {
   type: TransactionType
   amount: number
   category: string
+  planId?: string
   description: string
   paidByUserId: string
   date: string
@@ -38,7 +39,7 @@ export type PlanRecurrence = 'monthly' | 'once'
 export interface PlannedExpense {
   id: string
   groupId: string
-  category: string
+  name: string
   amount: number
   recurrence: PlanRecurrence
   description: string

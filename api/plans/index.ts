@@ -16,7 +16,7 @@ import type { PlanRecurrence } from '../_lib/types.js'
 
 interface CreatePlanBody {
   groupId?: string
-  category?: string
+  name?: string
   amount?: number
   recurrence?: PlanRecurrence
   description?: string
@@ -46,7 +46,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   if (req.method === 'POST') {
-    const { groupId, category, amount, recurrence, description } =
+    const { groupId, name, amount, recurrence, description } =
       parseBody<CreatePlanBody>(req)
 
     if (!groupId) {
@@ -57,8 +57,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return error(res, 400, 'Amount must be greater than 0')
     }
 
-    if (!category?.trim()) {
-      return error(res, 400, 'Category is required')
+    if (!name?.trim()) {
+      return error(res, 400, 'Name is required')
     }
 
     if (recurrence !== 'monthly' && recurrence !== 'once') {
@@ -81,7 +81,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       freshDb.plans.push({
         id: planId,
         groupId,
-        category: category.trim(),
+        name: name.trim(),
         amount: Math.round(amount * 100) / 100,
         recurrence,
         description: description?.trim() ?? '',

@@ -1,11 +1,14 @@
+import { Link } from 'react-router-dom'
 import { useState } from 'react'
 import { api } from '../lib/api'
-import { getCategoryInfo } from '../lib/categories'
+import { PLAN_DISPLAY } from '../lib/categories'
+import { getPlanDisplay } from '../lib/plans'
 import type { PlannedExpense } from '../lib/types'
 import { CategoryIcon } from './CategoryIcon'
 
 interface PlanListProps {
   plans: PlannedExpense[]
+  groupId: string
   loading?: boolean
   onDeleted?: () => void
 }
@@ -18,14 +21,14 @@ function formatMoney(amount: number) {
   }).format(amount)
 }
 
-export function PlanList({ plans, loading, onDeleted }: PlanListProps) {
+export function PlanList({ plans, groupId, loading, onDeleted }: PlanListProps) {
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
   async function handleDelete(plan: PlannedExpense) {
     const period = plan.recurrence === 'monthly' ? 'ежемесячный' : 'разовый'
     if (
       !window.confirm(
-        `Удалить ${period} план «${plan.category}» на ${formatMoney(plan.amount)}?`,
+        `Удалить ${period} план «${getPlanDisplay(plan).title}» на ${formatMoney(plan.amount)}?`,
       )
     ) {
       return
@@ -61,8 +64,8 @@ export function PlanList({ plans, loading, onDeleted }: PlanListProps) {
   return (
     <div className="space-y-3">
       {plans.map((plan) => {
-        const info = getCategoryInfo(plan.category, 'expense')
         const isComplete = plan.percent >= 100
+        const { title, subtitle } = getPlanDisplay(plan)
 
         return (
           <article
@@ -70,13 +73,13 @@ export function PlanList({ plans, loading, onDeleted }: PlanListProps) {
             className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100"
           >
             <div className="flex items-start gap-3">
-              <CategoryIcon category={plan.category} type="expense" />
+              <CategoryIcon category={title} isPlan size="md" />
 
               <div className="min-w-0 flex-1">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <p className="font-medium text-slate-900">{plan.category}</p>
+                      <p className="font-medium text-slate-900">{title}</p>
                       <span className="rounded-full bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-700">
                         {plan.recurrence === 'monthly' ? 'Ежемесячно' : 'Разово'}
                       </span>
@@ -86,8 +89,8 @@ export function PlanList({ plans, loading, onDeleted }: PlanListProps) {
                         </span>
                       ) : null}
                     </div>
-                    {plan.description ? (
-                      <p className="mt-1 text-sm text-slate-500">{plan.description}</p>
+                    {subtitle ? (
+                      <p className="mt-1 text-sm text-slate-500">{subtitle}</p>
                     ) : null}
                     <p className="mt-2 text-xs text-slate-400">
                       План: {formatMoney(plan.amount)} · Потрачено: {formatMoney(plan.spent)} ·
@@ -95,14 +98,22 @@ export function PlanList({ plans, loading, onDeleted }: PlanListProps) {
                     </p>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={() => handleDelete(plan)}
-                    disabled={deletingId === plan.id}
-                    className="shrink-0 rounded-lg px-2 py-1 text-xs font-medium text-slate-400 transition hover:bg-rose-50 hover:text-rose-600 disabled:opacity-50"
-                  >
-                    {deletingId === plan.id ? '...' : 'Удалить'}
-                  </button>
+                  <div className="flex shrink-0 flex-col items-end gap-2">
+                    <Link
+                      to={`/groups/${groupId}/add?planId=${plan.id}`}
+                      className="rounded-lg bg-violet-100 px-2 py-1 text-xs font-semibold text-violet-700"
+                    >
+                      + Расход
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(plan)}
+                      disabled={deletingId === plan.id}
+                      className="rounded-lg px-2 py-1 text-xs font-medium text-slate-400 transition hover:bg-rose-50 hover:text-rose-600 disabled:opacity-50"
+                    >
+                      {deletingId === plan.id ? '...' : 'Удалить'}
+                    </button>
+                  </div>
                 </div>
 
                 <div className="mt-3">
@@ -111,12 +122,12 @@ export function PlanList({ plans, loading, onDeleted }: PlanListProps) {
                       className="h-full rounded-full transition-all"
                       style={{
                         width: `${plan.percent}%`,
-                        backgroundColor: isComplete ? '#10b981' : info.color,
+                        backgroundColor: isComplete ? '#10b981' : PLAN_DISPLAY.color,
                       }}
                     />
                   </div>
                   <p className="mt-1 text-xs text-slate-500">
-                    {plan.percent}% — расходы в категории «{plan.category}» засчитываются в план
+                    {plan.percent}% — засчитываются только расходы, привязанные к «{title}»
                   </p>
                 </div>
               </div>

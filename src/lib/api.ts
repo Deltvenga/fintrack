@@ -89,7 +89,8 @@ export const api = {
     groupId: string
     type?: TransactionType
     amount: number
-    category: string
+    category?: string
+    planId?: string
     description?: string
     date?: string
   }) {
@@ -117,7 +118,7 @@ export const api = {
 
   createPlan(payload: {
     groupId: string
-    category: string
+    name: string
     amount: number
     recurrence: PlanRecurrence
     description?: string

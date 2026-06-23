@@ -3,6 +3,15 @@ import { dirname, join } from 'node:path'
 import { get, put, type BlobAccessType } from '@vercel/blob'
 import type { Database } from './types.js'
 import { DbConflictError } from './types.js'
+import { migrateLegacyPlans } from './plans.js'
+
+function normalizeDb(db: Database): Database {
+  if (!db.plans) {
+    db.plans = []
+  }
+  migrateLegacyPlans(db.plans)
+  return db
+}
 
 const DB_BLOB_PATH = 'db.json'
 const LOCAL_DB_PATH = join(process.cwd(), 'data', 'db.json')
@@ -93,10 +102,7 @@ async function readFromBlob(): Promise<Database> {
       if (result?.statusCode === 200 && result.stream) {
         const text = await streamToText(result.stream)
         const db = JSON.parse(text) as Database
-        if (!db.plans) {
-          db.plans = []
-        }
-        return db
+        return normalizeDb(db)
       }
     } catch (error) {
       if (!(error instanceof Error) || !error.message.includes('404')) {
@@ -141,10 +147,7 @@ function readFromLocal(): Database {
 
   const raw = readFileSync(LOCAL_DB_PATH, 'utf-8')
   const db = JSON.parse(raw) as Database
-  if (!db.plans) {
-    db.plans = []
-  }
-  return db
+  return normalizeDb(db)
 }
 
 function writeToLocal(db: Database): void {

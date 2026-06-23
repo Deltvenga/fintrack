@@ -8,12 +8,14 @@ import {
   requireAuth,
 } from '../_lib/auth.js'
 import { readDb, updateDb } from '../_lib/db.js'
+import { getPlanName } from '../_lib/plans.js'
 
 interface CreateExpenseBody {
   groupId?: string
   type?: 'expense' | 'income'
   amount?: number
   category?: string
+  planId?: string
   description?: string
   date?: string
 }
@@ -28,6 +30,9 @@ function mapExpense(
   }
 
   const payer = db.users.find((u) => u.id === expense.paidByUserId)
+  const plan = expense.planId
+    ? (db.plans ?? []).find((p) => p.id === expense.planId)
+    : undefined
 
   return {
     id: expense.id,
@@ -35,6 +40,8 @@ function mapExpense(
     type: expense.type ?? 'expense',
     amount: expense.amount,
     category: expense.category,
+    planId: expense.planId,
+    planName: plan ? getPlanName(plan) : undefined,
     description: expense.description,
     paidByUserId: expense.paidByUserId,
     paidByUsername: payer?.username ?? 'Unknown',
@@ -70,7 +77,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   if (req.method === 'POST') {
-    const { groupId, type, amount, category, description, date } =
+    const { groupId, type, amount, category, planId, description, date } =
       parseBody<CreateExpenseBody>(req)
 
     if (!groupId) {
@@ -83,13 +90,27 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return error(res, 400, 'Amount must be greater than 0')
     }
 
-    if (!category?.trim()) {
-      return error(res, 400, 'Category is required')
+    if (transactionType === 'income' && planId) {
+      return error(res, 400, 'Income cannot be linked to a plan')
     }
 
     const db = await readDb()
     if (!isGroupMember(db, groupId, user.id)) {
       return error(res, 403, 'Forbidden')
+    }
+
+    let resolvedCategory = category?.trim() ?? ''
+    let resolvedPlanId: string | undefined
+
+    if (planId) {
+      const plan = (db.plans ?? []).find((p) => p.id === planId && p.groupId === groupId)
+      if (!plan) {
+        return error(res, 400, 'Plan not found')
+      }
+      resolvedPlanId = plan.id
+      resolvedCategory = getPlanName(plan)
+    } else if (!resolvedCategory) {
+      return error(res, 400, 'Category is required')
     }
 
     const expenseId = randomUUID()
@@ -102,7 +123,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         groupId,
         type: transactionType,
         amount: Math.round(amount * 100) / 100,
-        category: category.trim(),
+        category: resolvedCategory,
+        planId: resolvedPlanId,
         description: description?.trim() ?? '',
         paidByUserId: user.id,
         date: expenseDate,

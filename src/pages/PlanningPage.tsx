@@ -2,10 +2,8 @@ import type { FormEvent } from 'react'
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { api } from '../lib/api'
-import { EXPENSE_CATEGORIES } from '../lib/categories'
 import type { FinancialSummary, PlannedExpense, PlanRecurrence } from '../lib/types'
 import { BottomNav } from '../components/BottomNav'
-import { CategoryIcon } from '../components/CategoryIcon'
 import { PlanList } from '../components/PlanList'
 
 function formatMoney(amount: number) {
@@ -24,8 +22,8 @@ export function PlanningPage() {
   const [error, setError] = useState('')
   const [showForm, setShowForm] = useState(false)
 
+  const [name, setName] = useState('')
   const [amount, setAmount] = useState('')
-  const [category, setCategory] = useState(EXPENSE_CATEGORIES[0].id)
   const [recurrence, setRecurrence] = useState<PlanRecurrence>('monthly')
   const [description, setDescription] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -65,16 +63,23 @@ export function PlanningPage() {
       return
     }
 
+    if (!name.trim()) {
+      setFormError('Введите название')
+      setSubmitting(false)
+      return
+    }
+
     try {
       const res = await api.createPlan({
         groupId,
-        category,
+        name: name.trim(),
         amount: parsedAmount,
         recurrence,
         description,
       })
       setPlans((prev) => [...prev, res.plan])
       setSummary(res.summary)
+      setName('')
       setAmount('')
       setDescription('')
       setShowForm(false)
@@ -102,8 +107,8 @@ export function PlanningPage() {
         </Link>
         <h1 className="mt-3 text-2xl font-bold text-slate-900">Планирование</h1>
         <p className="mt-1 text-sm text-slate-500">
-          Обязательные расходы учитываются в текущем балансе. Фактические траты по категории
-          засчитываются в план.
+          Каждый план — отдельная статья расходов. При добавлении траты выберите нужный план,
+          чтобы сумма засчиталась именно в него.
         </p>
       </header>
 
@@ -135,6 +140,18 @@ export function PlanningPage() {
           onSubmit={handleSubmit}
           className="mb-6 space-y-4 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-100"
         >
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-700">Название</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-100"
+              placeholder="Например: Аренда, Интернет, Подписки"
+              required
+            />
+          </div>
+
           <div>
             <label className="mb-2 block text-sm font-medium text-slate-700">Сумма, ₽</label>
             <input
@@ -179,27 +196,6 @@ export function PlanningPage() {
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">Категория</label>
-            <div className="grid grid-cols-2 gap-2">
-              {EXPENSE_CATEGORIES.map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => setCategory(item.id)}
-                  className={`flex items-center gap-2 rounded-xl border px-3 py-3 text-left text-sm transition ${
-                    category === item.id
-                      ? 'border-violet-500 bg-violet-50 ring-2 ring-violet-100'
-                      : 'border-slate-200 hover:border-slate-300'
-                  }`}
-                >
-                  <CategoryIcon category={item.id} type="expense" size="sm" />
-                  <span className="font-medium text-slate-800">{item.id}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div>
             <label className="mb-2 block text-sm font-medium text-slate-700">Описание</label>
             <input
               type="text"
@@ -224,7 +220,12 @@ export function PlanningPage() {
 
       <section>
         <h2 className="mb-3 text-lg font-semibold text-slate-900">Обязательные расходы</h2>
-        <PlanList plans={plans} loading={loading} onDeleted={handleDeleted} />
+        <PlanList
+          plans={plans}
+          groupId={groupId}
+          loading={loading}
+          onDeleted={handleDeleted}
+        />
       </section>
 
       <BottomNav groupId={groupId} />

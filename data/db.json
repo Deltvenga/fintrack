@@ -1,5 +1,5 @@
 {
-  "version": 8,
+  "version": 9,
   "users": [
     {
       "id": "a0692b41-d056-4fcb-82ff-b6a0e9d1ec50",
@@ -58,6 +58,18 @@
       "paidByUserId": "a0692b41-d056-4fcb-82ff-b6a0e9d1ec50",
       "date": "2026-06-23",
       "createdAt": "2026-06-23T18:12:21.927Z"
+    },
+    {
+      "id": "4e9a69da-1d45-4dcb-b284-923374048375",
+      "groupId": "0e359723-8339-4184-aeef-f9ddfd9eb584",
+      "type": "expense",
+      "amount": 2500,
+      "category": "уборщица",
+      "planId": "92d96470-864d-49b7-83a6-7491f8a0a394",
+      "description": "хехехехе",
+      "paidByUserId": "a0692b41-d056-4fcb-82ff-b6a0e9d1ec50",
+      "date": "2026-06-23",
+      "createdAt": "2026-06-23T18:31:28.805Z"
     }
   ],
   "plans": [
@@ -67,8 +79,9 @@
       "category": "Другое",
       "amount": 5000,
       "recurrence": "monthly",
-      "description": "уборщица",
-      "createdAt": "2026-06-23T18:22:47.491Z"
+      "description": "",
+      "createdAt": "2026-06-23T18:22:47.491Z",
+      "name": "уборщица"
     }
   ]
 }

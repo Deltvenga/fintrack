@@ -29,7 +29,7 @@ export function ExpenseList({ expenses, loading, onDeleted }: ExpenseListProps) 
 
   async function handleDelete(expense: Expense) {
     const label = expense.type === 'income' ? 'доход' : 'расход'
-    if (!window.confirm(`Удалить ${label} «${expense.category}» на ${formatMoney(expense.amount)}?`)) {
+    if (!window.confirm(`Удалить ${label} «${expense.planName ?? expense.category}» на ${formatMoney(expense.amount)}?`)) {
       return
     }
 
@@ -64,6 +64,8 @@ export function ExpenseList({ expenses, loading, onDeleted }: ExpenseListProps) 
     <div className="space-y-3">
       {expenses.map((expense) => {
         const isIncome = expense.type === 'income'
+        const isPlanned = Boolean(expense.planId)
+        const displayName = expense.planName ?? expense.category
 
         return (
           <article
@@ -72,15 +74,16 @@ export function ExpenseList({ expenses, loading, onDeleted }: ExpenseListProps) 
           >
             <div className="flex items-start gap-3">
               <CategoryIcon
-                category={expense.category}
+                category={displayName}
                 type={expense.type ?? 'expense'}
+                isPlan={isPlanned}
               />
 
               <div className="min-w-0 flex-1">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <div className="flex items-center gap-2">
-                      <p className="font-medium text-slate-900">{expense.category}</p>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="font-medium text-slate-900">{displayName}</p>
                       <span
                         className={`rounded-full px-2 py-0.5 text-xs font-medium ${
                           isIncome
@@ -90,6 +93,11 @@ export function ExpenseList({ expenses, loading, onDeleted }: ExpenseListProps) 
                       >
                         {isIncome ? 'Доход' : 'Расход'}
                       </span>
+                      {isPlanned ? (
+                        <span className="rounded-full bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-700">
+                          По плану
+                        </span>
+                      ) : null}
                     </div>
                     {expense.description ? (
                       <p className="mt-1 text-sm text-slate-500">{expense.description}</p>

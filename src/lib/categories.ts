@@ -20,6 +20,8 @@ export const INCOME_CATEGORIES: Category[] = [
   { id: 'Другое', icon: '💰', color: '#64748b' },
 ]
 
+export const PLAN_DISPLAY = { id: 'plan', icon: '📋', color: '#8b5cf6' } as const
+
 const expenseMap = new Map(EXPENSE_CATEGORIES.map((c) => [c.id, c]))
 const incomeMap = new Map(INCOME_CATEGORIES.map((c) => [c.id, c]))
 
