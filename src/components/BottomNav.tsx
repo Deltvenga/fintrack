@@ -14,7 +14,7 @@ export function BottomNav({ groupId }: BottomNavProps) {
   const tabs = [
     { to: `/groups/${groupId}`, label: 'Операции', exact: true },
     { to: `/groups/${groupId}/summary`, label: 'Сводка', exact: true },
-    { to: `/groups/${groupId}/planning`, label: 'План', exact: true },
+    { to: `/groups/${groupId}/planning`, label: 'План', exact: false },
     { to: `/groups/${groupId}/add`, label: '+', exact: false },
   ]
 

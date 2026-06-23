@@ -44,6 +44,7 @@ export interface PlannedExpense {
   recurrence: PlanRecurrence
   targetMonth: string
   description: string
+  icon?: string
   createdAt: string
 }
 

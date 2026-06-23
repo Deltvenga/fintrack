@@ -6,6 +6,7 @@ interface CategoryIconProps {
   type?: TransactionType
   size?: 'sm' | 'md' | 'lg'
   isPlan?: boolean
+  planIcon?: string
   customCategories?: CustomCategory[]
 }
 
@@ -20,9 +21,12 @@ export function CategoryIcon({
   type = 'expense',
   size = 'md',
   isPlan = false,
+  planIcon,
   customCategories = [],
 }: CategoryIconProps) {
-  const info = isPlan ? PLAN_DISPLAY : getCategoryInfo(category, type, customCategories)
+  const info = isPlan
+    ? { ...PLAN_DISPLAY, icon: planIcon ?? PLAN_DISPLAY.icon }
+    : getCategoryInfo(category, type, customCategories)
 
   return (
     <span

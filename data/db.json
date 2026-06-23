@@ -1,5 +1,5 @@
 {
-  "version": 15,
+  "version": 16,
   "users": [
     {
       "id": "a0692b41-d056-4fcb-82ff-b6a0e9d1ec50",
@@ -70,7 +70,9 @@
       "recurrence": "monthly",
       "description": "",
       "createdAt": "2026-06-23T18:22:47.491Z",
-      "name": "уборщица"
+      "name": "уборщица",
+      "targetMonth": "2026-06",
+      "icon": "🎓"
     }
   ],
   "categories": [

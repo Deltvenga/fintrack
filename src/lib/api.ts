@@ -125,11 +125,31 @@ export const api = {
     recurrence: PlanRecurrence
     targetMonth?: string
     description?: string
+    icon?: string
   }) {
     return request<{ plan: PlannedExpense; summary: FinancialSummary }>('/api/plans', {
       method: 'POST',
       body: JSON.stringify(payload),
     })
+  },
+
+  updatePlan(
+    planId: string,
+    payload: {
+      amount?: number
+      recurrence?: PlanRecurrence
+      targetMonth?: string
+      description?: string
+      icon?: string
+    },
+  ) {
+    return request<{ plan: PlannedExpense; summary: FinancialSummary }>(
+      `/api/plans?id=${encodeURIComponent(planId)}`,
+      {
+        method: 'PATCH',
+        body: JSON.stringify(payload),
+      },
+    )
   },
 
   deletePlan(planId: string) {

@@ -6,6 +6,8 @@ import type { FinancialSummary, PlannedExpense, PlanRecurrence } from '../lib/ty
 import { currentMonthValue } from '../lib/period'
 import { BottomNav } from '../components/BottomNav'
 import { PlanList } from '../components/PlanList'
+import { PlanEmojiField } from '../components/PlanEmojiField'
+import { PLAN_DISPLAY } from '../lib/categories'
 
 function formatMoney(amount: number) {
   return new Intl.NumberFormat('ru-RU', {
@@ -28,6 +30,7 @@ export function PlanningPage() {
   const [recurrence, setRecurrence] = useState<PlanRecurrence>('monthly')
   const [targetMonth, setTargetMonth] = useState(currentMonthValue())
   const [description, setDescription] = useState('')
+  const [icon, setIcon] = useState<string>(PLAN_DISPLAY.icon)
   const [submitting, setSubmitting] = useState(false)
   const [formError, setFormError] = useState('')
 
@@ -79,6 +82,7 @@ export function PlanningPage() {
         recurrence,
         targetMonth,
         description,
+        icon,
       })
       setPlans((prev) => [...prev, res.plan])
       setSummary(res.summary)
@@ -86,6 +90,7 @@ export function PlanningPage() {
       setAmount('')
       setTargetMonth(currentMonthValue())
       setDescription('')
+      setIcon(PLAN_DISPLAY.icon)
       setShowForm(false)
     } catch (err) {
       setFormError(err instanceof Error ? err.message : 'Не удалось добавить план')
@@ -95,6 +100,11 @@ export function PlanningPage() {
   }
 
   async function handleDeleted() {
+    if (!groupId) return
+    await loadData(groupId)
+  }
+
+  async function handleUpdated() {
     if (!groupId) return
     await loadData(groupId)
   }
@@ -114,6 +124,12 @@ export function PlanningPage() {
           Каждый план — отдельная статья расходов. При добавлении траты выберите нужный план,
           чтобы сумма засчиталась именно в него.
         </p>
+        <Link
+          to={`/groups/${groupId}/planning/overview`}
+          className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-violet-700"
+        >
+          Обзор по месяцам →
+        </Link>
       </header>
 
       {error ? <p className="mb-4 text-sm text-rose-600">{error}</p> : null}
@@ -221,6 +237,8 @@ export function PlanningPage() {
             />
           </div>
 
+          <PlanEmojiField value={icon} onChange={setIcon} />
+
           {formError ? <p className="text-sm text-rose-600">{formError}</p> : null}
 
           <button
@@ -240,6 +258,7 @@ export function PlanningPage() {
           groupId={groupId}
           loading={loading}
           onDeleted={handleDeleted}
+          onUpdated={handleUpdated}
         />
       </section>
 

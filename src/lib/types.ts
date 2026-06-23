@@ -54,6 +54,7 @@ export interface PlannedExpense {
   recurrence: PlanRecurrence
   targetMonth: string
   description: string
+  icon?: string
   spent: number
   remaining: number
   percent: number

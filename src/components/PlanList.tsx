@@ -7,12 +7,14 @@ import { getPlanDisplay } from '../lib/plans'
 import type { PlannedExpense } from '../lib/types'
 import { CategoryIcon } from './CategoryIcon'
 import { ConfirmDialog } from './ConfirmDialog'
+import { PlanEditForm } from './PlanEditForm'
 
 interface PlanListProps {
   plans: PlannedExpense[]
   groupId: string
   loading?: boolean
   onDeleted?: () => void
+  onUpdated?: () => void
 }
 
 function formatMoney(amount: number) {
@@ -23,8 +25,9 @@ function formatMoney(amount: number) {
   }).format(amount)
 }
 
-export function PlanList({ plans, groupId, loading, onDeleted }: PlanListProps) {
+export function PlanList({ plans, groupId, loading, onDeleted, onUpdated }: PlanListProps) {
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [editingId, setEditingId] = useState<string | null>(null)
   const [pendingDelete, setPendingDelete] = useState<PlannedExpense | null>(null)
   const [deleteError, setDeleteError] = useState('')
 
@@ -67,6 +70,7 @@ export function PlanList({ plans, groupId, loading, onDeleted }: PlanListProps) 
       <div className="space-y-3">
         {plans.map((plan) => {
           const isComplete = plan.percent >= 100
+          const isEditing = editingId === plan.id
           const { title, subtitle } = getPlanDisplay(plan)
 
           return (
@@ -75,7 +79,7 @@ export function PlanList({ plans, groupId, loading, onDeleted }: PlanListProps) 
               className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100"
             >
               <div className="flex items-start gap-3">
-                <CategoryIcon category={title} isPlan size="md" />
+                <CategoryIcon category={title} isPlan planIcon={plan.icon} size="md" />
 
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-3">
@@ -103,13 +107,26 @@ export function PlanList({ plans, groupId, loading, onDeleted }: PlanListProps) 
                       </p>
                     </div>
 
-                    <div className="flex shrink-0 flex-col items-end gap-2">
+                    <div className="flex shrink-0 items-center gap-0.5">
                       <Link
                         to={`/groups/${groupId}/add?planId=${plan.id}`}
-                        className="rounded-lg bg-violet-100 px-2 py-1 text-xs font-semibold text-violet-700"
+                        className="rounded-md bg-violet-100 px-1.5 py-0.5 text-[11px] font-semibold text-violet-700"
                       >
                         + Расход
                       </Link>
+                      <span className="text-slate-200">·</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditingId(isEditing ? null : plan.id)
+                        }}
+                        disabled={deletingId === plan.id}
+                        className="rounded-md px-1 py-0.5 text-[11px] font-medium text-slate-400 transition hover:text-violet-700 disabled:opacity-50"
+                        aria-label={isEditing ? 'Свернуть редактирование' : 'Изменить план'}
+                      >
+                        {isEditing ? 'Свернуть' : 'Изм.'}
+                      </button>
+                      <span className="text-slate-200">·</span>
                       <button
                         type="button"
                         onClick={() => {
@@ -117,27 +134,39 @@ export function PlanList({ plans, groupId, loading, onDeleted }: PlanListProps) 
                           setPendingDelete(plan)
                         }}
                         disabled={deletingId === plan.id}
-                        className="rounded-lg px-2 py-1 text-xs font-medium text-slate-400 transition hover:bg-rose-50 hover:text-rose-600 disabled:opacity-50"
+                        className="rounded-md px-1 py-0.5 text-[11px] font-medium text-slate-400 transition hover:text-rose-600 disabled:opacity-50"
+                        aria-label="Удалить план"
                       >
-                        Удалить
+                        Удал.
                       </button>
                     </div>
                   </div>
 
-                  <div className="mt-3">
-                    <div className="h-2 overflow-hidden rounded-full bg-slate-100">
-                      <div
-                        className="h-full rounded-full transition-all"
-                        style={{
-                          width: `${plan.percent}%`,
-                          backgroundColor: isComplete ? '#10b981' : PLAN_DISPLAY.color,
-                        }}
-                      />
+                  {!isEditing ? (
+                    <div className="mt-3">
+                      <div className="h-2 overflow-hidden rounded-full bg-slate-100">
+                        <div
+                          className="h-full rounded-full transition-all"
+                          style={{
+                            width: `${plan.percent}%`,
+                            backgroundColor: isComplete ? '#10b981' : PLAN_DISPLAY.color,
+                          }}
+                        />
+                      </div>
+                      <p className="mt-1 text-xs text-slate-500">
+                        {plan.percent}% — засчитываются только расходы, привязанные к «{title}»
+                      </p>
                     </div>
-                    <p className="mt-1 text-xs text-slate-500">
-                      {plan.percent}% — засчитываются только расходы, привязанные к «{title}»
-                    </p>
-                  </div>
+                  ) : (
+                    <PlanEditForm
+                      plan={plan}
+                      onSaved={() => {
+                        setEditingId(null)
+                        onUpdated?.()
+                      }}
+                      onCancel={() => setEditingId(null)}
+                    />
+                  )}
                 </div>
               </div>
             </article>

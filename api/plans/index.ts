@@ -13,6 +13,7 @@ import {
   calculatePlansProgress,
 } from '../_lib/plans.js'
 import { getRouteId } from '../_lib/request.js'
+import { normalizeEmojiIcon } from '../_lib/emoji.js'
 import type { PlanRecurrence } from '../_lib/types.js'
 
 interface CreatePlanBody {
@@ -22,6 +23,15 @@ interface CreatePlanBody {
   recurrence?: PlanRecurrence
   targetMonth?: string
   description?: string
+  icon?: string
+}
+
+interface UpdatePlanBody {
+  amount?: number
+  recurrence?: PlanRecurrence
+  targetMonth?: string
+  description?: string
+  icon?: string
 }
 
 function isValidTargetMonth(value: string): boolean {
@@ -52,7 +62,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   if (req.method === 'POST') {
-    const { groupId, name, amount, recurrence, targetMonth, description } =
+    const { groupId, name, amount, recurrence, targetMonth, description, icon } =
       parseBody<CreatePlanBody>(req)
 
     if (!groupId) {
@@ -83,6 +93,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const planId = randomUUID()
     const createdAt = new Date().toISOString()
+    const planIcon = icon?.trim() ? normalizeEmojiIcon(icon) : undefined
 
     await updateDb((freshDb) => {
       if (!freshDb.plans) {
@@ -97,6 +108,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         recurrence,
         targetMonth: planTargetMonth,
         description: description?.trim() ?? '',
+        ...(planIcon ? { icon: planIcon } : {}),
         createdAt,
       })
     })
@@ -111,6 +123,88 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     )
 
     return json(res, 201, { plan, summary })
+  }
+
+  if (req.method === 'PATCH') {
+    const planId = getRouteId(req, 'plans')
+    if (!planId) {
+      return error(res, 400, 'Plan id is required')
+    }
+
+    const { amount, recurrence, targetMonth, description, icon } =
+      parseBody<UpdatePlanBody>(req)
+
+    const db = await readDb()
+    const plan = (db.plans ?? []).find((p) => p.id === planId)
+    if (!plan) {
+      return error(res, 404, 'Plan not found')
+    }
+
+    if (!isGroupMember(db, plan.groupId, user.id)) {
+      return error(res, 403, 'Forbidden')
+    }
+
+    if (amount !== undefined && amount <= 0) {
+      return error(res, 400, 'Amount must be greater than 0')
+    }
+
+    if (recurrence !== undefined && recurrence !== 'monthly' && recurrence !== 'once') {
+      return error(res, 400, 'recurrence must be monthly or once')
+    }
+
+    if (targetMonth !== undefined) {
+      const trimmedMonth = targetMonth.trim()
+      if (!isValidTargetMonth(trimmedMonth)) {
+        return error(res, 400, 'targetMonth must be YYYY-MM')
+      }
+    }
+
+    const groupId = plan.groupId
+
+    await updateDb((freshDb) => {
+      const index = (freshDb.plans ?? []).findIndex((p) => p.id === planId)
+      if (index === -1) {
+        return
+      }
+
+      const current = freshDb.plans![index]
+
+      if (amount !== undefined) {
+        current.amount = Math.round(amount * 100) / 100
+      }
+
+      if (recurrence !== undefined) {
+        current.recurrence = recurrence
+      }
+
+      if (targetMonth !== undefined) {
+        current.targetMonth = targetMonth.trim()
+      }
+
+      if (description !== undefined) {
+        current.description = description.trim()
+      }
+
+      if (icon !== undefined) {
+        const normalized = icon.trim() ? normalizeEmojiIcon(icon) : undefined
+        if (normalized) {
+          current.icon = normalized
+        } else {
+          delete current.icon
+        }
+      }
+    })
+
+    const freshDb = await readDb()
+    const plans = calculatePlansProgress(freshDb.plans ?? [], freshDb.expenses, groupId)
+    const updatedPlan = plans.find((p) => p.id === planId)
+    const summary = calculateFinancialSummary(
+      freshDb.expenses,
+      freshDb.plans ?? [],
+      groupId,
+    )
+
+    return json(res, 200, { plan: updatedPlan, summary })
   }
 
   if (req.method === 'DELETE') {
