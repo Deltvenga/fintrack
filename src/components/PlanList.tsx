@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { useState } from 'react'
 import { api } from '../lib/api'
 import { PLAN_DISPLAY } from '../lib/categories'
+import { formatTargetMonth } from '../lib/period'
 import { getPlanDisplay } from '../lib/plans'
 import type { PlannedExpense } from '../lib/types'
 import { CategoryIcon } from './CategoryIcon'
@@ -81,9 +82,12 @@ export function PlanList({ plans, groupId, loading, onDeleted }: PlanListProps) 
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
                         <p className="font-medium text-slate-900">{title}</p>
-                        <span className="rounded-full bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-700">
-                          {plan.recurrence === 'monthly' ? 'Ежемесячно' : 'Разово'}
-                        </span>
+                      <span className="rounded-full bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-700">
+                        {formatTargetMonth(plan.targetMonth)}
+                      </span>
+                      <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">
+                        {plan.recurrence === 'monthly' ? 'Ежемесячно' : 'Разово'}
+                      </span>
                         {isComplete ? (
                           <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
                             Выполнено

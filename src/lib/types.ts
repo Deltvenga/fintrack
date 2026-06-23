@@ -52,6 +52,7 @@ export interface PlannedExpense {
   name: string
   amount: number
   recurrence: PlanRecurrence
+  targetMonth: string
   description: string
   spent: number
   remaining: number

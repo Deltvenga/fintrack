@@ -5,6 +5,7 @@ import {
   mergeCategories,
   type Category,
 } from '../lib/categories'
+import { normalizeEmojiIcon } from '../lib/emoji'
 import type { CustomCategory, TransactionType } from '../lib/types'
 import { CategoryIcon } from './CategoryIcon'
 import { ConfirmDialog } from './ConfirmDialog'
@@ -22,6 +23,7 @@ export function CategoryPicker({ groupId, type, value, onChange }: CategoryPicke
   const [showForm, setShowForm] = useState(false)
   const [newName, setNewName] = useState('')
   const [newIcon, setNewIcon] = useState<string>(CUSTOM_ICON_OPTIONS[0])
+  const [customIconInput, setCustomIconInput] = useState('')
   const [formError, setFormError] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [pendingDelete, setPendingDelete] = useState<{ id: string; name: string } | null>(null)
@@ -56,18 +58,23 @@ export function CategoryPicker({ groupId, type, value, onChange }: CategoryPicke
     }
 
     setSubmitting(true)
+    const icon = customIconInput.trim()
+      ? normalizeEmojiIcon(customIconInput)
+      : newIcon
+
     try {
       const res = await api.createCategory({
         groupId,
         name: trimmedName,
         type,
-        icon: newIcon,
+        icon,
       })
       if (res.category) {
         setCustomCategories((prev) => [...prev, res.category!])
         onChange(res.category.name)
         setNewName('')
         setNewIcon(CUSTOM_ICON_OPTIONS[0])
+        setCustomIconInput('')
         setShowForm(false)
       }
     } catch (err) {
@@ -183,9 +190,12 @@ export function CategoryPicker({ groupId, type, value, onChange }: CategoryPicke
                 <button
                   key={icon}
                   type="button"
-                  onClick={() => setNewIcon(icon)}
+                  onClick={() => {
+                    setNewIcon(icon)
+                    setCustomIconInput('')
+                  }}
                   className={`flex h-9 w-9 items-center justify-center rounded-lg text-lg transition ${
-                    newIcon === icon
+                    newIcon === icon && !customIconInput.trim()
                       ? 'bg-white ring-2 ring-emerald-500'
                       : 'bg-white/80 hover:bg-white'
                   }`}
@@ -193,6 +203,21 @@ export function CategoryPicker({ groupId, type, value, onChange }: CategoryPicke
                   {icon}
                 </button>
               ))}
+            </div>
+            <div className="mt-3 flex items-center gap-2">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-xl ring-1 ring-slate-200">
+                {customIconInput.trim()
+                  ? normalizeEmojiIcon(customIconInput)
+                  : newIcon}
+              </span>
+              <input
+                type="text"
+                value={customIconInput}
+                onChange={(e) => setCustomIconInput(e.target.value)}
+                className="min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-emerald-500"
+                placeholder="Или введите свой эмодзи"
+                maxLength={8}
+              />
             </div>
           </div>
 

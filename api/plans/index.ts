@@ -20,7 +20,12 @@ interface CreatePlanBody {
   name?: string
   amount?: number
   recurrence?: PlanRecurrence
+  targetMonth?: string
   description?: string
+}
+
+function isValidTargetMonth(value: string): boolean {
+  return /^\d{4}-\d{2}$/.test(value)
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -47,7 +52,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   if (req.method === 'POST') {
-    const { groupId, name, amount, recurrence, description } =
+    const { groupId, name, amount, recurrence, targetMonth, description } =
       parseBody<CreatePlanBody>(req)
 
     if (!groupId) {
@@ -64,6 +69,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     if (recurrence !== 'monthly' && recurrence !== 'once') {
       return error(res, 400, 'recurrence must be monthly or once')
+    }
+
+    const planTargetMonth = targetMonth?.trim() || new Date().toISOString().slice(0, 7)
+    if (!isValidTargetMonth(planTargetMonth)) {
+      return error(res, 400, 'targetMonth must be YYYY-MM')
     }
 
     const db = await readDb()
@@ -85,6 +95,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         name: name.trim(),
         amount: Math.round(amount * 100) / 100,
         recurrence,
+        targetMonth: planTargetMonth,
         description: description?.trim() ?? '',
         createdAt,
       })

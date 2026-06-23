@@ -8,6 +8,7 @@ export interface PlanProgress {
   name: string
   amount: number
   recurrence: PlanRecurrence
+  targetMonth: string
   description: string
   spent: number
   remaining: number
@@ -30,6 +31,10 @@ function currentMonthPrefix(): string {
   const now = new Date()
   const month = String(now.getMonth() + 1).padStart(2, '0')
   return `${now.getFullYear()}-${month}`
+}
+
+export function getPlanTargetMonth(plan: PlannedExpense): string {
+  return plan.targetMonth ?? plan.createdAt.slice(0, 7)
 }
 
 /** @deprecated old plans used `category` instead of `name` */
@@ -59,6 +64,10 @@ export function getPlanSubtitle(
 
 export function migrateLegacyPlans(plans: PlannedExpense[]): void {
   for (const plan of plans as Array<PlannedExpense & { category?: string }>) {
+    if (!plan.targetMonth) {
+      plan.targetMonth = plan.createdAt.slice(0, 7)
+    }
+
     if (plan.name?.trim()) {
       continue
     }
@@ -76,33 +85,27 @@ export function migrateLegacyPlans(plans: PlannedExpense[]): void {
 }
 
 function getPlanSpentInPeriod(plan: PlannedExpense, expenses: Expense[]): number {
+  const targetMonth = getPlanTargetMonth(plan)
   const linkedExpenses = expenses.filter(
     (e) =>
       e.groupId === plan.groupId &&
       (e.type ?? 'expense') === 'expense' &&
-      e.planId === plan.id,
+      e.planId === plan.id &&
+      e.date.startsWith(targetMonth),
   )
 
-  if (plan.recurrence === 'monthly') {
-    const prefix = currentMonthPrefix()
-    return linkedExpenses
-      .filter((e) => e.date.startsWith(prefix))
-      .reduce((sum, e) => sum + e.amount, 0)
-  }
-
-  const planDate = plan.createdAt.slice(0, 10)
-  return linkedExpenses
-    .filter((e) => e.date >= planDate)
-    .reduce((sum, e) => sum + e.amount, 0)
+  return linkedExpenses.reduce((sum, e) => sum + e.amount, 0)
 }
 
 export function calculatePlansProgress(
   plans: PlannedExpense[],
   expenses: Expense[],
   groupId: string,
+  monthFilter?: string,
 ): PlanProgress[] {
   const groupPlans = plans
     .filter((p) => p.groupId === groupId)
+    .filter((p) => !monthFilter || getPlanTargetMonth(p) === monthFilter)
     .sort((a, b) => a.createdAt.localeCompare(b.createdAt))
 
   const groupExpenses = expenses.filter((e) => e.groupId === groupId)
@@ -119,6 +122,7 @@ export function calculatePlansProgress(
       name: getPlanName(plan),
       amount: plan.amount,
       recurrence: plan.recurrence,
+      targetMonth: getPlanTargetMonth(plan),
       description: plan.description,
       spent: roundMoney(spent),
       remaining: roundMoney(remaining),
@@ -146,7 +150,8 @@ export function calculateFinancialSummary(
     }
   }
 
-  const plansProgress = calculatePlansProgress(plans, expenses, groupId)
+  const currentMonth = currentMonthPrefix()
+  const plansProgress = calculatePlansProgress(plans, expenses, groupId, currentMonth)
   const plannedRemaining = plansProgress.reduce((sum, plan) => sum + plan.remaining, 0)
 
   totalIncome = roundMoney(totalIncome)

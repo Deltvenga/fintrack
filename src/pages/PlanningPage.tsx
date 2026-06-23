@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { api } from '../lib/api'
 import type { FinancialSummary, PlannedExpense, PlanRecurrence } from '../lib/types'
+import { currentMonthValue } from '../lib/period'
 import { BottomNav } from '../components/BottomNav'
 import { PlanList } from '../components/PlanList'
 
@@ -25,6 +26,7 @@ export function PlanningPage() {
   const [name, setName] = useState('')
   const [amount, setAmount] = useState('')
   const [recurrence, setRecurrence] = useState<PlanRecurrence>('monthly')
+  const [targetMonth, setTargetMonth] = useState(currentMonthValue())
   const [description, setDescription] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [formError, setFormError] = useState('')
@@ -75,12 +77,14 @@ export function PlanningPage() {
         name: name.trim(),
         amount: parsedAmount,
         recurrence,
+        targetMonth,
         description,
       })
       setPlans((prev) => [...prev, res.plan])
       setSummary(res.summary)
       setName('')
       setAmount('')
+      setTargetMonth(currentMonthValue())
       setDescription('')
       setShowForm(false)
     } catch (err) {
@@ -163,6 +167,17 @@ export function PlanningPage() {
               onChange={(e) => setAmount(e.target.value)}
               className="w-full rounded-xl border border-slate-200 px-4 py-3 text-lg outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-100"
               placeholder="0"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-700">Месяц</label>
+            <input
+              type="month"
+              value={targetMonth}
+              onChange={(e) => setTargetMonth(e.target.value)}
+              className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-100"
               required
             />
           </div>

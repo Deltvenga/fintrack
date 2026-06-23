@@ -123,6 +123,7 @@ export const api = {
     name: string
     amount: number
     recurrence: PlanRecurrence
+    targetMonth?: string
     description?: string
   }) {
     return request<{ plan: PlannedExpense; summary: FinancialSummary }>('/api/plans', {

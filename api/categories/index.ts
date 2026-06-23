@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { randomUUID } from 'node:crypto'
 import { pickCustomColor, pickCustomIcon } from '../_lib/categories.js'
+import { normalizeEmojiIcon } from '../_lib/emoji.js'
 import {
   error,
   isGroupMember,
@@ -88,7 +89,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const groupCategories = (db.categories ?? []).filter((c) => c.groupId === groupId)
     const categoryId = randomUUID()
     const createdAt = new Date().toISOString()
-    const iconValue = icon?.trim() || pickCustomIcon(groupCategories.length)
+    const iconValue = icon?.trim()
+      ? normalizeEmojiIcon(icon)
+      : pickCustomIcon(groupCategories.length)
     const color = pickCustomColor(groupCategories.length)
 
     await updateDb((freshDb) => {
