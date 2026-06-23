@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs'
 import { dirname, join } from 'node:path'
-import { list, put } from '@vercel/blob'
+import { get, put, type BlobAccessType } from '@vercel/blob'
 import type { Database } from './types.js'
 import { DbConflictError } from './types.js'
 
@@ -21,20 +21,56 @@ function useBlob(): boolean {
   return Boolean(process.env.BLOB_READ_WRITE_TOKEN)
 }
 
+async function streamToText(stream: ReadableStream<Uint8Array>): Promise<string> {
+  return new Response(stream).text()
+}
+
 async function readFromBlob(): Promise<Database> {
-  const { blobs } = await list({ prefix: DB_BLOB_PATH, limit: 1 })
-  const blob = blobs.find((b) => b.pathname === DB_BLOB_PATH)
+  const modes: BlobAccessType[] =
+    process.env.BLOB_ACCESS === 'public'
+      ? ['public']
+      : process.env.BLOB_ACCESS === 'private'
+        ? ['private']
+        : ['private', 'public']
 
-  if (!blob) {
-    return emptyDb()
+  for (const access of modes) {
+    try {
+      const result = await get(DB_BLOB_PATH, { access, useCache: false })
+      if (result?.statusCode === 200 && result.stream) {
+        const text = await streamToText(result.stream)
+        return JSON.parse(text) as Database
+      }
+    } catch {
+      // try next access mode
+    }
   }
 
-  const response = await fetch(blob.url)
-  if (!response.ok) {
-    throw new Error('Failed to read database from Blob')
+  return emptyDb()
+}
+
+async function writeToBlob(db: Database): Promise<void> {
+  const modes: BlobAccessType[] =
+    process.env.BLOB_ACCESS === 'public'
+      ? ['public']
+      : process.env.BLOB_ACCESS === 'private'
+        ? ['private']
+        : ['private', 'public']
+
+  let lastError: unknown
+  for (const access of modes) {
+    try {
+      await put(DB_BLOB_PATH, JSON.stringify(db), {
+        access,
+        allowOverwrite: true,
+        contentType: 'application/json',
+      })
+      return
+    } catch (error) {
+      lastError = error
+    }
   }
 
-  return (await response.json()) as Database
+  throw lastError
 }
 
 function readFromLocal(): Database {
@@ -49,14 +85,6 @@ function readFromLocal(): Database {
 
   const raw = readFileSync(LOCAL_DB_PATH, 'utf-8')
   return JSON.parse(raw) as Database
-}
-
-async function writeToBlob(db: Database): Promise<void> {
-  await put(DB_BLOB_PATH, JSON.stringify(db), {
-    access: 'private',
-    allowOverwrite: true,
-    contentType: 'application/json',
-  })
 }
 
 function writeToLocal(db: Database): void {

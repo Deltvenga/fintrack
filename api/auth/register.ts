@@ -65,6 +65,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (err instanceof Error && err.message === 'USERNAME_EXISTS') {
       return error(res, 409, 'Username already taken')
     }
-    throw err
+    console.error('Register error:', err)
+    return error(res, 500, 'Internal server error')
   }
 }
