@@ -27,8 +27,8 @@ function getBlobToken(): string | undefined {
 
 function getBlobStoreId(): string | undefined {
   const storeId =
-    process.env.BLOB_READ_WRITE_TOKEN_STORE_ID?.trim() ||
-    process.env.BLOB_STORE_ID?.trim()
+    process.env.BLOB_STORE_ID?.trim() ||
+    process.env.BLOB_READ_WRITE_TOKEN_STORE_ID?.trim()
   return storeId || undefined
 }
 
