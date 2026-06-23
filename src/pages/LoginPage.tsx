@@ -32,7 +32,7 @@ export function LoginPage() {
     <div className="flex min-h-dvh flex-col justify-center px-5 py-10">
       <div className="mx-auto w-full max-w-md">
         <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-600 text-2xl font-bold text-white">
+          <div className="app-logo mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-600 text-2xl font-bold text-white">
             ₽
           </div>
           <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">Fintrack</h1>

@@ -31,12 +31,21 @@
           document.documentElement.classList.add('girly')
           document.documentElement.style.colorScheme = 'light'
           var meta = document.querySelector('meta[name="theme-color"]')
-          if (meta) meta.setAttribute('content', '#e879f9')
+          if (meta) meta.setAttribute('content', '#f9a8d4')
+          return
+        }
+        if (stored === 'girly2') {
+          document.documentElement.classList.add('girly2')
+          document.documentElement.style.colorScheme = 'light'
+          var meta2 = document.querySelector('meta[name="theme-color"]')
+          if (meta2) meta2.setAttribute('content', '#c4b5fd')
           return
         }
         var dark =
           stored === 'dark' ||
           (stored !== 'light' &&
+            stored !== 'girly' &&
+            stored !== 'girly2' &&
             window.matchMedia('(prefers-color-scheme: dark)').matches)
         if (dark) {
           document.documentElement.classList.add('dark')

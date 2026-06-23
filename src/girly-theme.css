@@ -1,36 +1,87 @@
-/* Девчачья тема — пиксельно-милый стиль в розово-фиолетовых тонах */
+/* Девчачья тема — чёткий розово-пиксельный стиль */
+
+@keyframes girly-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.18;
+  }
+  50% {
+    transform: translateY(-8px) rotate(6deg);
+    opacity: 0.42;
+  }
+}
+
+@keyframes girly-burst {
+  0% {
+    transform: translate(0, 0) scale(0.4);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--dx), var(--dy)) scale(1.1);
+    opacity: 0;
+  }
+}
+
+@keyframes girly-wiggle {
+  0%,
+  100% {
+    transform: rotate(-3deg) scale(1);
+  }
+  50% {
+    transform: rotate(3deg) scale(1.06);
+  }
+}
+
+.girly-floater {
+  animation: girly-float ease-in-out infinite;
+  opacity: 0.28;
+}
+
+.girly-burst-particle {
+  animation: girly-burst 0.85s ease-out forwards;
+}
+
+.girly-toggle-icon {
+  display: inline-block;
+  animation: girly-wiggle 1.6s ease-in-out infinite;
+}
+
+/* Лёгкая сетка — почти незаметная, без «тумана» */
+.girly-pixel-grid {
+  background-image:
+    linear-gradient(rgba(249, 168, 212, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(249, 168, 212, 0.07) 1px, transparent 1px);
+  background-size: 18px 18px;
+  opacity: 0.65;
+}
 
 .girly {
-  --girly-bg: #fff0f9;
-  --girly-bg-soft: #fde8f5;
-  --girly-surface: #fff7fc;
-  --girly-surface-muted: #fce7f6;
-  --girly-border: #e879f9;
-  --girly-border-dark: #c026d3;
-  --girly-text: #701a75;
-  --girly-text-soft: #a21caf;
-  --girly-text-muted: #c026d3;
-  --girly-accent: #ec4899;
-  --girly-accent-deep: #db2777;
-  --girly-violet: #a855f7;
-  --girly-shadow: #be185d;
+  --girly-bg: #fff5f9;
+  --girly-surface: #ffffff;
+  --girly-surface-muted: #fce7f3;
+  --girly-border: #f9a8d4;
+  --girly-border-soft: #fbcfe8;
+  --girly-border-strong: #f472b6;
+  --girly-text: #881337;
+  --girly-text-soft: #9f1239;
+  --girly-text-muted: #be185d;
+  --girly-shadow: #f472b6;
   --girly-pixel: 3px;
 
   color: var(--girly-text);
   background-color: var(--girly-bg);
   color-scheme: light;
   font-family: 'Pixelify Sans', 'Segoe UI', sans-serif;
-  image-rendering: pixelated;
 
+  /* Чистый розовый фон, без лавандового градиента */
   background-image:
-    radial-gradient(circle at 12% 18%, rgba(244, 114, 182, 0.22) 2px, transparent 2px),
-    radial-gradient(circle at 78% 72%, rgba(192, 132, 252, 0.2) 2px, transparent 2px),
-    radial-gradient(circle at 44% 88%, rgba(249, 168, 212, 0.18) 1.5px, transparent 1.5px),
-    linear-gradient(180deg, #fff5fc 0%, #fde8f7 45%, #fae8ff 100%);
+    radial-gradient(circle at 10% 15%, rgba(251, 207, 232, 0.35) 1.5px, transparent 1.5px),
+    radial-gradient(circle at 88% 80%, rgba(249, 168, 212, 0.28) 1.5px, transparent 1.5px),
+    linear-gradient(180deg, #fff8fb 0%, #fff5f9 55%, #ffeff6 100%);
   background-size:
-    28px 28px,
-    32px 32px,
-    20px 20px,
+    36px 36px,
+    40px 40px,
     auto;
 }
 
@@ -38,38 +89,77 @@
 .girly h2,
 .girly h3 {
   letter-spacing: 0.02em;
-  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.85);
+  color: #9f1239 !important;
+  text-shadow: 1px 1px 0 #fff;
+}
+
+.girly .app-logo {
+  position: relative;
+  background: linear-gradient(145deg, #fff1f5 0%, #fce7f3 50%, #fbcfe8 100%) !important;
+  border: var(--girly-pixel) solid var(--girly-border-strong) !important;
+  border-radius: 6px !important;
+  box-shadow: 4px 4px 0 0 var(--girly-shadow) !important;
+  font-size: 0 !important;
+}
+
+.girly .app-logo::before {
+  content: '💖';
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.girly .app-logo::after {
+  content: '✨';
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  font-size: 0.95rem;
+  animation: girly-float 2.8s ease-in-out infinite;
 }
 
 .girly .theme-toggle {
   border-radius: 4px !important;
-  border: var(--girly-pixel) solid var(--girly-border) !important;
-  background: linear-gradient(180deg, #fff7fc 0%, #fce7f6 100%) !important;
+  border: var(--girly-pixel) solid var(--girly-border-strong) !important;
+  background: #ffffff !important;
   box-shadow: 3px 3px 0 0 var(--girly-shadow) !important;
   --tw-ring-shadow: 0 0 #0000 !important;
 }
 
 .girly .theme-toggle:hover {
   transform: translate(-1px, -1px);
-  box-shadow: 4px 4px 0 0 var(--girly-shadow) !important;
+  box-shadow: 4px 4px 0 0 #ec4899 !important;
 }
 
-/* Пиксельные карточки и панели */
+/* Пиксельные карточки — белые, с розовой обводкой */
 .girly :is(
     [class*='rounded-2xl'],
     [class*='rounded-3xl'],
     [class*='rounded-xl']:not(.theme-toggle):not([class*='rounded-full'])
   ) {
-  border-radius: 4px !important;
+  border-radius: 5px !important;
 }
 
-.girly :is(
-    .rounded-2xl,
-    .rounded-3xl,
-    .rounded-xl
-  ):not(.rounded-full):not(.theme-toggle) {
+.girly :is(.rounded-2xl, .rounded-3xl, .rounded-xl):not(.rounded-full):not(.theme-toggle) {
+  background-color: var(--girly-surface) !important;
   border: var(--girly-pixel) solid var(--girly-border) !important;
   box-shadow: 4px 4px 0 0 var(--girly-shadow) !important;
+  position: relative;
+}
+
+.girly :is(.rounded-2xl, .rounded-3xl, .rounded-xl):not(.rounded-full):not(.theme-toggle)::before {
+  content: '';
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  width: 6px;
+  height: 6px;
+  background: #fbcfe8;
+  box-shadow:
+    8px 0 0 #f9a8d4,
+    0 8px 0 #fda4af,
+    8px 8px 0 #fb7185;
+  opacity: 0.75;
+  pointer-events: none;
 }
 
 .girly .shadow-sm,
@@ -89,8 +179,8 @@
 }
 
 .girly .bg-slate-100 {
-  background: linear-gradient(180deg, #fce7f6 0%, #f5d0fe 100%) !important;
-  border: 2px solid #f0abfc;
+  background: #fce7f3 !important;
+  border: 2px solid var(--girly-border-soft);
 }
 
 .girly .bg-slate-50.dark\:bg-slate-950,
@@ -99,7 +189,7 @@
   background: var(--girly-surface-muted) !important;
 }
 
-/* Текст */
+/* Текст — контрастнее */
 .girly .text-slate-900,
 .girly .text-slate-800 {
   color: var(--girly-text) !important;
@@ -121,74 +211,77 @@
 
 .girly .text-violet-700,
 .girly .text-violet-600 {
-  color: #a21caf !important;
+  color: #db2777 !important;
 }
 
 .girly .text-sky-600,
 .girly .text-sky-700 {
-  color: #7c3aed !important;
+  color: #e11d48 !important;
 }
 
 .girly .text-rose-600,
 .girly .text-rose-700 {
-  color: #db2777 !important;
+  color: #e11d48 !important;
 }
 
-/* Рамки и кольца */
+/* Рамки */
 .girly .border-slate-200,
 .girly .border-slate-300,
 .girly .ring-slate-100,
 .girly .ring-slate-200 {
-  border-color: #f0abfc !important;
-  --tw-ring-color: #f0abfc !important;
+  border-color: var(--girly-border-soft) !important;
+  --tw-ring-color: var(--girly-border-soft) !important;
 }
 
 .girly .hover\:border-slate-300:hover,
 .girly .hover\:border-slate-400:hover {
-  border-color: var(--girly-border) !important;
+  border-color: var(--girly-border-strong) !important;
 }
 
-/* Кнопки и акценты */
+/* Кнопки — розовые, чёткие */
 .girly .bg-emerald-600,
 .girly .bg-emerald-600:hover,
 .girly .hover\:bg-emerald-700:hover {
-  background: linear-gradient(180deg, #f472b6 0%, #ec4899 55%, #db2777 100%) !important;
-  border: var(--girly-pixel) solid #be185d !important;
-  box-shadow: 3px 3px 0 0 #9d174d !important;
+  background: linear-gradient(180deg, #fda4af 0%, #fb7185 45%, #f472b6 100%) !important;
+  border: var(--girly-pixel) solid #e11d48 !important;
+  box-shadow: 3px 3px 0 0 #be185d !important;
   color: #fff !important;
-  border-radius: 4px !important;
+  border-radius: 5px !important;
 }
 
 .girly .bg-violet-600,
 .girly .bg-violet-600:hover,
 .girly .hover\:bg-violet-700:hover {
-  background: linear-gradient(180deg, #d8b4fe 0%, #c084fc 45%, #a855f7 100%) !important;
-  border: var(--girly-pixel) solid #7e22ce !important;
-  box-shadow: 3px 3px 0 0 #6b21a8 !important;
+  background: linear-gradient(180deg, #f9a8d4 0%, #f472b6 50%, #ec4899 100%) !important;
+  border: var(--girly-pixel) solid #db2777 !important;
+  box-shadow: 3px 3px 0 0 #be185d !important;
   color: #fff !important;
 }
 
 .girly .bg-sky-600,
 .girly .hover\:bg-sky-700:hover {
-  background: linear-gradient(180deg, #c4b5fd 0%, #a78bfa 55%, #8b5cf6 100%) !important;
-  border: var(--girly-pixel) solid #6d28d9 !important;
-  box-shadow: 3px 3px 0 0 #5b21b6 !important;
+  background: linear-gradient(180deg, #fbcfe8 0%, #f9a8d4 55%, #f472b6 100%) !important;
+  border: var(--girly-pixel) solid #db2777 !important;
+  box-shadow: 3px 3px 0 0 #be185d !important;
+  color: #fff !important;
 }
 
 .girly .bg-rose-600,
 .girly .hover\:bg-rose-700:hover {
-  background: linear-gradient(180deg, #fb7185 0%, #f43f5e 55%, #e11d48 100%) !important;
-  border: var(--girly-pixel) solid #be123c !important;
-  box-shadow: 3px 3px 0 0 #9f1239 !important;
+  background: linear-gradient(180deg, #fda4af 0%, #fb7185 55%, #f43f5e 100%) !important;
+  border: var(--girly-pixel) solid #e11d48 !important;
+  box-shadow: 3px 3px 0 0 #be123c !important;
+  color: #fff !important;
 }
 
 .girly .bg-emerald-100,
 .girly .bg-violet-100,
 .girly .bg-sky-100,
 .girly .bg-rose-100 {
-  background: #fce7f6 !important;
-  border: 2px solid #f9a8d4 !important;
-  border-radius: 4px !important;
+  background: #fce7f3 !important;
+  border: 2px solid var(--girly-border) !important;
+  border-radius: 5px !important;
+  color: var(--girly-text-soft) !important;
 }
 
 .girly .text-emerald-700,
@@ -202,99 +295,111 @@
 .girly .bg-emerald-50,
 .girly .bg-sky-50,
 .girly .bg-rose-50 {
-  background: #fdf2f8 !important;
-  border: 2px dashed #f0abfc !important;
+  background: #fff1f5 !important;
+  border: 2px dashed var(--girly-border) !important;
 }
 
 .girly .bg-violet-600.p-5,
-.girly .from-violet-600 {
-  background: linear-gradient(135deg, #e879f9 0%, #c026d3 50%, #a855f7 100%) !important;
-  border: var(--girly-pixel) solid #86198f !important;
-  box-shadow: 5px 5px 0 0 #701a75 !important;
+.girly .from-violet-600,
+.girly .bg-gradient-to-br.from-violet-600 {
+  background: linear-gradient(135deg, #fbcfe8 0%, #f9a8d4 45%, #f472b6 100%) !important;
+  border: var(--girly-pixel) solid #db2777 !important;
+  box-shadow: 5px 5px 0 0 #be185d !important;
+  color: #fff !important;
+}
+
+.girly .text-violet-100,
+.girly .text-violet-200 {
+  color: #fff1f5 !important;
 }
 
 .girly .bg-rose-600.p-5,
 .girly .bg-sky-600.p-5 {
-  border: var(--girly-pixel) solid #9d174d !important;
-  box-shadow: 4px 4px 0 0 #831843 !important;
+  border: var(--girly-pixel) solid #e11d48 !important;
+  box-shadow: 4px 4px 0 0 #be123c !important;
 }
 
 /* Нижнее меню */
 .girly nav.fixed {
-  background: linear-gradient(180deg, #fff7fc 0%, #fce7f6 100%) !important;
+  background: #ffffff !important;
   border-top: var(--girly-pixel) solid var(--girly-border) !important;
-  box-shadow: 0 -4px 0 0 #f9a8d4 !important;
+  box-shadow: 0 -4px 0 0 #fbcfe8 !important;
 }
 
 .girly nav .bg-emerald-600 {
   background: linear-gradient(180deg, #f9a8d4 0%, #ec4899 100%) !important;
-  border: 2px solid #be185d !important;
-  box-shadow: 2px 2px 0 0 #9d174d !important;
+  border: 2px solid #db2777 !important;
+  box-shadow: 2px 2px 0 0 #be185d !important;
+  color: #fff !important;
 }
 
 .girly nav .bg-slate-100 {
-  background: #fdf2f8 !important;
-  border: 2px solid #f0abfc !important;
+  background: #fff1f5 !important;
+  border: 2px solid var(--girly-border-soft) !important;
   color: var(--girly-text-soft) !important;
 }
 
-/* Поля ввода */
+/* Поля ввода — белые, чёткая розовая рамка */
 .girly input,
 .girly select,
 .girly textarea {
-  background: #fff7fc !important;
-  border: var(--girly-pixel) solid #f0abfc !important;
-  border-radius: 4px !important;
+  background: #ffffff !important;
+  border: var(--girly-pixel) solid var(--girly-border) !important;
+  border-radius: 5px !important;
   color: var(--girly-text) !important;
-  box-shadow: inset 2px 2px 0 0 rgba(236, 72, 153, 0.12) !important;
+  box-shadow: inset 2px 2px 0 0 rgba(244, 114, 182, 0.12) !important;
 }
 
 .girly input:focus,
 .girly select:focus,
 .girly textarea:focus {
-  border-color: var(--girly-border) !important;
-  outline: 2px dashed #f9a8d4 !important;
-  outline-offset: 2px;
+  border-color: var(--girly-border-strong) !important;
+  outline: 2px solid #fbcfe8 !important;
+  outline-offset: 1px;
 }
 
-/* Переключатели периода / типа */
+/* Переключатели */
 .girly .grid .bg-white.shadow-sm {
-  background: #fff7fc !important;
-  border: 2px solid #e879f9 !important;
-  box-shadow: 2px 2px 0 0 #db2777 !important;
+  background: #ffffff !important;
+  border: 2px solid var(--girly-border-strong) !important;
+  box-shadow: 2px 2px 0 0 #f472b6 !important;
   color: var(--girly-text) !important;
 }
 
 /* Диалог */
 .girly .fixed.inset-0.z-50 button.absolute.inset-0 {
-  background: rgba(88, 28, 135, 0.45) !important;
+  background: rgba(190, 24, 93, 0.22) !important;
 }
 
 .girly .bg-rose-100.text-xl {
-  background: #fce7f6 !important;
-  border: 2px solid #f9a8d4 !important;
-  border-radius: 4px !important;
+  background: #fce7f3 !important;
+  border: 2px solid var(--girly-border) !important;
+  border-radius: 5px !important;
 }
 
 /* Прогресс-бары */
 .girly .bg-slate-100.rounded-full,
 .girly .h-2.overflow-hidden.rounded-full.bg-slate-100,
 .girly .h-3.overflow-hidden.rounded-full.bg-slate-100 {
-  background: #fce7f6 !important;
-  border: 2px solid #f9a8d4 !important;
-  border-radius: 2px !important;
+  background: #fce7f3 !important;
+  border: 2px solid var(--girly-border-soft) !important;
+  border-radius: 3px !important;
 }
 
 .girly .rounded-full.transition-all,
 .girly .h-full.rounded-full {
-  border-radius: 2px !important;
+  border-radius: 3px !important;
+}
+
+.girly .h-full.rounded-full[style*='background'] {
+  background: linear-gradient(90deg, #fb7185, #ec4899) !important;
 }
 
 /* Ссылки */
 .girly a.text-emerald-700,
 .girly a.text-violet-600,
 .girly a.text-violet-700 {
-  color: #c026d3 !important;
+  color: #db2777 !important;
   text-decoration-style: wavy;
   text-underline-offset: 3px;
 }
@@ -302,14 +407,14 @@
 .girly a.text-emerald-700:hover,
 .girly a.text-violet-600:hover,
 .girly a.text-violet-700:hover {
-  color: #db2777 !important;
+  color: #e11d48 !important;
 }
 
 /* Hover */
 .girly .hover\:bg-slate-50:hover,
 .girly .hover\:bg-slate-100:hover,
 .girly .hover\:bg-slate-200:hover {
-  background: #fce7f6 !important;
+  background: #fce7f3 !important;
 }
 
 .girly .hover\:bg-rose-50:hover {
@@ -317,27 +422,27 @@
 }
 
 .girly .hover\:bg-violet-50:hover {
-  background: #f5d0fe !important;
+  background: #fce7f3 !important;
 }
 
-/* Пайчарт — центр */
+/* Пайчарт */
 .girly .absolute.inset-6.rounded-full.bg-white {
-  background: #fff7fc !important;
-  border: 2px solid #f0abfc !important;
+  background: #ffffff !important;
+  border: 2px solid var(--girly-border) !important;
 }
 
-/* Выбранные категории / планы */
+/* Выбранные элементы */
 .girly .border-emerald-500,
 .girly .border-violet-500,
 .girly .border-sky-500 {
-  border-color: #e879f9 !important;
-  background: #fdf2f8 !important;
+  border-color: var(--girly-border-strong) !important;
+  background: #fff1f5 !important;
 }
 
 .girly .ring-emerald-100,
 .girly .ring-violet-100,
 .girly .ring-sky-100 {
-  --tw-ring-color: #f9a8d4 !important;
+  --tw-ring-color: #fbcfe8 !important;
 }
 
 /* Бейджи */
@@ -346,23 +451,33 @@
 .girly .rounded-full.bg-slate-100,
 .girly .rounded-full.bg-sky-100,
 .girly .rounded-full.bg-rose-100 {
-  border-radius: 4px !important;
-  border: 2px solid #f0abfc !important;
+  border-radius: 5px !important;
+  border: 2px solid var(--girly-border) !important;
 }
 
 .girly .rounded-full {
-  border-radius: 4px !important;
+  border-radius: 5px !important;
 }
 
-/* Градиентные карточки сводки */
 .girly .bg-sky-50,
 .girly .bg-rose-50,
 .girly .bg-violet-50 {
-  box-shadow: 3px 3px 0 0 #f9a8d4 !important;
+  box-shadow: 3px 3px 0 0 #fbcfe8 !important;
 }
 
 .girly .ring-sky-100,
 .girly .ring-rose-100,
 .girly .ring-violet-100 {
-  --tw-ring-color: #f0abfc !important;
+  --tw-ring-color: var(--girly-border-soft) !important;
+}
+
+/* Нажатие */
+.girly button:active:not(:disabled),
+.girly a:active {
+  transform: translate(2px, 2px) !important;
+  box-shadow: 1px 1px 0 0 var(--girly-shadow) !important;
+}
+
+.girly nav a:active {
+  transform: translate(1px, 1px) !important;
 }

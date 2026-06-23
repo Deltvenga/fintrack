@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import './girly-theme.css';
+@import './girly2-theme.css';
 
 @custom-variant dark (&:where(.dark, .dark *));
 

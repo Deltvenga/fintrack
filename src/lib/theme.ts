@@ -1,26 +1,33 @@
-export type Theme = 'light' | 'dark' | 'girly' | 'system'
+export type Theme = 'light' | 'dark' | 'girly' | 'girly2' | 'system'
 
-export type ResolvedTheme = 'light' | 'dark' | 'girly'
+export type ResolvedTheme = 'light' | 'dark' | 'girly' | 'girly2'
 
 export const THEME_STORAGE_KEY = 'fintrack-theme'
 
 const THEME_COLORS: Record<ResolvedTheme, string> = {
   light: '#059669',
   dark: '#020617',
-  girly: '#e879f9',
+  girly: '#f9a8d4',
+  girly2: '#c4b5fd',
 }
 
 export function getStoredTheme(): Theme {
   const stored = localStorage.getItem(THEME_STORAGE_KEY)
-  if (stored === 'light' || stored === 'dark' || stored === 'girly' || stored === 'system') {
+  if (
+    stored === 'light' ||
+    stored === 'dark' ||
+    stored === 'girly' ||
+    stored === 'girly2' ||
+    stored === 'system'
+  ) {
     return stored
   }
   return 'system'
 }
 
 export function resolveTheme(theme: Theme): ResolvedTheme {
-  if (theme === 'girly') {
-    return 'girly'
+  if (theme === 'girly' || theme === 'girly2') {
+    return theme
   }
 
   if (theme === 'light') {
@@ -36,7 +43,7 @@ export function resolveTheme(theme: Theme): ResolvedTheme {
 
 export function applyResolvedTheme(resolved: ResolvedTheme) {
   const root = document.documentElement
-  root.classList.remove('dark', 'girly')
+  root.classList.remove('dark', 'girly', 'girly2')
   root.style.colorScheme = resolved === 'dark' ? 'dark' : 'light'
 
   if (resolved === 'dark') {
@@ -45,6 +52,10 @@ export function applyResolvedTheme(resolved: ResolvedTheme) {
 
   if (resolved === 'girly') {
     root.classList.add('girly')
+  }
+
+  if (resolved === 'girly2') {
+    root.classList.add('girly2')
   }
 
   const meta = document.querySelector('meta[name="theme-color"]')
@@ -61,5 +72,10 @@ export function cycleTheme(theme: Theme): Theme {
   if (theme === 'system') return 'light'
   if (theme === 'light') return 'dark'
   if (theme === 'dark') return 'girly'
+  if (theme === 'girly') return 'girly2'
   return 'system'
+}
+
+export function isDecorativeTheme(resolved: ResolvedTheme): boolean {
+  return resolved === 'girly' || resolved === 'girly2'
 }
