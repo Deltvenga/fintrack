@@ -46,6 +46,16 @@ export interface PlannedExpense {
   createdAt: string
 }
 
+export interface CustomCategory {
+  id: string
+  groupId: string
+  name: string
+  type: TransactionType
+  icon: string
+  color: string
+  createdAt: string
+}
+
 export interface Database {
   version: number
   users: User[]
@@ -53,6 +63,7 @@ export interface Database {
   groups: Group[]
   expenses: Expense[]
   plans: PlannedExpense[]
+  categories: CustomCategory[]
 }
 
 export class DbConflictError extends Error {

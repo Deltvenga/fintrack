@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { api } from '../lib/api'
-import type { Expense, FinancialSummary, GroupBalance } from '../lib/types'
+import type { CustomCategory, Expense, FinancialSummary, GroupBalance } from '../lib/types'
 import { BalanceCard } from '../components/BalanceCard'
 import { BottomNav } from '../components/BottomNav'
 import { CategoryPieChart } from '../components/CategoryPieChart'
@@ -21,6 +21,7 @@ export function SummaryPage() {
   const [summary, setSummary] = useState<FinancialSummary | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [customCategories, setCustomCategories] = useState<CustomCategory[]>([])
 
   useEffect(() => {
     if (!groupId) return
@@ -30,15 +31,17 @@ export function SummaryPage() {
       setError('')
 
       try {
-        const [expensesRes, balanceRes, plansRes] = await Promise.all([
+        const [expensesRes, balanceRes, plansRes, categoriesRes] = await Promise.all([
           api.getExpenses(currentGroupId),
           api.getBalance(currentGroupId),
           api.getPlans(currentGroupId),
+          api.getCategories(currentGroupId),
         ])
 
         setExpenses(expensesRes.expenses)
         setBalance(balanceRes.balance)
         setSummary(plansRes.summary)
+        setCustomCategories(categoriesRes.categories)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Не удалось загрузить данные')
       } finally {
@@ -114,7 +117,11 @@ export function SummaryPage() {
       </section>
 
       <section className="mb-6">
-        <CategoryPieChart expenses={expenses} loading={loading} />
+        <CategoryPieChart
+          expenses={expenses}
+          customCategories={customCategories}
+          loading={loading}
+        />
       </section>
 
       <section>

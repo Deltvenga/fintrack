@@ -2,15 +2,12 @@ import type { FormEvent } from 'react'
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { api } from '../lib/api'
-import {
-  EXPENSE_CATEGORIES,
-  INCOME_CATEGORIES,
-  type Category,
-} from '../lib/categories'
+import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from '../lib/categories'
 import type { PlannedExpense, TransactionType } from '../lib/types'
 import { getPlanDisplay } from '../lib/plans'
 import { BottomNav } from '../components/BottomNav'
 import { CategoryIcon } from '../components/CategoryIcon'
+import { CategoryPicker } from '../components/CategoryPicker'
 
 type ExpenseKind = 'regular' | 'planned'
 
@@ -58,8 +55,6 @@ export function AddExpensePage() {
     return null
   }
 
-  const categories: Category[] =
-    transactionType === 'income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES
   const isIncome = transactionType === 'income'
   const selectedPlan = plans.find((p) => p.id === selectedPlanId)
   const selectedPlanDisplay = selectedPlan ? getPlanDisplay(selectedPlan) : null
@@ -259,49 +254,21 @@ export function AddExpensePage() {
                 ) : null}
               </div>
             ) : (
-              <div>
-                <label className="mb-2 block text-sm font-medium text-slate-700">Категория</label>
-                <div className="grid grid-cols-2 gap-2">
-                  {categories.map((item) => (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => setCategory(item.id)}
-                      className={`flex items-center gap-2 rounded-xl border px-3 py-3 text-left text-sm transition ${
-                        category === item.id
-                          ? 'border-emerald-500 bg-emerald-50 ring-2 ring-emerald-100'
-                          : 'border-slate-200 hover:border-slate-300'
-                      }`}
-                    >
-                      <CategoryIcon category={item.id} type={transactionType} size="sm" />
-                      <span className="font-medium text-slate-800">{item.id}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
+              <CategoryPicker
+                groupId={groupId}
+                type="expense"
+                value={category}
+                onChange={setCategory}
+              />
             )}
           </>
         ) : (
-          <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">Категория</label>
-            <div className="grid grid-cols-2 gap-2">
-              {categories.map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => setCategory(item.id)}
-                  className={`flex items-center gap-2 rounded-xl border px-3 py-3 text-left text-sm transition ${
-                    category === item.id
-                      ? 'border-emerald-500 bg-emerald-50 ring-2 ring-emerald-100'
-                      : 'border-slate-200 hover:border-slate-300'
-                  }`}
-                >
-                  <CategoryIcon category={item.id} type={transactionType} size="sm" />
-                  <span className="font-medium text-slate-800">{item.id}</span>
-                </button>
-              ))}
-            </div>
-          </div>
+          <CategoryPicker
+            groupId={groupId}
+            type="income"
+            value={category}
+            onChange={setCategory}
+          />
         )}
 
         <div>

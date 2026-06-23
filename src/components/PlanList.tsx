@@ -5,6 +5,7 @@ import { PLAN_DISPLAY } from '../lib/categories'
 import { getPlanDisplay } from '../lib/plans'
 import type { PlannedExpense } from '../lib/types'
 import { CategoryIcon } from './CategoryIcon'
+import { ConfirmDialog } from './ConfirmDialog'
 
 interface PlanListProps {
   plans: PlannedExpense[]
@@ -23,23 +24,20 @@ function formatMoney(amount: number) {
 
 export function PlanList({ plans, groupId, loading, onDeleted }: PlanListProps) {
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [pendingDelete, setPendingDelete] = useState<PlannedExpense | null>(null)
+  const [deleteError, setDeleteError] = useState('')
 
-  async function handleDelete(plan: PlannedExpense) {
-    const period = plan.recurrence === 'monthly' ? 'ежемесячный' : 'разовый'
-    if (
-      !window.confirm(
-        `Удалить ${period} план «${getPlanDisplay(plan).title}» на ${formatMoney(plan.amount)}?`,
-      )
-    ) {
-      return
-    }
+  async function confirmDelete() {
+    if (!pendingDelete) return
 
-    setDeletingId(plan.id)
+    setDeleteError('')
+    setDeletingId(pendingDelete.id)
     try {
-      await api.deletePlan(plan.id)
+      await api.deletePlan(pendingDelete.id)
+      setPendingDelete(null)
       onDeleted?.()
     } catch (err) {
-      window.alert(err instanceof Error ? err.message : 'Не удалось удалить')
+      setDeleteError(err instanceof Error ? err.message : 'Не удалось удалить')
     } finally {
       setDeletingId(null)
     }
@@ -61,80 +59,108 @@ export function PlanList({ plans, groupId, loading, onDeleted }: PlanListProps) 
     )
   }
 
+  const pendingDisplay = pendingDelete ? getPlanDisplay(pendingDelete) : null
+
   return (
-    <div className="space-y-3">
-      {plans.map((plan) => {
-        const isComplete = plan.percent >= 100
-        const { title, subtitle } = getPlanDisplay(plan)
+    <>
+      <div className="space-y-3">
+        {plans.map((plan) => {
+          const isComplete = plan.percent >= 100
+          const { title, subtitle } = getPlanDisplay(plan)
 
-        return (
-          <article
-            key={plan.id}
-            className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100"
-          >
-            <div className="flex items-start gap-3">
-              <CategoryIcon category={title} isPlan size="md" />
+          return (
+            <article
+              key={plan.id}
+              className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100"
+            >
+              <div className="flex items-start gap-3">
+                <CategoryIcon category={title} isPlan size="md" />
 
-              <div className="min-w-0 flex-1">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <p className="font-medium text-slate-900">{title}</p>
-                      <span className="rounded-full bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-700">
-                        {plan.recurrence === 'monthly' ? 'Ежемесячно' : 'Разово'}
-                      </span>
-                      {isComplete ? (
-                        <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
-                          Выполнено
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="font-medium text-slate-900">{title}</p>
+                        <span className="rounded-full bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-700">
+                          {plan.recurrence === 'monthly' ? 'Ежемесячно' : 'Разово'}
                         </span>
+                        {isComplete ? (
+                          <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
+                            Выполнено
+                          </span>
+                        ) : null}
+                      </div>
+                      {subtitle ? (
+                        <p className="mt-1 text-sm text-slate-500">{subtitle}</p>
                       ) : null}
+                      <p className="mt-2 text-xs text-slate-400">
+                        План: {formatMoney(plan.amount)} · Потрачено: {formatMoney(plan.spent)} ·
+                        Осталось: {formatMoney(plan.remaining)}
+                      </p>
                     </div>
-                    {subtitle ? (
-                      <p className="mt-1 text-sm text-slate-500">{subtitle}</p>
-                    ) : null}
-                    <p className="mt-2 text-xs text-slate-400">
-                      План: {formatMoney(plan.amount)} · Потрачено: {formatMoney(plan.spent)} ·
-                      Осталось: {formatMoney(plan.remaining)}
+
+                    <div className="flex shrink-0 flex-col items-end gap-2">
+                      <Link
+                        to={`/groups/${groupId}/add?planId=${plan.id}`}
+                        className="rounded-lg bg-violet-100 px-2 py-1 text-xs font-semibold text-violet-700"
+                      >
+                        + Расход
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setDeleteError('')
+                          setPendingDelete(plan)
+                        }}
+                        disabled={deletingId === plan.id}
+                        className="rounded-lg px-2 py-1 text-xs font-medium text-slate-400 transition hover:bg-rose-50 hover:text-rose-600 disabled:opacity-50"
+                      >
+                        Удалить
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="mt-3">
+                    <div className="h-2 overflow-hidden rounded-full bg-slate-100">
+                      <div
+                        className="h-full rounded-full transition-all"
+                        style={{
+                          width: `${plan.percent}%`,
+                          backgroundColor: isComplete ? '#10b981' : PLAN_DISPLAY.color,
+                        }}
+                      />
+                    </div>
+                    <p className="mt-1 text-xs text-slate-500">
+                      {plan.percent}% — засчитываются только расходы, привязанные к «{title}»
                     </p>
                   </div>
-
-                  <div className="flex shrink-0 flex-col items-end gap-2">
-                    <Link
-                      to={`/groups/${groupId}/add?planId=${plan.id}`}
-                      className="rounded-lg bg-violet-100 px-2 py-1 text-xs font-semibold text-violet-700"
-                    >
-                      + Расход
-                    </Link>
-                    <button
-                      type="button"
-                      onClick={() => handleDelete(plan)}
-                      disabled={deletingId === plan.id}
-                      className="rounded-lg px-2 py-1 text-xs font-medium text-slate-400 transition hover:bg-rose-50 hover:text-rose-600 disabled:opacity-50"
-                    >
-                      {deletingId === plan.id ? '...' : 'Удалить'}
-                    </button>
-                  </div>
-                </div>
-
-                <div className="mt-3">
-                  <div className="h-2 overflow-hidden rounded-full bg-slate-100">
-                    <div
-                      className="h-full rounded-full transition-all"
-                      style={{
-                        width: `${plan.percent}%`,
-                        backgroundColor: isComplete ? '#10b981' : PLAN_DISPLAY.color,
-                      }}
-                    />
-                  </div>
-                  <p className="mt-1 text-xs text-slate-500">
-                    {plan.percent}% — засчитываются только расходы, привязанные к «{title}»
-                  </p>
                 </div>
               </div>
-            </div>
-          </article>
-        )
-      })}
-    </div>
+            </article>
+          )
+        })}
+      </div>
+
+      <ConfirmDialog
+        open={pendingDelete !== null}
+        title="Удалить план?"
+        message="Обязательный расход будет удалён из планирования."
+        detail={
+          pendingDisplay
+            ? `${pendingDisplay.title} · ${formatMoney(pendingDelete!.amount)} · ${
+                pendingDelete!.recurrence === 'monthly' ? 'ежемесячно' : 'разово'
+              }`
+            : undefined
+        }
+        loading={deletingId === pendingDelete?.id}
+        error={deleteError}
+        onConfirm={() => void confirmDelete()}
+        onCancel={() => {
+          if (deletingId) return
+          setPendingDelete(null)
+          setDeleteError('')
+        }}
+      />
+    </>
   )
 }

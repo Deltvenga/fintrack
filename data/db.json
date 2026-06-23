@@ -1,5 +1,5 @@
 {
-  "version": 9,
+  "version": 15,
   "users": [
     {
       "id": "a0692b41-d056-4fcb-82ff-b6a0e9d1ec50",
@@ -49,17 +49,6 @@
       "createdAt": "2026-06-23T18:12:00.011Z"
     },
     {
-      "id": "3dd3ddfa-67ba-44e6-a29d-bfb710175855",
-      "groupId": "0e359723-8339-4184-aeef-f9ddfd9eb584",
-      "type": "expense",
-      "amount": 12,
-      "category": "Транспорт",
-      "description": "qeqeqwe",
-      "paidByUserId": "a0692b41-d056-4fcb-82ff-b6a0e9d1ec50",
-      "date": "2026-06-23",
-      "createdAt": "2026-06-23T18:12:21.927Z"
-    },
-    {
       "id": "4e9a69da-1d45-4dcb-b284-923374048375",
       "groupId": "0e359723-8339-4184-aeef-f9ddfd9eb584",
       "type": "expense",
@@ -82,6 +71,17 @@
       "description": "",
       "createdAt": "2026-06-23T18:22:47.491Z",
       "name": "уборщица"
+    }
+  ],
+  "categories": [
+    {
+      "id": "c2060d76-fe11-4d4c-8a2f-f43bdc414104",
+      "groupId": "0e359723-8339-4184-aeef-f9ddfd9eb584",
+      "name": "юка",
+      "type": "expense",
+      "icon": "🐾",
+      "color": "#6366f1",
+      "createdAt": "2026-06-23T18:44:17.566Z"
     }
   ]
 }

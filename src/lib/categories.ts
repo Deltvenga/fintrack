@@ -1,7 +1,11 @@
+import type { CustomCategory, TransactionType } from './types'
+
 export interface Category {
   id: string
   icon: string
   color: string
+  custom?: boolean
+  customId?: string
 }
 
 export const EXPENSE_CATEGORIES: Category[] = [
@@ -22,13 +26,48 @@ export const INCOME_CATEGORIES: Category[] = [
 
 export const PLAN_DISPLAY = { id: 'plan', icon: '📋', color: '#8b5cf6' } as const
 
+export const CUSTOM_ICON_OPTIONS = ['🏷️', '✨', '🎁', '🐾', '💊', '🎓', '⚡', '🌿'] as const
+
 const expenseMap = new Map(EXPENSE_CATEGORIES.map((c) => [c.id, c]))
 const incomeMap = new Map(INCOME_CATEGORIES.map((c) => [c.id, c]))
 
+export function customToCategory(custom: CustomCategory): Category {
+  return {
+    id: custom.name,
+    icon: custom.icon,
+    color: custom.color,
+    custom: true,
+    customId: custom.id,
+  }
+}
+
+export function mergeCategories(
+  type: TransactionType,
+  customCategories: CustomCategory[] = [],
+): Category[] {
+  const builtin = type === 'income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES
+  const builtinNames = new Set(builtin.map((c) => c.id.toLowerCase()))
+
+  const custom = customCategories
+    .filter((c) => c.type === type)
+    .filter((c) => !builtinNames.has(c.name.toLowerCase()))
+    .map(customToCategory)
+
+  return [...builtin, ...custom]
+}
+
 export function getCategoryInfo(
   category: string,
-  type: 'expense' | 'income' = 'expense',
+  type: TransactionType = 'expense',
+  customCategories: CustomCategory[] = [],
 ): Category {
+  const custom = customCategories.find(
+    (c) => c.type === type && c.name.toLowerCase() === category.toLowerCase(),
+  )
+  if (custom) {
+    return customToCategory(custom)
+  }
+
   const map = type === 'income' ? incomeMap : expenseMap
   return map.get(category) ?? { id: category, icon: '📌', color: '#94a3b8' }
 }

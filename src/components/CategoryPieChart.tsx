@@ -1,5 +1,5 @@
 import { getCategoryInfo } from '../lib/categories'
-import type { Expense } from '../lib/types'
+import type { CustomCategory, Expense } from '../lib/types'
 
 interface CategorySlice {
   category: string
@@ -11,6 +11,7 @@ interface CategorySlice {
 
 interface CategoryPieChartProps {
   expenses: Expense[]
+  customCategories?: CustomCategory[]
   loading?: boolean
 }
 
@@ -22,7 +23,7 @@ function formatMoney(amount: number) {
   }).format(amount)
 }
 
-function buildSlices(expenses: Expense[]): CategorySlice[] {
+function buildSlices(expenses: Expense[], customCategories: CustomCategory[]): CategorySlice[] {
   const expenseOnly = expenses.filter((e) => (e.type ?? 'expense') === 'expense')
   const totals = new Map<string, number>()
 
@@ -37,7 +38,7 @@ function buildSlices(expenses: Expense[]): CategorySlice[] {
 
   return Array.from(totals.entries())
     .map(([category, amount]) => {
-      const info = getCategoryInfo(category, 'expense')
+      const info = getCategoryInfo(category, 'expense', customCategories)
       return {
         category,
         amount,
@@ -62,7 +63,7 @@ function buildConicGradient(slices: CategorySlice[]): string {
   return `conic-gradient(${stops.join(', ')})`
 }
 
-export function CategoryPieChart({ expenses, loading }: CategoryPieChartProps) {
+export function CategoryPieChart({ expenses, customCategories = [], loading }: CategoryPieChartProps) {
   if (loading) {
     return (
       <div className="rounded-2xl bg-white p-6 text-center text-slate-500 shadow-sm">
@@ -71,7 +72,7 @@ export function CategoryPieChart({ expenses, loading }: CategoryPieChartProps) {
     )
   }
 
-  const slices = buildSlices(expenses)
+  const slices = buildSlices(expenses, customCategories)
   const total = slices.reduce((sum, slice) => sum + slice.amount, 0)
 
   if (slices.length === 0) {

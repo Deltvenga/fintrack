@@ -1,11 +1,12 @@
 import { getCategoryInfo, PLAN_DISPLAY } from '../lib/categories'
-import type { TransactionType } from '../lib/types'
+import type { CustomCategory, TransactionType } from '../lib/types'
 
 interface CategoryIconProps {
   category: string
   type?: TransactionType
   size?: 'sm' | 'md' | 'lg'
   isPlan?: boolean
+  customCategories?: CustomCategory[]
 }
 
 const sizeClasses = {
@@ -19,8 +20,9 @@ export function CategoryIcon({
   type = 'expense',
   size = 'md',
   isPlan = false,
+  customCategories = [],
 }: CategoryIconProps) {
-  const info = isPlan ? PLAN_DISPLAY : getCategoryInfo(category, type)
+  const info = isPlan ? PLAN_DISPLAY : getCategoryInfo(category, type, customCategories)
 
   return (
     <span

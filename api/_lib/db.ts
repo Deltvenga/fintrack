@@ -9,6 +9,9 @@ function normalizeDb(db: Database): Database {
   if (!db.plans) {
     db.plans = []
   }
+  if (!db.categories) {
+    db.categories = []
+  }
   migrateLegacyPlans(db.plans)
   return db
 }
@@ -86,6 +89,7 @@ function emptyDb(): Database {
     groups: [],
     expenses: [],
     plans: [],
+    categories: [],
   }
 }
 

@@ -72,3 +72,13 @@ export interface GroupBalance {
   totalExpenses: number
   totalIncome: number
 }
+
+export interface CustomCategory {
+  id: string
+  groupId: string
+  name: string
+  type: TransactionType
+  icon: string
+  color: string
+  createdAt: string
+}

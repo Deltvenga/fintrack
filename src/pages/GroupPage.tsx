@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { api } from '../lib/api'
-import type { Expense, GroupBalance } from '../lib/types'
+import type { CustomCategory, Expense, GroupBalance } from '../lib/types'
 import { BalanceCard } from '../components/BalanceCard'
 import { BottomNav } from '../components/BottomNav'
 import { ExpenseList } from '../components/ExpenseList'
@@ -13,20 +13,23 @@ export function GroupPage() {
   const [inviteCode, setInviteCode] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [customCategories, setCustomCategories] = useState<CustomCategory[]>([])
 
   const loadData = useCallback(async (currentGroupId: string) => {
     setLoading(true)
     setError('')
 
     try {
-      const [expensesRes, balanceRes, groupsRes] = await Promise.all([
+      const [expensesRes, balanceRes, groupsRes, categoriesRes] = await Promise.all([
         api.getExpenses(currentGroupId),
         api.getBalance(currentGroupId),
         api.getGroups(),
+        api.getCategories(currentGroupId),
       ])
 
       setExpenses(expensesRes.expenses)
       setBalance(balanceRes.balance)
+      setCustomCategories(categoriesRes.categories)
 
       const group = groupsRes.groups.find((g) => g.id === currentGroupId)
       if (group) {
@@ -96,7 +99,12 @@ export function GroupPage() {
             </Link>
           </div>
         </div>
-        <ExpenseList expenses={expenses} loading={loading} onDeleted={handleDeleted} />
+        <ExpenseList
+          expenses={expenses}
+          customCategories={customCategories}
+          loading={loading}
+          onDeleted={handleDeleted}
+        />
       </section>
 
       <BottomNav groupId={groupId} />

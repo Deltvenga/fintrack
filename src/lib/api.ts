@@ -1,4 +1,5 @@
 import type {
+  CustomCategory,
   Expense,
   FinancialSummary,
   Group,
@@ -133,6 +134,31 @@ export const api = {
   deletePlan(planId: string) {
     return request<{ plans: PlannedExpense[]; summary: FinancialSummary }>(
       `/api/plans?id=${encodeURIComponent(planId)}`,
+      { method: 'DELETE' },
+    )
+  },
+
+  getCategories(groupId: string) {
+    return request<{ categories: CustomCategory[] }>(
+      `/api/categories?groupId=${groupId}`,
+    )
+  },
+
+  createCategory(payload: {
+    groupId: string
+    name: string
+    type: TransactionType
+    icon?: string
+  }) {
+    return request<{ category: CustomCategory }>('/api/categories', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    })
+  },
+
+  deleteCategory(categoryId: string) {
+    return request<{ ok: boolean }>(
+      `/api/categories?id=${encodeURIComponent(categoryId)}`,
       { method: 'DELETE' },
     )
   },
