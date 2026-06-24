@@ -109,13 +109,17 @@ export function planMatchesPeriod(
   period: SummaryPeriod,
   referenceDate = new Date(),
 ): boolean {
+  if (period === 'day') {
+    return false
+  }
+
   const targetMonth = plan.targetMonth ?? plan.createdAt.slice(0, 7)
 
   if (period === 'year') {
     return targetMonth.startsWith(String(referenceDate.getFullYear()))
   }
 
-  if (period === 'month' || period === 'day') {
+  if (period === 'month') {
     return targetMonth === monthPrefix(referenceDate)
   }
 

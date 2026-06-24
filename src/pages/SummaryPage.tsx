@@ -42,6 +42,7 @@ export function SummaryPage() {
   const [customCategories, setCustomCategories] = useState<CustomCategory[]>([])
   const [period, setPeriod] = useState<SummaryPeriod>('month')
   const [referenceDate, setReferenceDate] = useState<Date>(() => new Date())
+  const [includePlan, setIncludePlan] = useState(true)
 
   useEffect(() => {
     if (!groupId) return
@@ -101,7 +102,8 @@ export function SummaryPage() {
     [periodPlans],
   )
 
-  const periodBalance = periodTotals.net - periodPlannedRemaining
+  const planApplies = period !== 'day' && includePlan
+  const periodBalance = periodTotals.net - (planApplies ? periodPlannedRemaining : 0)
 
   if (!groupId) {
     return null
@@ -174,19 +176,36 @@ export function SummaryPage() {
       </section>
 
       <section className="mb-6">
-        <div className="rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 p-5 text-white shadow-sm">
-          <p className="text-sm text-violet-100">Баланс за период</p>
+        <button
+          type="button"
+          onClick={() => setIncludePlan((current) => !current)}
+          disabled={period === 'day'}
+          className="w-full rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 p-5 text-left text-white shadow-sm transition hover:from-violet-500 hover:to-indigo-500 disabled:cursor-default disabled:hover:from-violet-600 disabled:hover:to-indigo-600"
+        >
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-sm text-violet-100">Баланс за период</p>
+            {period !== 'day' ? (
+              <span className="rounded-full bg-white/15 px-2 py-0.5 text-[11px] font-medium text-violet-50">
+                {planApplies ? 'с планом' : 'без плана'}
+              </span>
+            ) : null}
+          </div>
           <p className="mt-1 text-3xl font-bold">
             {loading ? '...' : formatMoney(periodBalance)}
           </p>
           {!loading ? (
             <p className="mt-2 text-xs text-violet-200">
               {formatMoney(periodTotals.totalIncome)} доходы −{' '}
-              {formatMoney(periodTotals.totalExpenses)} расходы −{' '}
-              {formatMoney(periodPlannedRemaining)} план
+              {formatMoney(periodTotals.totalExpenses)} расходы
+              {planApplies ? <> − {formatMoney(periodPlannedRemaining)} план</> : null}
             </p>
           ) : null}
-        </div>
+          {period !== 'day' ? (
+            <p className="mt-2 text-[11px] text-violet-200/80">
+              Нажмите, чтобы {planApplies ? 'скрыть' : 'учесть'} плановые траты
+            </p>
+          ) : null}
+        </button>
       </section>
 
       <section className="mb-6 rounded-2xl bg-slate-100 dark:bg-slate-800 p-4 ring-1 ring-slate-200 dark:ring-slate-700">
@@ -199,7 +218,7 @@ export function SummaryPage() {
         </p>
       </section>
 
-      <section className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <section className={`mb-6 grid gap-3 ${period === 'day' ? 'grid-cols-3' : 'grid-cols-2 sm:grid-cols-4'}`}>
         <div className="rounded-2xl bg-sky-50 dark:bg-sky-950/40 p-4 ring-1 ring-sky-100 dark:ring-sky-900">
           <p className="text-xs text-sky-600 dark:text-sky-400">Доходы</p>
           <p className="mt-1 text-lg font-bold text-sky-700 dark:text-sky-300">
@@ -212,12 +231,14 @@ export function SummaryPage() {
             {formatMoney(periodTotals.totalExpenses)}
           </p>
         </div>
-        <div className="rounded-2xl bg-violet-50 dark:bg-violet-950/40 p-4 ring-1 ring-violet-100 dark:ring-violet-900">
-          <p className="text-xs text-violet-600 dark:text-violet-400">План</p>
-          <p className="mt-1 text-lg font-bold text-violet-700 dark:text-violet-300">
-            {formatMoney(periodPlannedRemaining)}
-          </p>
-        </div>
+        {period !== 'day' ? (
+          <div className="rounded-2xl bg-violet-50 dark:bg-violet-950/40 p-4 ring-1 ring-violet-100 dark:ring-violet-900">
+            <p className="text-xs text-violet-600 dark:text-violet-400">План</p>
+            <p className="mt-1 text-lg font-bold text-violet-700 dark:text-violet-300">
+              {formatMoney(periodPlannedRemaining)}
+            </p>
+          </div>
+        ) : null}
         <div className="rounded-2xl bg-slate-100 dark:bg-slate-800 p-4 ring-1 ring-slate-200 dark:ring-slate-700">
           <p className="text-xs text-slate-600 dark:text-slate-400">Итого</p>
           <p
