@@ -1,6 +1,6 @@
 import type { Expense, PlannedExpense } from './types'
 
-export type SummaryPeriod = 'week' | 'month' | 'year'
+export type SummaryPeriod = 'day' | 'week' | 'month' | 'year'
 
 export interface PeriodRange {
   start: string
@@ -44,10 +44,28 @@ function formatMonthYear(date: Date): string {
   return date.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' })
 }
 
+function formatFullDate(date: Date): string {
+  return date.toLocaleDateString('ru-RU', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
+}
+
 export function getPeriodRange(
   period: SummaryPeriod,
   referenceDate = new Date(),
 ): PeriodRange {
+  if (period === 'day') {
+    const date = toDateString(referenceDate)
+    return {
+      start: date,
+      end: date,
+      label: formatFullDate(referenceDate),
+    }
+  }
+
   if (period === 'week') {
     const start = startOfWeek(referenceDate)
     const end = endOfWeek(referenceDate)
@@ -97,7 +115,7 @@ export function planMatchesPeriod(
     return targetMonth.startsWith(String(referenceDate.getFullYear()))
   }
 
-  if (period === 'month') {
+  if (period === 'month' || period === 'day') {
     return targetMonth === monthPrefix(referenceDate)
   }
 
@@ -105,6 +123,40 @@ export function planMatchesPeriod(
   const startMonth = start.slice(0, 7)
   const endMonth = end.slice(0, 7)
   return targetMonth === startMonth || targetMonth === endMonth
+}
+
+export function shiftReferenceDate(
+  period: SummaryPeriod,
+  referenceDate: Date,
+  direction: 1 | -1,
+): Date {
+  const result = new Date(referenceDate)
+
+  if (period === 'day') {
+    result.setDate(result.getDate() + direction)
+  } else if (period === 'week') {
+    result.setDate(result.getDate() + direction * 7)
+  } else if (period === 'month') {
+    result.setMonth(result.getMonth() + direction)
+  } else {
+    result.setFullYear(result.getFullYear() + direction)
+  }
+
+  return result
+}
+
+export function isCurrentPeriod(
+  period: SummaryPeriod,
+  referenceDate: Date,
+): boolean {
+  return getPeriodRange(period, referenceDate).start === getPeriodRange(period, new Date()).start
+}
+
+export function isFuturePeriod(
+  period: SummaryPeriod,
+  referenceDate: Date,
+): boolean {
+  return getPeriodRange(period, referenceDate).start > getPeriodRange(period, new Date()).start
 }
 
 export function formatTargetMonth(targetMonth: string): string {

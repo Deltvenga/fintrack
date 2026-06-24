@@ -6,7 +6,10 @@ import {
   computePeriodTotals,
   filterExpensesByPeriod,
   getPeriodRange,
+  isCurrentPeriod,
+  isFuturePeriod,
   planMatchesPeriod,
+  shiftReferenceDate,
   type SummaryPeriod,
 } from '../lib/period'
 import { BalanceCard } from '../components/BalanceCard'
@@ -22,6 +25,7 @@ function formatMoney(amount: number) {
 }
 
 const PERIOD_LABELS: Record<SummaryPeriod, string> = {
+  day: 'День',
   week: 'Неделя',
   month: 'Месяц',
   year: 'Год',
@@ -37,6 +41,7 @@ export function SummaryPage() {
   const [error, setError] = useState('')
   const [customCategories, setCustomCategories] = useState<CustomCategory[]>([])
   const [period, setPeriod] = useState<SummaryPeriod>('month')
+  const [referenceDate, setReferenceDate] = useState<Date>(() => new Date())
 
   useEffect(() => {
     if (!groupId) return
@@ -68,11 +73,14 @@ export function SummaryPage() {
     load(groupId)
   }, [groupId])
 
-  const periodRange = useMemo(() => getPeriodRange(period), [period])
+  const periodRange = useMemo(
+    () => getPeriodRange(period, referenceDate),
+    [period, referenceDate],
+  )
 
   const periodExpenses = useMemo(
-    () => filterExpensesByPeriod(expenses, period),
-    [expenses, period],
+    () => filterExpensesByPeriod(expenses, period, referenceDate),
+    [expenses, period, referenceDate],
   )
 
   const periodTotals = useMemo(
@@ -81,9 +89,12 @@ export function SummaryPage() {
   )
 
   const periodPlans = useMemo(
-    () => plans.filter((plan) => planMatchesPeriod(plan, period)),
-    [plans, period],
+    () => plans.filter((plan) => planMatchesPeriod(plan, period, referenceDate)),
+    [plans, period, referenceDate],
   )
+
+  const atCurrentPeriod = isCurrentPeriod(period, referenceDate)
+  const nextDisabled = isFuturePeriod(period, shiftReferenceDate(period, referenceDate, 1))
 
   const periodPlannedRemaining = useMemo(
     () => periodPlans.reduce((sum, plan) => sum + plan.remaining, 0),
@@ -108,13 +119,13 @@ export function SummaryPage() {
       {error ? <p className="mb-4 text-sm text-rose-600 dark:text-rose-400">{error}</p> : null}
 
       <section className="mb-4">
-        <div className="grid grid-cols-3 gap-2 rounded-2xl bg-slate-100 dark:bg-slate-800 p-1">
+        <div className="grid grid-cols-4 gap-2 rounded-2xl bg-slate-100 dark:bg-slate-800 p-1">
           {(Object.keys(PERIOD_LABELS) as SummaryPeriod[]).map((key) => (
             <button
               key={key}
               type="button"
               onClick={() => setPeriod(key)}
-              className={`rounded-xl px-3 py-2.5 text-sm font-semibold transition ${
+              className={`rounded-xl px-2 py-2.5 text-sm font-semibold transition ${
                 period === key
                   ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-sm'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
@@ -124,7 +135,42 @@ export function SummaryPage() {
             </button>
           ))}
         </div>
-        <p className="mt-2 text-center text-xs text-slate-500 dark:text-slate-400">{periodRange.label}</p>
+
+        <div className="mt-3 flex items-center justify-between gap-2">
+          <button
+            type="button"
+            onClick={() => setReferenceDate((current) => shiftReferenceDate(period, current, -1))}
+            aria-label="Предыдущий период"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-lg font-bold text-slate-600 dark:text-slate-300 transition hover:bg-slate-200 dark:hover:bg-slate-700"
+          >
+            ‹
+          </button>
+
+          <div className="min-w-0 flex-1 text-center">
+            <p className="truncate text-sm font-semibold text-slate-700 dark:text-slate-200">
+              {periodRange.label}
+            </p>
+            {!atCurrentPeriod ? (
+              <button
+                type="button"
+                onClick={() => setReferenceDate(new Date())}
+                className="mt-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-400 hover:underline"
+              >
+                Вернуться к текущему
+              </button>
+            ) : null}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setReferenceDate((current) => shiftReferenceDate(period, current, 1))}
+            disabled={nextDisabled}
+            aria-label="Следующий период"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-lg font-bold text-slate-600 dark:text-slate-300 transition hover:bg-slate-200 dark:hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            ›
+          </button>
+        </div>
       </section>
 
       <section className="mb-6">

@@ -1,3 +1,4 @@
+import { useMemo, useState } from 'react'
 import { getCategoryInfo } from '../lib/categories'
 import type { CustomCategory, Expense } from '../lib/types'
 
@@ -6,7 +7,6 @@ interface CategorySlice {
   amount: number
   color: string
   icon: string
-  percent: number
 }
 
 interface CategoryPieChartProps {
@@ -31,11 +31,6 @@ function buildSlices(expenses: Expense[], customCategories: CustomCategory[]): C
     totals.set(expense.category, (totals.get(expense.category) ?? 0) + expense.amount)
   }
 
-  const total = Array.from(totals.values()).reduce((sum, value) => sum + value, 0)
-  if (total === 0) {
-    return []
-  }
-
   return Array.from(totals.entries())
     .map(([category, amount]) => {
       const info = getCategoryInfo(category, 'expense', customCategories)
@@ -44,13 +39,12 @@ function buildSlices(expenses: Expense[], customCategories: CustomCategory[]): C
         amount,
         color: info.color,
         icon: info.icon,
-        percent: Math.round((amount / total) * 100),
       }
     })
     .sort((a, b) => b.amount - a.amount)
 }
 
-function buildConicGradient(slices: CategorySlice[]): string {
+function buildConicGradient(slices: Array<{ color: string; percent: number }>): string {
   let cumulative = 0
   const stops: string[] = []
 
@@ -64,6 +58,33 @@ function buildConicGradient(slices: CategorySlice[]): string {
 }
 
 export function CategoryPieChart({ expenses, customCategories = [], loading }: CategoryPieChartProps) {
+  const [excluded, setExcluded] = useState<Set<string>>(new Set())
+
+  const slices = useMemo(
+    () => buildSlices(expenses, customCategories),
+    [expenses, customCategories],
+  )
+
+  const activeSlices = slices.filter((slice) => !excluded.has(slice.category))
+  const activeTotal = activeSlices.reduce((sum, slice) => sum + slice.amount, 0)
+
+  const gradientSlices = activeSlices.map((slice) => ({
+    color: slice.color,
+    percent: activeTotal > 0 ? (slice.amount / activeTotal) * 100 : 0,
+  }))
+
+  function toggleCategory(category: string) {
+    setExcluded((current) => {
+      const next = new Set(current)
+      if (next.has(category)) {
+        next.delete(category)
+      } else {
+        next.add(category)
+      }
+      return next
+    })
+  }
+
   if (loading) {
     return (
       <div className="rounded-2xl bg-white dark:bg-slate-900 p-6 text-center text-slate-500 dark:text-slate-400 shadow-sm">
@@ -71,9 +92,6 @@ export function CategoryPieChart({ expenses, customCategories = [], loading }: C
       </div>
     )
   }
-
-  const slices = buildSlices(expenses, customCategories)
-  const total = slices.reduce((sum, slice) => sum + slice.amount, 0)
 
   if (slices.length === 0) {
     return (
@@ -85,37 +103,81 @@ export function CategoryPieChart({ expenses, customCategories = [], loading }: C
 
   return (
     <div className="category-pie-chart rounded-2xl bg-white dark:bg-slate-900 p-5 shadow-sm ring-1 ring-slate-100 dark:ring-slate-800">
-      <h3 className="font-semibold text-slate-900 dark:text-slate-100">Расходы по категориям</h3>
+      <div className="flex items-center justify-between gap-2">
+        <h3 className="font-semibold text-slate-900 dark:text-slate-100">Расходы по категориям</h3>
+        {excluded.size > 0 ? (
+          <button
+            type="button"
+            onClick={() => setExcluded(new Set())}
+            className="text-xs font-medium text-emerald-700 dark:text-emerald-400 hover:underline"
+          >
+            Сбросить
+          </button>
+        ) : null}
+      </div>
 
       <div className="mt-5 flex flex-col items-center gap-6 sm:flex-row sm:items-start">
         <div className="pie-chart-frame relative h-44 w-44 shrink-0">
           <div
             className="pie-chart-ring h-full w-full rounded-full shadow-inner ring-2 ring-white dark:ring-slate-900"
-            style={{ backgroundImage: buildConicGradient(slices) }}
+            style={{
+              backgroundImage:
+                activeSlices.length > 0
+                  ? buildConicGradient(gradientSlices)
+                  : undefined,
+              backgroundColor: activeSlices.length === 0 ? '#e2e8f0' : undefined,
+            }}
           />
           <div className="pie-chart-hole absolute inset-6 flex flex-col items-center justify-center rounded-full bg-white dark:bg-slate-900 text-center shadow-sm ring-1 ring-slate-100 dark:ring-slate-800">
             <p className="text-xs text-slate-500 dark:text-slate-400">Всего</p>
-            <p className="text-sm font-bold text-slate-900 dark:text-slate-100">{formatMoney(total)}</p>
+            <p className="text-sm font-bold text-slate-900 dark:text-slate-100">{formatMoney(activeTotal)}</p>
           </div>
         </div>
 
         <ul className="w-full space-y-3">
-          {slices.map((slice) => (
-            <li key={slice.category} className="flex items-center gap-3">
-              <span
-                className="pie-chart-legend-dot h-3 w-3 shrink-0 rounded-full"
-                style={{ backgroundColor: slice.color }}
-              />
-              <span className="text-lg" aria-hidden>
-                {slice.icon}
-              </span>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium text-slate-900 dark:text-slate-100">{slice.category}</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">{slice.percent}%</p>
-              </div>
-              <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{formatMoney(slice.amount)}</p>
-            </li>
-          ))}
+          {slices.map((slice) => {
+            const isExcluded = excluded.has(slice.category)
+            const percent =
+              activeTotal > 0 && !isExcluded
+                ? Math.round((slice.amount / activeTotal) * 100)
+                : 0
+
+            return (
+              <li key={slice.category}>
+                <button
+                  type="button"
+                  onClick={() => toggleCategory(slice.category)}
+                  aria-pressed={!isExcluded}
+                  className={`flex w-full items-center gap-3 rounded-xl px-1 py-1 text-left transition hover:bg-slate-50 dark:hover:bg-slate-800 ${
+                    isExcluded ? 'opacity-40' : ''
+                  }`}
+                >
+                  <span
+                    className="pie-chart-legend-dot h-3 w-3 shrink-0 rounded-full"
+                    style={{ backgroundColor: slice.color }}
+                  />
+                  <span className="text-lg" aria-hidden>
+                    {slice.icon}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p
+                      className={`truncate text-sm font-medium text-slate-900 dark:text-slate-100 ${
+                        isExcluded ? 'line-through' : ''
+                      }`}
+                    >
+                      {slice.category}
+                    </p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                      {isExcluded ? 'исключено' : `${percent}%`}
+                    </p>
+                  </div>
+                  <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                    {formatMoney(slice.amount)}
+                  </p>
+                </button>
+              </li>
+            )
+          })}
         </ul>
       </div>
     </div>
