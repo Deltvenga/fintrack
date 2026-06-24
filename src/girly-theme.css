@@ -391,7 +391,7 @@
   border-radius: 3px !important;
 }
 
-.girly .h-full.rounded-full[style*='background'] {
+.girly .h-full.rounded-full[style*='backgroundColor'] {
   background: linear-gradient(90deg, #fb7185, #ec4899) !important;
 }
 
@@ -426,6 +426,31 @@
 }
 
 /* Пайчарт */
+.girly .category-pie-chart.rounded-2xl::before {
+  display: none !important;
+}
+
+.girly .pie-chart-ring {
+  border-radius: 50% !important;
+  border: 3px solid #fbcfe8 !important;
+  box-shadow:
+    4px 4px 0 0 #f9a8d4,
+    inset 0 0 0 2px rgba(255, 255, 255, 0.65) !important;
+}
+
+.girly .pie-chart-hole {
+  border-radius: 5px !important;
+  background: #ffffff !important;
+  border: 2px solid #fbcfe8 !important;
+  box-shadow: 2px 2px 0 0 #f9a8d4 !important;
+}
+
+.girly .pie-chart-legend-dot {
+  border-radius: 50% !important;
+  border: 1px solid rgba(255, 255, 255, 0.8) !important;
+  box-shadow: 0 0 0 1px #fbcfe8 !important;
+}
+
 .girly .absolute.inset-6.rounded-full.bg-white {
   background: #ffffff !important;
   border: 2px solid var(--girly-border) !important;
@@ -455,7 +480,7 @@
   border: 2px solid var(--girly-border) !important;
 }
 
-.girly .rounded-full {
+.girly .rounded-full:not(.pie-chart-ring):not(.pie-chart-hole):not(.pie-chart-legend-dot) {
   border-radius: 5px !important;
 }
 

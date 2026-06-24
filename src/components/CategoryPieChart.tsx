@@ -84,16 +84,16 @@ export function CategoryPieChart({ expenses, customCategories = [], loading }: C
   }
 
   return (
-    <div className="rounded-2xl bg-white dark:bg-slate-900 p-5 shadow-sm ring-1 ring-slate-100 dark:ring-slate-800">
+    <div className="category-pie-chart rounded-2xl bg-white dark:bg-slate-900 p-5 shadow-sm ring-1 ring-slate-100 dark:ring-slate-800">
       <h3 className="font-semibold text-slate-900 dark:text-slate-100">Расходы по категориям</h3>
 
       <div className="mt-5 flex flex-col items-center gap-6 sm:flex-row sm:items-start">
-        <div className="relative h-44 w-44 shrink-0">
+        <div className="pie-chart-frame relative h-44 w-44 shrink-0">
           <div
-            className="h-full w-full rounded-full shadow-inner"
-            style={{ background: buildConicGradient(slices) }}
+            className="pie-chart-ring h-full w-full rounded-full shadow-inner ring-2 ring-white dark:ring-slate-900"
+            style={{ backgroundImage: buildConicGradient(slices) }}
           />
-          <div className="absolute inset-6 flex flex-col items-center justify-center rounded-full bg-white dark:bg-slate-900 text-center shadow-sm">
+          <div className="pie-chart-hole absolute inset-6 flex flex-col items-center justify-center rounded-full bg-white dark:bg-slate-900 text-center shadow-sm ring-1 ring-slate-100 dark:ring-slate-800">
             <p className="text-xs text-slate-500 dark:text-slate-400">Всего</p>
             <p className="text-sm font-bold text-slate-900 dark:text-slate-100">{formatMoney(total)}</p>
           </div>
@@ -103,7 +103,7 @@ export function CategoryPieChart({ expenses, customCategories = [], loading }: C
           {slices.map((slice) => (
             <li key={slice.category} className="flex items-center gap-3">
               <span
-                className="h-3 w-3 shrink-0 rounded-full"
+                className="pie-chart-legend-dot h-3 w-3 shrink-0 rounded-full"
                 style={{ backgroundColor: slice.color }}
               />
               <span className="text-lg" aria-hidden>
