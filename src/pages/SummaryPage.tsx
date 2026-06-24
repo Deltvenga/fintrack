@@ -102,6 +102,14 @@ export function SummaryPage() {
     [periodPlans],
   )
 
+  const periodPlannedSpent = useMemo(
+    () =>
+      periodExpenses
+        .filter((e) => (e.type ?? 'expense') === 'expense' && Boolean(e.planId))
+        .reduce((sum, e) => sum + e.amount, 0),
+    [periodExpenses],
+  )
+
   const planApplies = period !== 'day' && includePlan
   const periodBalance = periodTotals.net - (planApplies ? periodPlannedRemaining : 0)
 
@@ -183,10 +191,12 @@ export function SummaryPage() {
           className="w-full rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 p-5 text-left text-white shadow-sm transition hover:from-violet-500 hover:to-indigo-500 disabled:cursor-default disabled:hover:from-violet-600 disabled:hover:to-indigo-600"
         >
           <div className="flex items-center justify-between gap-2">
-            <p className="text-sm text-violet-100">Баланс за период</p>
+            <p className="text-sm text-violet-100">
+              {planApplies ? 'Баланс за период (с планом)' : 'Фактический баланс'}
+            </p>
             {period !== 'day' ? (
               <span className="rounded-full bg-white/15 px-2 py-0.5 text-[11px] font-medium text-violet-50">
-                {planApplies ? 'с планом' : 'без плана'}
+                {planApplies ? 'с планом' : 'факт'}
               </span>
             ) : null}
           </div>
@@ -197,12 +207,19 @@ export function SummaryPage() {
             <p className="mt-2 text-xs text-violet-200">
               {formatMoney(periodTotals.totalIncome)} доходы −{' '}
               {formatMoney(periodTotals.totalExpenses)} расходы
-              {planApplies ? <> − {formatMoney(periodPlannedRemaining)} план</> : null}
+              {planApplies ? <> − {formatMoney(periodPlannedRemaining)} остаток плана</> : null}
+            </p>
+          ) : null}
+          {!loading && period === 'day' && periodPlannedSpent > 0 ? (
+            <p className="mt-1 text-xs text-violet-200/80">
+              Из них плановые {formatMoney(periodPlannedSpent)}
             </p>
           ) : null}
           {period !== 'day' ? (
             <p className="mt-2 text-[11px] text-violet-200/80">
-              Нажмите, чтобы {planApplies ? 'скрыть' : 'учесть'} плановые траты
+              {planApplies
+                ? 'Нажмите, чтобы увидеть фактический баланс (без остатка плана)'
+                : 'Учтены реальные доходы и расходы, остаток плана не вычитается'}
             </p>
           ) : null}
         </button>
