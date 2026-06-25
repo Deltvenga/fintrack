@@ -3,6 +3,7 @@ import type { FormEvent } from 'react'
 import { useState } from 'react'
 import { api } from '../lib/api'
 import { useAuth } from '../components/ProtectedRoute'
+import { PENDING_INVITE_KEY } from '../lib/invite'
 
 export function RegisterPage() {
   const navigate = useNavigate()
@@ -20,7 +21,8 @@ export function RegisterPage() {
     try {
       const { user } = await api.register(username, password)
       setUser(user)
-      navigate('/groups')
+      const pendingInvite = sessionStorage.getItem(PENDING_INVITE_KEY)
+      navigate(pendingInvite ? `/join/${pendingInvite}` : '/groups')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ошибка регистрации')
     } finally {

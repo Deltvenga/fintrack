@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
 import type { Group } from '../lib/types'
 import { useAuth } from '../components/ProtectedRoute'
+import { extractInviteCode } from '../lib/invite'
 
 function formatMoney(amount: number) {
   return new Intl.NumberFormat('ru-RU', {
@@ -72,7 +73,8 @@ export function GroupsPage() {
     setError('')
 
     try {
-      const { group } = await api.joinGroup(inviteCode)
+      const code = extractInviteCode(inviteCode)
+      const { group } = await api.joinGroup(code)
       setInviteCode('')
       setShowJoin(false)
       await loadGroups()
@@ -149,9 +151,9 @@ export function GroupsPage() {
         >
           <input
             value={inviteCode}
-            onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
-            placeholder="Код приглашения"
-            className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-3 uppercase outline-none focus:border-emerald-500 dark:bg-slate-800 dark:text-slate-100"
+            onChange={(e) => setInviteCode(e.target.value)}
+            placeholder="Код или ссылка приглашения"
+            className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-3 outline-none focus:border-emerald-500 dark:bg-slate-800 dark:text-slate-100"
             required
           />
           <button

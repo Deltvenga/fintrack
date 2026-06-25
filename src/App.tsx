@@ -10,6 +10,7 @@ import { ThemeToggle } from './components/ThemeToggle'
 import { AddExpensePage } from './pages/AddExpensePage'
 import { GroupPage } from './pages/GroupPage'
 import { GroupsPage } from './pages/GroupsPage'
+import { JoinPage } from './pages/JoinPage'
 import { LoginPage } from './pages/LoginPage'
 import { PlanningPage } from './pages/PlanningPage'
 import { PlanOverviewPage } from './pages/PlanOverviewPage'
@@ -26,6 +27,8 @@ export default function App() {
             <ThemeToggle />
             <Routes>
             <Route path="/" element={<Navigate to="/groups" replace />} />
+
+            <Route path="/join/:inviteCode" element={<JoinPage />} />
 
             <Route element={<GuestRoute />}>
               <Route path="/login" element={<LoginPage />} />
