@@ -52,6 +52,21 @@ button {
 input[type='date'],
 input[type='month'] {
   color-scheme: inherit;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+/* Не даём нативному вводу/иконке календаря распирать контейнер */
+input[type='date']::-webkit-date-and-time-value,
+input[type='month']::-webkit-date-and-time-value {
+  text-align: left;
+}
+
+input[type='date']::-webkit-calendar-picker-indicator,
+input[type='month']::-webkit-calendar-picker-indicator {
+  margin-left: auto;
+  flex-shrink: 0;
 }
 
 @keyframes slideUp {

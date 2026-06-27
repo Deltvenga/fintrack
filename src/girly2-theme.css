@@ -424,6 +424,25 @@
   background: #f5f3ff !important;
 }
 
+/* Выбранная карточка (категория/план/тип) — явная заливка и тень */
+.girly2 button.border-emerald-500,
+.girly2 button.border-violet-500,
+.girly2 button.border-sky-500 {
+  border-style: solid !important;
+  border-color: var(--g2-border-strong) !important;
+  background: linear-gradient(180deg, #ddd6fe 0%, #c4b5fd 100%) !important;
+  box-shadow: 4px 4px 0 0 var(--g2-text-muted) !important;
+}
+
+.girly2 button.border-emerald-500 .text-slate-800,
+.girly2 button.border-violet-500 .text-slate-800,
+.girly2 button.border-sky-500 .text-slate-800,
+.girly2 button.border-emerald-500 .text-slate-900,
+.girly2 button.border-violet-500 .text-slate-900,
+.girly2 button.border-sky-500 .text-slate-900 {
+  color: #4c1d95 !important;
+}
+
 .girly2 .ring-emerald-100,
 .girly2 .ring-violet-100,
 .girly2 .ring-sky-100 {
