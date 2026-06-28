@@ -109,6 +109,17 @@ export function GroupPage() {
     }
   }
 
+  async function handleUpdated(updated: Expense) {
+    if (!groupId) return
+    setExpenses((prev) => prev.map((e) => (e.id === updated.id ? updated : e)))
+    try {
+      const balanceRes = await api.getBalance(groupId)
+      setBalance(balanceRes.balance)
+    } catch {
+      await loadData(groupId)
+    }
+  }
+
   if (!groupId) {
     return null
   }
@@ -171,6 +182,7 @@ export function GroupPage() {
           customCategories={customCategories}
           loading={loading}
           onDeleted={handleDeleted}
+          onUpdated={handleUpdated}
         />
       </section>
 

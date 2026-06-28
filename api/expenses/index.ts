@@ -21,6 +21,17 @@ interface CreateExpenseBody {
   date?: string
 }
 
+interface UpdateExpenseBody {
+  amount?: number
+  category?: string
+  description?: string
+  date?: string
+}
+
+function isValidDate(value: string): boolean {
+  return /^\d{4}-\d{2}-\d{2}$/.test(value)
+}
+
 function mapExpense(
   db: Awaited<ReturnType<typeof readDb>>,
   expenseId: string,
@@ -136,6 +147,68 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const freshDb = await readDb()
     const expense = mapExpense(freshDb, expenseId)
     return json(res, 201, { expense })
+  }
+
+  if (req.method === 'PATCH') {
+    const expenseId = getRouteId(req, 'expenses')
+    if (!expenseId) {
+      return error(res, 400, 'Expense id is required')
+    }
+
+    const { amount, category, description, date } =
+      parseBody<UpdateExpenseBody>(req)
+
+    const db = await readDb()
+    const expense = db.expenses.find((e) => e.id === expenseId)
+    if (!expense) {
+      return error(res, 404, 'Expense not found')
+    }
+
+    if (!isGroupMember(db, expense.groupId, user.id)) {
+      return error(res, 403, 'Forbidden')
+    }
+
+    if (amount !== undefined && (!amount || amount <= 0)) {
+      return error(res, 400, 'Amount must be greater than 0')
+    }
+
+    if (date !== undefined && !isValidDate(date)) {
+      return error(res, 400, 'date must be YYYY-MM-DD')
+    }
+
+    const isPlanned = Boolean(expense.planId)
+    if (category !== undefined && !isPlanned && !category.trim()) {
+      return error(res, 400, 'Category is required')
+    }
+
+    await updateDb((freshDb) => {
+      const current = freshDb.expenses.find((e) => e.id === expenseId)
+      if (!current) {
+        return
+      }
+
+      if (amount !== undefined) {
+        current.amount = Math.round(amount * 100) / 100
+      }
+
+      if (description !== undefined) {
+        current.description = description.trim()
+      }
+
+      if (date !== undefined) {
+        current.date = date
+      }
+
+      // Категория редактируется только у обычных операций;
+      // у привязанных к плану название определяется планом.
+      if (category !== undefined && !current.planId) {
+        current.category = category.trim()
+      }
+    })
+
+    const freshDb = await readDb()
+    const updated = mapExpense(freshDb, expenseId)
+    return json(res, 200, { expense: updated })
   }
 
   if (req.method === 'DELETE') {

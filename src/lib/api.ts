@@ -101,6 +101,24 @@ export const api = {
     })
   },
 
+  updateExpense(
+    expenseId: string,
+    payload: {
+      amount?: number
+      category?: string
+      description?: string
+      date?: string
+    },
+  ) {
+    return request<{ expense: Expense }>(
+      `/api/expenses?id=${encodeURIComponent(expenseId)}`,
+      {
+        method: 'PATCH',
+        body: JSON.stringify(payload),
+      },
+    )
+  },
+
   deleteExpense(expenseId: string) {
     return request<{ ok: boolean }>(
       `/api/expenses?id=${encodeURIComponent(expenseId)}`,

@@ -3,12 +3,14 @@ import { api } from '../lib/api'
 import type { CustomCategory, Expense } from '../lib/types'
 import { CategoryIcon } from './CategoryIcon'
 import { ConfirmDialog } from './ConfirmDialog'
+import { EditExpenseDialog } from './EditExpenseDialog'
 
 interface ExpenseListProps {
   expenses: Expense[]
   customCategories?: CustomCategory[]
   loading?: boolean
   onDeleted?: (expenseId: string) => void
+  onUpdated?: (expense: Expense) => void
 }
 
 function formatMoney(amount: number) {
@@ -26,10 +28,17 @@ function formatDate(date: string) {
   })
 }
 
-export function ExpenseList({ expenses, customCategories = [], loading, onDeleted }: ExpenseListProps) {
+export function ExpenseList({
+  expenses,
+  customCategories = [],
+  loading,
+  onDeleted,
+  onUpdated,
+}: ExpenseListProps) {
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [pendingDelete, setPendingDelete] = useState<Expense | null>(null)
   const [deleteError, setDeleteError] = useState('')
+  const [editing, setEditing] = useState<Expense | null>(null)
 
   async function confirmDelete() {
     if (!pendingDelete) return
@@ -125,18 +134,29 @@ export function ExpenseList({ expenses, customCategories = [], loading, onDelete
                         {isIncome ? '+' : '−'}
                         {formatMoney(expense.amount)}
                       </p>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setDeleteError('')
-                          setPendingDelete(expense)
-                        }}
-                        disabled={deletingId === expense.id}
-                        className="rounded-lg px-2 py-1 text-xs font-medium text-slate-400 transition hover:bg-rose-50 dark:bg-rose-950/40 dark:hover:bg-rose-950/50 hover:text-rose-600 dark:text-rose-400 dark:hover:text-rose-400 disabled:opacity-50"
-                        aria-label={`Удалить ${isIncome ? 'доход' : 'расход'}`}
-                      >
-                        Удалить
-                      </button>
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => setEditing(expense)}
+                          disabled={deletingId === expense.id}
+                          className="rounded-lg px-2 py-1 text-xs font-medium text-slate-400 transition hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-600 dark:hover:text-emerald-400 disabled:opacity-50"
+                          aria-label={`Изменить ${isIncome ? 'доход' : 'расход'}`}
+                        >
+                          Изменить
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setDeleteError('')
+                            setPendingDelete(expense)
+                          }}
+                          disabled={deletingId === expense.id}
+                          className="rounded-lg px-2 py-1 text-xs font-medium text-slate-400 transition hover:bg-rose-50 dark:bg-rose-950/40 dark:hover:bg-rose-950/50 hover:text-rose-600 dark:text-rose-400 dark:hover:text-rose-400 disabled:opacity-50"
+                          aria-label={`Удалить ${isIncome ? 'доход' : 'расход'}`}
+                        >
+                          Удалить
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -163,6 +183,12 @@ export function ExpenseList({ expenses, customCategories = [], loading, onDelete
           setPendingDelete(null)
           setDeleteError('')
         }}
+      />
+
+      <EditExpenseDialog
+        expense={editing}
+        onClose={() => setEditing(null)}
+        onUpdated={(updated) => onUpdated?.(updated)}
       />
     </>
   )
