@@ -16,7 +16,7 @@ export function error(res: VercelResponse, status: number, message: string): voi
   json(res, status, { error: message })
 }
 
-export function parseBody<T extends Record<string, unknown>>(req: VercelRequest): T {
+export function parseBody<T = Record<string, unknown>>(req: VercelRequest): T {
   if (typeof req.body === 'string') {
     return JSON.parse(req.body) as T
   }

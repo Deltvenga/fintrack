@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { calculateGroupBalance } from '../_lib/balance.js'
-import { error, isGroupMember, json, requireAuth } from '../_lib/auth.js'
-import { readDb } from '../_lib/db.js'
+import { calculateGroupBalance } from '../../_lib/balance.js'
+import { error, isGroupMember, json, requireAuth } from '../../_lib/auth.js'
+import { readDb } from '../../_lib/db.js'
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET') {

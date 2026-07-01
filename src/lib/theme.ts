@@ -1,6 +1,8 @@
-export type Theme = 'light' | 'dark' | 'girly' | 'girly2' | 'system'
+export type Theme = 'light' | 'dark' | 'girly' | 'girly2' | 'synth' | 'system'
 
-export type ResolvedTheme = 'light' | 'dark' | 'girly' | 'girly2'
+export type ResolvedTheme = 'light' | 'dark' | 'girly' | 'girly2' | 'synth'
+
+export type DecorativeTheme = 'girly' | 'girly2' | 'synth'
 
 export const THEME_STORAGE_KEY = 'fintrack-theme'
 
@@ -9,6 +11,7 @@ const THEME_COLORS: Record<ResolvedTheme, string> = {
   dark: '#020617',
   girly: '#f9a8d4',
   girly2: '#c4b5fd',
+  synth: '#12082a',
 }
 
 export function getStoredTheme(): Theme {
@@ -18,6 +21,7 @@ export function getStoredTheme(): Theme {
     stored === 'dark' ||
     stored === 'girly' ||
     stored === 'girly2' ||
+    stored === 'synth' ||
     stored === 'system'
   ) {
     return stored
@@ -26,7 +30,7 @@ export function getStoredTheme(): Theme {
 }
 
 export function resolveTheme(theme: Theme): ResolvedTheme {
-  if (theme === 'girly' || theme === 'girly2') {
+  if (theme === 'girly' || theme === 'girly2' || theme === 'synth') {
     return theme
   }
 
@@ -43,8 +47,8 @@ export function resolveTheme(theme: Theme): ResolvedTheme {
 
 export function applyResolvedTheme(resolved: ResolvedTheme) {
   const root = document.documentElement
-  root.classList.remove('dark', 'girly', 'girly2')
-  root.style.colorScheme = resolved === 'dark' ? 'dark' : 'light'
+  root.classList.remove('dark', 'girly', 'girly2', 'synth')
+  root.style.colorScheme = resolved === 'dark' || resolved === 'synth' ? 'dark' : 'light'
 
   if (resolved === 'dark') {
     root.classList.add('dark')
@@ -56,6 +60,10 @@ export function applyResolvedTheme(resolved: ResolvedTheme) {
 
   if (resolved === 'girly2') {
     root.classList.add('girly2')
+  }
+
+  if (resolved === 'synth') {
+    root.classList.add('synth')
   }
 
   const meta = document.querySelector('meta[name="theme-color"]')
@@ -73,9 +81,10 @@ export function cycleTheme(theme: Theme): Theme {
   if (theme === 'light') return 'dark'
   if (theme === 'dark') return 'girly'
   if (theme === 'girly') return 'girly2'
+  if (theme === 'girly2') return 'synth'
   return 'system'
 }
 
-export function isDecorativeTheme(resolved: ResolvedTheme): boolean {
-  return resolved === 'girly' || resolved === 'girly2'
+export function isDecorativeTheme(resolved: ResolvedTheme): resolved is DecorativeTheme {
+  return resolved === 'girly' || resolved === 'girly2' || resolved === 'synth'
 }

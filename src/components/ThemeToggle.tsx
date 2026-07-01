@@ -1,12 +1,13 @@
 import { useTheme } from './ThemeProvider'
 import { ThemeSparkleBurst } from './GirlyAmbience'
-import { isDecorativeTheme } from '../lib/theme'
+import { isDecorativeTheme, type DecorativeTheme } from '../lib/theme'
 
 const LABELS = {
   light: 'Светлая тема',
   dark: 'Тёмная тема',
   girly: 'Девчачья тема (розовая)',
   girly2: 'Девчачья тема (лавандовая)',
+  synth: 'Синтвейв',
   system: 'Системная тема',
 } as const
 
@@ -15,14 +16,20 @@ const ICONS = {
   dark: '🌙',
   girly: '💖',
   girly2: '💜',
+  synth: '🌆',
   system: '💻',
 } as const
+
+const TOGGLE_ICON_CLASS: Partial<Record<DecorativeTheme, string>> = {
+  girly: 'girly-toggle-icon',
+  girly2: 'girly2-toggle-icon',
+  synth: 'synth-toggle-icon',
+}
 
 export function ThemeToggle() {
   const { theme, resolved, toggleTheme } = useTheme()
   const isDecorative = isDecorativeTheme(resolved)
-  const toggleIconClass =
-    resolved === 'girly2' ? 'girly2-toggle-icon' : resolved === 'girly' ? 'girly-toggle-icon' : undefined
+  const toggleIconClass = isDecorative ? TOGGLE_ICON_CLASS[resolved] : undefined
 
   return (
     <>

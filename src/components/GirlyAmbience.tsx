@@ -1,26 +1,38 @@
 import type { CSSProperties } from 'react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTheme } from './ThemeProvider'
-import type { ResolvedTheme } from '../lib/theme'
+import { isDecorativeTheme, type DecorativeTheme, type ResolvedTheme } from '../lib/theme'
 
 const GIRLY_FLOATERS = ['✨', '💖', '🌸', '🎀', '♡', '⭐', '✨', '💖'] as const
 const GIRLY2_FLOATERS = ['✨', '💜', '⭐', '🦋', '✦', '💟', '🌙', '✨'] as const
+const SYNTH_FLOATERS = ['⚡', '🌆', '💿', '🎹', '✦', '🔮', '🌃', '⚡'] as const
 
-const BURST_ICONS: Record<'girly' | 'girly2', string[]> = {
+const BURST_ICONS: Record<DecorativeTheme, string[]> = {
   girly: ['✨', '💖', '⭐', '🎀', '♡', '✦'],
   girly2: ['✨', '💜', '⭐', '🦋', '✦', '💟'],
+  synth: ['⚡', '🌆', '💿', '✦', '🔮', '🎹'],
 }
 
 function randomBetween(min: number, max: number) {
   return min + Math.random() * (max - min)
 }
 
-function getAmbienceConfig(resolved: ResolvedTheme) {
+function getAmbienceConfig(resolved: DecorativeTheme) {
   if (resolved === 'girly2') {
     return {
       floaters: GIRLY2_FLOATERS,
       gridClass: 'girly2-pixel-grid',
       floaterClass: 'girly2-floater',
+      extraLayers: null,
+    }
+  }
+
+  if (resolved === 'synth') {
+    return {
+      floaters: SYNTH_FLOATERS,
+      gridClass: 'synth-horizon-grid',
+      floaterClass: 'synth-floater',
+      extraLayers: 'synth-scanlines',
     }
   }
 
@@ -28,7 +40,12 @@ function getAmbienceConfig(resolved: ResolvedTheme) {
     floaters: GIRLY_FLOATERS,
     gridClass: 'girly-pixel-grid',
     floaterClass: 'girly-floater',
+    extraLayers: null,
   }
+}
+
+function isDecorativeResolved(resolved: ResolvedTheme): resolved is DecorativeTheme {
+  return isDecorativeTheme(resolved)
 }
 
 export function GirlyAmbience() {
@@ -47,7 +64,7 @@ export function GirlyAmbience() {
     [],
   )
 
-  if (resolved !== 'girly' && resolved !== 'girly2') {
+  if (!isDecorativeResolved(resolved)) {
     return null
   }
 
@@ -56,6 +73,7 @@ export function GirlyAmbience() {
   return (
     <div className="girly-ambience pointer-events-none fixed inset-0 z-[5] overflow-hidden" aria-hidden>
       <div className={`${config.gridClass} absolute inset-0`} />
+      {config.extraLayers ? <div className={`${config.extraLayers} absolute inset-0`} /> : null}
       {sparkles.map((sparkle, index) => (
         <span
           key={sparkle.id}
@@ -84,17 +102,21 @@ interface BurstParticle {
   dy: number
 }
 
+function isDecorativeThemeValue(theme: string): theme is DecorativeTheme {
+  return theme === 'girly' || theme === 'girly2' || theme === 'synth'
+}
+
 export function ThemeSparkleBurst() {
   const { theme } = useTheme()
   const prevTheme = useRef(theme)
   const [particles, setParticles] = useState<BurstParticle[]>([])
 
   useEffect(() => {
-    const isDecorative = theme === 'girly' || theme === 'girly2'
-    const wasDecorative = prevTheme.current === 'girly' || prevTheme.current === 'girly2'
+    const isDecorative = isDecorativeThemeValue(theme)
+    const wasDecorative = isDecorativeThemeValue(prevTheme.current)
 
     if (isDecorative && !wasDecorative) {
-      const icons = BURST_ICONS[theme as 'girly' | 'girly2']
+      const icons = BURST_ICONS[theme]
       const originX = window.innerWidth - 36
       const originY = 36
 
@@ -118,7 +140,7 @@ export function ThemeSparkleBurst() {
     }
 
     if (isDecorative && wasDecorative && theme !== prevTheme.current) {
-      const icons = BURST_ICONS[theme as 'girly' | 'girly2']
+      const icons = BURST_ICONS[theme]
       const originX = window.innerWidth - 36
       const originY = 36
 
