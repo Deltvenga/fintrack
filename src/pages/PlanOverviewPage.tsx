@@ -137,11 +137,10 @@ export function PlanOverviewPage() {
       ) : (
         <div className="space-y-4">
           {months.map((month) => {
-            const monthlyShare =
+            const spentPercent =
               month.totalAmount > 0
-                ? Math.round((month.monthlyAmount / month.totalAmount) * 100)
+                ? Math.min(100, Math.round((month.totalSpent / month.totalAmount) * 100))
                 : 0
-            const onceShare = month.totalAmount > 0 ? 100 - monthlyShare : 0
 
             return (
               <article
@@ -165,22 +164,17 @@ export function PlanOverviewPage() {
                   </div>
                 </div>
 
-                <div className="mb-4 flex h-3 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
-                  {month.monthlyAmount > 0 ? (
-                    <div
-                      className="h-full bg-violet-500"
-                      style={{ width: `${monthlyShare}%` }}
-                      title={`Ежемесячные: ${monthlyShare}%`}
-                    />
-                  ) : null}
-                  {month.onceAmount > 0 ? (
-                    <div
-                      className="h-full bg-indigo-300"
-                      style={{ width: `${onceShare}%` }}
-                      title={`Разовые: ${onceShare}%`}
-                    />
-                  ) : null}
+                <div className="mb-1 flex h-3 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+                  <div
+                    className="h-full rounded-full bg-emerald-500 transition-all"
+                    style={{ width: `${spentPercent}%` }}
+                    title={`Выполнено: ${spentPercent}%`}
+                  />
                 </div>
+                <p className="mb-4 text-xs text-slate-400">
+                  Выполнено {spentPercent}% — потрачено {formatMoney(month.totalSpent)} из{' '}
+                  {formatMoney(month.totalAmount)}
+                </p>
 
                 <div className="space-y-3">
                   <OverviewRow
