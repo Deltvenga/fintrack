@@ -3,6 +3,8 @@ import { Link, useParams } from 'react-router-dom'
 import { api } from '../lib/api'
 import type { CustomCategory, Expense, FinancialSummary, GroupBalance, PlannedExpense } from '../lib/types'
 import {
+  computeCumulativeTotals,
+  computeOpeningBalance,
   computePeriodTotals,
   filterExpensesByPeriod,
   getPeriodRange,
@@ -120,8 +122,19 @@ export function SummaryPage() {
     [periodExpenses],
   )
 
+  const openingBalance = useMemo(
+    () => computeOpeningBalance(expenses, periodRange.start),
+    [expenses, periodRange.start],
+  )
+
+  const cumulativeTotals = useMemo(
+    () => computeCumulativeTotals(expenses, periodRange.end),
+    [expenses, periodRange.end],
+  )
+
   const planApplies = period !== 'day' && includePlan
-  const periodBalance = periodTotals.net - (planApplies ? periodPlannedRemaining : 0)
+  const periodBalance =
+    cumulativeTotals.net - (planApplies ? periodPlannedRemaining : 0)
 
   if (!groupId) {
     return null
@@ -215,6 +228,11 @@ export function SummaryPage() {
           </p>
           {!loading ? (
             <p className="mt-2 text-xs text-violet-200">
+              {openingBalance !== 0 ? (
+                <>
+                  {formatMoney(openingBalance)} перенос +{' '}
+                </>
+              ) : null}
               {formatMoney(periodTotals.totalIncome)} доходы −{' '}
               {formatMoney(periodTotals.totalExpenses)} расходы
               {planApplies ? <> − {formatMoney(periodPlannedRemaining)} остаток плана</> : null}
@@ -229,7 +247,7 @@ export function SummaryPage() {
             <p className="mt-2 text-[11px] text-violet-200/80">
               {planApplies
                 ? 'Нажмите, чтобы увидеть фактический баланс (без остатка плана)'
-                : 'Учтены реальные доходы и расходы, остаток плана не вычитается'}
+                : 'Остаток на картах: перенос + доходы − расходы, план не вычитается'}
             </p>
           ) : null}
         </button>

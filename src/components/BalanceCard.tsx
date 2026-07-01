@@ -38,47 +38,6 @@ export function BalanceCard({ balance, loading }: BalanceCardProps) {
           <p className="mt-1 text-2xl font-bold">{formatMoney(balance.totalIncome ?? 0)}</p>
         </div>
       </div>
-
-      <div className="rounded-2xl bg-white dark:bg-slate-900 p-5 shadow-sm ring-1 ring-slate-100 dark:ring-slate-800">
-        <h3 className="font-semibold text-slate-900 dark:text-slate-100">Баланс участников</h3>
-        <ul className="mt-3 space-y-2">
-          {balance.members.map((member) => (
-            <li key={member.userId} className="flex items-center justify-between text-sm">
-              <span className="text-slate-700 dark:text-slate-300">{member.username}</span>
-              <span
-                className={
-                  member.net > 0
-                    ? 'font-medium text-emerald-600'
-                    : member.net < 0
-                      ? 'font-medium text-rose-600 dark:text-rose-400'
-                      : 'text-slate-400'
-                }
-              >
-                {member.net > 0 ? '+' : ''}
-                {formatMoney(member.net)}
-              </span>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {balance.settlements.length > 0 ? (
-        <div className="rounded-2xl bg-white dark:bg-slate-900 p-5 shadow-sm ring-1 ring-slate-100 dark:ring-slate-800">
-          <h3 className="font-semibold text-slate-900 dark:text-slate-100">Кто кому должен</h3>
-          <ul className="mt-3 space-y-3">
-            {balance.settlements.map((item, index) => (
-              <li key={index} className="rounded-xl bg-slate-50 dark:bg-slate-950 px-4 py-3 text-sm text-slate-700 dark:text-slate-300">
-                <span className="font-medium">{item.fromUsername}</span>
-                {' → '}
-                <span className="font-medium">{item.toUsername}</span>
-                <span className="mt-1 block font-semibold text-slate-900 dark:text-slate-100">
-                  {formatMoney(item.amount)}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
     </div>
   )
 }

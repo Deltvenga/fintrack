@@ -230,3 +230,19 @@ export function computePeriodTotals(expenses: Expense[]) {
     net: Math.round((totalIncome - totalExpenses) * 100) / 100,
   }
 }
+
+export function filterExpensesBeforeDate(expenses: Expense[], beforeDate: string): Expense[] {
+  return expenses.filter((expense) => expense.date < beforeDate)
+}
+
+export function filterExpensesUpToDate(expenses: Expense[], endDate: string): Expense[] {
+  return expenses.filter((expense) => expense.date <= endDate)
+}
+
+export function computeOpeningBalance(expenses: Expense[], periodStart: string): number {
+  return computePeriodTotals(filterExpensesBeforeDate(expenses, periodStart)).net
+}
+
+export function computeCumulativeTotals(expenses: Expense[], endDate: string) {
+  return computePeriodTotals(filterExpensesUpToDate(expenses, endDate))
+}
