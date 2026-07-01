@@ -6,11 +6,13 @@ import { isDecorativeTheme, type DecorativeTheme, type ResolvedTheme } from '../
 const GIRLY_FLOATERS = ['✨', '💖', '🌸', '🎀', '♡', '⭐', '✨', '💖'] as const
 const GIRLY2_FLOATERS = ['✨', '💜', '⭐', '🦋', '✦', '💟', '🌙', '✨'] as const
 const SYNTH_FLOATERS = ['⚡', '🌆', '💿', '🎹', '✦', '🔮', '🌃', '⚡'] as const
+const ACID_FLOATERS = ['🌀', '🤡', '💀', '🌈', '⚠️', '🔥', '👁️', '💊'] as const
 
 const BURST_ICONS: Record<DecorativeTheme, string[]> = {
   girly: ['✨', '💖', '⭐', '🎀', '♡', '✦'],
   girly2: ['✨', '💜', '⭐', '🦋', '✦', '💟'],
   synth: ['⚡', '🌆', '💿', '✦', '🔮', '🎹'],
+  acid: ['🌀', '🤡', '💀', '🌈', '⚠️', '🔥'],
 }
 
 function randomBetween(min: number, max: number) {
@@ -33,6 +35,15 @@ function getAmbienceConfig(resolved: DecorativeTheme) {
       gridClass: 'synth-horizon-grid',
       floaterClass: 'synth-floater',
       extraLayers: 'synth-scanlines',
+    }
+  }
+
+  if (resolved === 'acid') {
+    return {
+      floaters: ACID_FLOATERS,
+      gridClass: 'acid-vortex-grid',
+      floaterClass: 'acid-floater',
+      extraLayers: 'acid-rgb-split acid-scanlines',
     }
   }
 
@@ -103,7 +114,7 @@ interface BurstParticle {
 }
 
 function isDecorativeThemeValue(theme: string): theme is DecorativeTheme {
-  return theme === 'girly' || theme === 'girly2' || theme === 'synth'
+  return theme === 'girly' || theme === 'girly2' || theme === 'synth' || theme === 'acid'
 }
 
 export function ThemeSparkleBurst() {

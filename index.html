@@ -13,7 +13,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Pixelify+Sans:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Bungee&family=Orbitron:wght@400;500;600;700&family=Pixelify+Sans:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <meta name="mobile-web-app-capable" content="yes" />
@@ -48,12 +48,20 @@
           if (meta3) meta3.setAttribute('content', '#12082a')
           return
         }
+        if (stored === 'acid') {
+          document.documentElement.classList.add('acid')
+          document.documentElement.style.colorScheme = 'dark'
+          var meta4 = document.querySelector('meta[name="theme-color"]')
+          if (meta4) meta4.setAttribute('content', '#1a0033')
+          return
+        }
         var dark =
           stored === 'dark' ||
           (stored !== 'light' &&
             stored !== 'girly' &&
             stored !== 'girly2' &&
             stored !== 'synth' &&
+            stored !== 'acid' &&
             window.matchMedia('(prefers-color-scheme: dark)').matches)
         if (dark) {
           document.documentElement.classList.add('dark')

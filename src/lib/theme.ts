@@ -1,8 +1,8 @@
-export type Theme = 'light' | 'dark' | 'girly' | 'girly2' | 'synth' | 'system'
+export type Theme = 'light' | 'dark' | 'girly' | 'girly2' | 'synth' | 'acid' | 'system'
 
-export type ResolvedTheme = 'light' | 'dark' | 'girly' | 'girly2' | 'synth'
+export type ResolvedTheme = 'light' | 'dark' | 'girly' | 'girly2' | 'synth' | 'acid'
 
-export type DecorativeTheme = 'girly' | 'girly2' | 'synth'
+export type DecorativeTheme = 'girly' | 'girly2' | 'synth' | 'acid'
 
 export const THEME_STORAGE_KEY = 'fintrack-theme'
 
@@ -12,6 +12,7 @@ const THEME_COLORS: Record<ResolvedTheme, string> = {
   girly: '#f9a8d4',
   girly2: '#c4b5fd',
   synth: '#12082a',
+  acid: '#1a0033',
 }
 
 export function getStoredTheme(): Theme {
@@ -22,6 +23,7 @@ export function getStoredTheme(): Theme {
     stored === 'girly' ||
     stored === 'girly2' ||
     stored === 'synth' ||
+    stored === 'acid' ||
     stored === 'system'
   ) {
     return stored
@@ -30,7 +32,7 @@ export function getStoredTheme(): Theme {
 }
 
 export function resolveTheme(theme: Theme): ResolvedTheme {
-  if (theme === 'girly' || theme === 'girly2' || theme === 'synth') {
+  if (theme === 'girly' || theme === 'girly2' || theme === 'synth' || theme === 'acid') {
     return theme
   }
 
@@ -47,8 +49,9 @@ export function resolveTheme(theme: Theme): ResolvedTheme {
 
 export function applyResolvedTheme(resolved: ResolvedTheme) {
   const root = document.documentElement
-  root.classList.remove('dark', 'girly', 'girly2', 'synth')
-  root.style.colorScheme = resolved === 'dark' || resolved === 'synth' ? 'dark' : 'light'
+  root.classList.remove('dark', 'girly', 'girly2', 'synth', 'acid')
+  root.style.colorScheme =
+    resolved === 'dark' || resolved === 'synth' || resolved === 'acid' ? 'dark' : 'light'
 
   if (resolved === 'dark') {
     root.classList.add('dark')
@@ -64,6 +67,10 @@ export function applyResolvedTheme(resolved: ResolvedTheme) {
 
   if (resolved === 'synth') {
     root.classList.add('synth')
+  }
+
+  if (resolved === 'acid') {
+    root.classList.add('acid')
   }
 
   const meta = document.querySelector('meta[name="theme-color"]')
@@ -82,9 +89,10 @@ export function cycleTheme(theme: Theme): Theme {
   if (theme === 'dark') return 'girly'
   if (theme === 'girly') return 'girly2'
   if (theme === 'girly2') return 'synth'
+  if (theme === 'synth') return 'acid'
   return 'system'
 }
 
 export function isDecorativeTheme(resolved: ResolvedTheme): resolved is DecorativeTheme {
-  return resolved === 'girly' || resolved === 'girly2' || resolved === 'synth'
+  return resolved === 'girly' || resolved === 'girly2' || resolved === 'synth' || resolved === 'acid'
 }
