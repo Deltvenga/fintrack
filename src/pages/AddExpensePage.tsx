@@ -11,6 +11,26 @@ import { CategoryPicker } from '../components/CategoryPicker'
 
 type ExpenseKind = 'regular' | 'planned'
 
+const DATE_QUICK_OPTIONS = [
+  { label: 'Позавчера', offset: -2 },
+  { label: 'Вчера', offset: -1 },
+  { label: 'Завтра', offset: 1 },
+  { label: 'Послезавтра', offset: 2 },
+] as const
+
+function toLocalDateString(date: Date): string {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+function dateFromOffset(days: number): string {
+  const date = new Date()
+  date.setDate(date.getDate() + days)
+  return toLocalDateString(date)
+}
+
 export function AddExpensePage() {
   const { groupId } = useParams<{ groupId: string }>()
   const [searchParams] = useSearchParams()
@@ -29,7 +49,7 @@ export function AddExpensePage() {
     initialType === 'income' ? INCOME_CATEGORIES[0].id : EXPENSE_CATEGORIES[0].id,
   )
   const [description, setDescription] = useState('')
-  const [date, setDate] = useState(new Date().toISOString().slice(0, 10))
+  const [date, setDate] = useState(() => toLocalDateString(new Date()))
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [plansLoading, setPlansLoading] = useState(false)
@@ -58,6 +78,11 @@ export function AddExpensePage() {
   const isIncome = transactionType === 'income'
   const selectedPlan = plans.find((p) => p.id === selectedPlanId)
   const selectedPlanDisplay = selectedPlan ? getPlanDisplay(selectedPlan) : null
+  const dateQuickActiveClass = isIncome
+    ? 'border-sky-500 bg-sky-50 text-sky-700 ring-2 ring-sky-100 dark:border-sky-400 dark:bg-sky-950/50 dark:text-sky-300 dark:ring-sky-900/60'
+    : expenseKind === 'planned'
+      ? 'border-violet-500 bg-violet-50 text-violet-700 ring-2 ring-violet-100 dark:border-violet-400 dark:bg-violet-950/50 dark:text-violet-300 dark:ring-violet-900/60'
+      : 'border-emerald-500 bg-emerald-50 text-emerald-700 ring-2 ring-emerald-100 dark:border-emerald-400 dark:bg-emerald-950/50 dark:text-emerald-300 dark:ring-emerald-900/60'
 
   function switchType(nextType: TransactionType) {
     setTransactionType(nextType)
@@ -291,6 +316,27 @@ export function AddExpensePage() {
             className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-3 outline-none focus:border-emerald-500 dark:bg-slate-800 dark:text-slate-100"
             required
           />
+          <div className="mt-2.5 grid grid-cols-2 gap-1.5 sm:grid-cols-4">
+            {DATE_QUICK_OPTIONS.map(({ label, offset }) => {
+              const quickDate = dateFromOffset(offset)
+              const isActive = date === quickDate
+
+              return (
+                <button
+                  key={label}
+                  type="button"
+                  onClick={() => setDate(quickDate)}
+                  className={`rounded-xl border px-2 py-2 text-xs font-semibold transition sm:text-sm ${
+                    isActive
+                      ? dateQuickActiveClass
+                      : 'border-slate-200 bg-slate-50 text-slate-600 hover:border-slate-300 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-400 dark:hover:border-slate-600 dark:hover:bg-slate-800'
+                  }`}
+                >
+                  {label}
+                </button>
+              )
+            })}
+          </div>
         </div>
 
         {error ? <p className="text-sm text-rose-600 dark:text-rose-400">{error}</p> : null}
