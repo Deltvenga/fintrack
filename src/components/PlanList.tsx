@@ -87,7 +87,11 @@ export function PlanList({ plans, groupId, loading, onDeleted, onUpdated }: Plan
                       <div className="flex flex-wrap items-center gap-2">
                         <p className="font-medium text-slate-900 dark:text-slate-100">{title}</p>
                       <span className="rounded-full bg-violet-100 dark:bg-violet-950/50 px-2 py-0.5 text-xs font-medium text-violet-700 dark:text-violet-300">
-                        {formatTargetMonth(plan.targetMonth)}
+                        {formatTargetMonth(
+                          plan.recurrence === 'monthly'
+                            ? (plan.progressMonth ?? plan.targetMonth)
+                            : plan.targetMonth,
+                        )}
                       </span>
                       <span className="rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-xs font-medium text-slate-600 dark:text-slate-400">
                         {plan.recurrence === 'monthly' ? 'Ежемесячно' : 'Разово'}

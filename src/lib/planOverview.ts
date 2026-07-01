@@ -1,5 +1,5 @@
 import type { Expense, PlannedExpense } from './types'
-import { currentMonthValue, formatTargetMonth, listMonthsInclusive } from './period'
+import { currentMonthValue, formatTargetMonth, getPlanStartMonth, listMonthsInclusive } from './period'
 
 export interface MonthPlanOverview {
   targetMonth: string
@@ -69,7 +69,7 @@ export function buildPlanOverviewByMonth(
   }
 
   for (const plan of plans) {
-    const startMonth = plan.targetMonth ?? plan.createdAt.slice(0, 7)
+    const startMonth = getPlanStartMonth(plan)
 
     if (plan.recurrence === 'monthly') {
       for (const targetMonth of listMonthsInclusive(startMonth, currentMonth)) {

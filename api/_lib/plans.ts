@@ -9,6 +9,7 @@ export interface PlanProgress {
   amount: number
   recurrence: PlanRecurrence
   targetMonth: string
+  progressMonth: string
   description: string
   icon?: string
   spent: number
@@ -155,7 +156,8 @@ export function calculatePlansProgress(
       name: getPlanName(plan),
       amount: plan.amount,
       recurrence: plan.recurrence,
-      targetMonth: evaluationMonth,
+      targetMonth: getPlanStartMonth(plan),
+      progressMonth: evaluationMonth,
       description: plan.description,
       icon: plan.icon,
       spent: roundMoney(spent),

@@ -1,5 +1,5 @@
 {
-  "version": 17,
+  "version": 18,
   "users": [
     {
       "id": "a0692b41-d056-4fcb-82ff-b6a0e9d1ec50",
@@ -13,6 +13,11 @@
       "token": "cb0c7d1160dba4a68d95e4e6b61139ba2f8f58395d66c78e3e22cf936bdb3f6f",
       "userId": "a0692b41-d056-4fcb-82ff-b6a0e9d1ec50",
       "expiresAt": "2026-07-23T18:09:01.054Z"
+    },
+    {
+      "token": "1c1d0009795bb37772ab8d1722e718df562085e9ba5c3551987dfcd113ae422c",
+      "userId": "a0692b41-d056-4fcb-82ff-b6a0e9d1ec50",
+      "expiresAt": "2026-07-31T22:04:55.927Z"
     }
   ],
   "groups": [
