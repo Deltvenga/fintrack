@@ -5,7 +5,7 @@ import {
   buildPlanOverviewByMonth,
   buildPlanOverviewTotals,
 } from '../lib/planOverview'
-import type { PlannedExpense } from '../lib/types'
+import type { Expense, PlannedExpense } from '../lib/types'
 import { BottomNav } from '../components/BottomNav'
 
 function formatMoney(amount: number) {
@@ -45,6 +45,7 @@ function OverviewRow({
 export function PlanOverviewPage() {
   const { groupId } = useParams<{ groupId: string }>()
   const [plans, setPlans] = useState<PlannedExpense[]>([])
+  const [expenses, setExpenses] = useState<Expense[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -56,8 +57,12 @@ export function PlanOverviewPage() {
       setError('')
 
       try {
-        const res = await api.getPlans(currentGroupId)
-        setPlans(res.plans)
+        const [plansRes, expensesRes] = await Promise.all([
+          api.getPlans(currentGroupId),
+          api.getExpenses(currentGroupId),
+        ])
+        setPlans(plansRes.plans)
+        setExpenses(expensesRes.expenses)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Не удалось загрузить данные')
       } finally {
@@ -68,7 +73,7 @@ export function PlanOverviewPage() {
     load(groupId)
   }, [groupId])
 
-  const months = useMemo(() => buildPlanOverviewByMonth(plans), [plans])
+  const months = useMemo(() => buildPlanOverviewByMonth(plans, expenses), [plans, expenses])
   const totals = useMemo(() => buildPlanOverviewTotals(months), [months])
 
   if (!groupId) {

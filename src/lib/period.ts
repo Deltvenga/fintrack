@@ -104,6 +104,40 @@ export function filterExpensesByPeriod(
   return expenses.filter((expense) => expense.date >= start && expense.date <= end)
 }
 
+export function getPlanStartMonth(plan: PlannedExpense): string {
+  return plan.targetMonth ?? plan.createdAt.slice(0, 7)
+}
+
+export function planAppliesToMonth(plan: PlannedExpense, month: string): boolean {
+  const startMonth = getPlanStartMonth(plan)
+  if (plan.recurrence === 'monthly') {
+    return month >= startMonth
+  }
+  return month === startMonth
+}
+
+function nextMonthValue(month: string): string {
+  const [year, monthNumber] = month.split('-').map(Number)
+  const date = new Date(year, monthNumber, 1)
+  return monthPrefix(date)
+}
+
+export function listMonthsInclusive(startMonth: string, endMonth: string): string[] {
+  if (startMonth > endMonth) {
+    return []
+  }
+
+  const months: string[] = []
+  let current = startMonth
+
+  while (current <= endMonth) {
+    months.push(current)
+    current = nextMonthValue(current)
+  }
+
+  return months
+}
+
 export function planMatchesPeriod(
   plan: PlannedExpense,
   period: SummaryPeriod,
@@ -113,20 +147,22 @@ export function planMatchesPeriod(
     return false
   }
 
-  const targetMonth = plan.targetMonth ?? plan.createdAt.slice(0, 7)
+  const refMonth = monthPrefix(referenceDate)
 
   if (period === 'year') {
-    return targetMonth.startsWith(String(referenceDate.getFullYear()))
+    const year = String(referenceDate.getFullYear())
+    if (plan.recurrence === 'monthly') {
+      return getPlanStartMonth(plan).slice(0, 4) === year && refMonth >= getPlanStartMonth(plan)
+    }
+    return getPlanStartMonth(plan).startsWith(year)
   }
 
   if (period === 'month') {
-    return targetMonth === monthPrefix(referenceDate)
+    return planAppliesToMonth(plan, refMonth)
   }
 
-  const { start, end } = getPeriodRange('week', referenceDate)
-  const startMonth = start.slice(0, 7)
-  const endMonth = end.slice(0, 7)
-  return targetMonth === startMonth || targetMonth === endMonth
+  const { start } = getPeriodRange('week', referenceDate)
+  return planAppliesToMonth(plan, start.slice(0, 7))
 }
 
 export function shiftReferenceDate(

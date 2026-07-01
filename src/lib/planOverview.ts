@@ -1,5 +1,5 @@
-import type { PlannedExpense } from './types'
-import { formatTargetMonth } from './period'
+import type { Expense, PlannedExpense } from './types'
+import { currentMonthValue, formatTargetMonth, listMonthsInclusive } from './period'
 
 export interface MonthPlanOverview {
   targetMonth: string
@@ -27,12 +27,31 @@ function roundMoney(value: number): number {
   return Math.round(value * 100) / 100
 }
 
-export function buildPlanOverviewByMonth(plans: PlannedExpense[]): MonthPlanOverview[] {
-  const byMonth = new Map<string, MonthPlanOverview>()
+function getPlanSpentInMonth(plan: PlannedExpense, expenses: Expense[], month: string): number {
+  return expenses
+    .filter(
+      (expense) =>
+        expense.planId === plan.id &&
+        (expense.type ?? 'expense') === 'expense' &&
+        expense.date.startsWith(month),
+    )
+    .reduce((sum, expense) => sum + expense.amount, 0)
+}
 
-  for (const plan of plans) {
-    const targetMonth = plan.targetMonth ?? plan.createdAt.slice(0, 7)
-    const existing = byMonth.get(targetMonth) ?? {
+export function buildPlanOverviewByMonth(
+  plans: PlannedExpense[],
+  expenses: Expense[] = [],
+): MonthPlanOverview[] {
+  const byMonth = new Map<string, MonthPlanOverview>()
+  const currentMonth = currentMonthValue()
+
+  function ensureMonth(targetMonth: string): MonthPlanOverview {
+    const existing = byMonth.get(targetMonth)
+    if (existing) {
+      return existing
+    }
+
+    const created: MonthPlanOverview = {
       targetMonth,
       label: formatTargetMonth(targetMonth),
       monthlyAmount: 0,
@@ -45,19 +64,37 @@ export function buildPlanOverviewByMonth(plans: PlannedExpense[]): MonthPlanOver
       onceCount: 0,
     }
 
+    byMonth.set(targetMonth, created)
+    return created
+  }
+
+  for (const plan of plans) {
+    const startMonth = plan.targetMonth ?? plan.createdAt.slice(0, 7)
+
     if (plan.recurrence === 'monthly') {
-      existing.monthlyAmount += plan.amount
-      existing.monthlyRemaining += plan.remaining
-      existing.monthlyCount += 1
-    } else {
-      existing.onceAmount += plan.amount
-      existing.onceRemaining += plan.remaining
-      existing.onceCount += 1
+      for (const targetMonth of listMonthsInclusive(startMonth, currentMonth)) {
+        const month = ensureMonth(targetMonth)
+        const spent = getPlanSpentInMonth(plan, expenses, targetMonth)
+        const remaining = Math.max(0, plan.amount - Math.min(plan.amount, spent))
+
+        month.monthlyAmount += plan.amount
+        month.monthlyRemaining += remaining
+        month.monthlyCount += 1
+        month.totalAmount += plan.amount
+        month.totalRemaining += remaining
+      }
+      continue
     }
 
-    existing.totalAmount += plan.amount
-    existing.totalRemaining += plan.remaining
-    byMonth.set(targetMonth, existing)
+    const month = ensureMonth(startMonth)
+    const spent = getPlanSpentInMonth(plan, expenses, startMonth)
+    const remaining = Math.max(0, plan.amount - Math.min(plan.amount, spent))
+
+    month.onceAmount += plan.amount
+    month.onceRemaining += remaining
+    month.onceCount += 1
+    month.totalAmount += plan.amount
+    month.totalRemaining += remaining
   }
 
   return Array.from(byMonth.values())

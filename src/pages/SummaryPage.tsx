@@ -98,8 +98,18 @@ export function SummaryPage() {
   const nextDisabled = isFuturePeriod(period, shiftReferenceDate(period, referenceDate, 1))
 
   const periodPlannedRemaining = useMemo(
-    () => periodPlans.reduce((sum, plan) => sum + plan.remaining, 0),
-    [periodPlans],
+    () =>
+      periodPlans.reduce((sum, plan) => {
+        const spent = periodExpenses
+          .filter(
+            (expense) =>
+              expense.planId === plan.id && (expense.type ?? 'expense') === 'expense',
+          )
+          .reduce((total, expense) => total + expense.amount, 0)
+
+        return sum + Math.max(0, plan.amount - Math.min(plan.amount, spent))
+      }, 0),
+    [periodPlans, periodExpenses],
   )
 
   const periodPlannedSpent = useMemo(
