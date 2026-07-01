@@ -19,11 +19,13 @@ function formatMoney(amount: number) {
 function OverviewRow({
   label,
   amount,
+  spent,
   remaining,
   colorClass,
 }: {
   label: string
   amount: number
+  spent: number
   remaining: number
   colorClass: string
 }) {
@@ -36,7 +38,9 @@ function OverviewRow({
       <span className="text-slate-600 dark:text-slate-400">{label}</span>
       <div className="text-right">
         <p className={`font-semibold ${colorClass}`}>{formatMoney(amount)}</p>
-        <p className="text-xs text-slate-400">осталось {formatMoney(remaining)}</p>
+        <p className="text-xs text-slate-400">
+          потрачено {formatMoney(spent)} · осталось {formatMoney(remaining)}
+        </p>
       </div>
     </div>
   )
@@ -73,7 +77,10 @@ export function PlanOverviewPage() {
     load(groupId)
   }, [groupId])
 
-  const months = useMemo(() => buildPlanOverviewByMonth(plans, expenses), [plans, expenses])
+  const months = useMemo(
+    () => buildPlanOverviewByMonth(plans, expenses, groupId),
+    [plans, expenses, groupId],
+  )
   const totals = useMemo(() => buildPlanOverviewTotals(months), [months])
 
   if (!groupId) {
@@ -111,7 +118,8 @@ export function PlanOverviewPage() {
           </div>
         </div>
         <p className="mt-3 text-xs text-violet-200">
-          Осталось выполнить: {formatMoney(totals.totalRemaining)}
+          Потрачено по планам: {formatMoney(totals.totalSpent)} · осталось{' '}
+          {formatMoney(totals.totalRemaining)}
         </p>
       </section>
 
@@ -178,12 +186,14 @@ export function PlanOverviewPage() {
                   <OverviewRow
                     label={`Ежемесячные (${month.monthlyCount})`}
                     amount={month.monthlyAmount}
+                    spent={month.monthlySpent}
                     remaining={month.monthlyRemaining}
                     colorClass="text-violet-700 dark:text-violet-300"
                   />
                   <OverviewRow
                     label={`Разовые (${month.onceCount})`}
                     amount={month.onceAmount}
+                    spent={month.onceSpent}
                     remaining={month.onceRemaining}
                     colorClass="text-indigo-600"
                   />

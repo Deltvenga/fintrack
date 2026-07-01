@@ -1,5 +1,11 @@
 import type { Expense, PlannedExpense } from './types'
-import { currentMonthValue, formatTargetMonth, getPlanStartMonth, listMonthsInclusive } from './period'
+import {
+  currentMonthValue,
+  formatTargetMonth,
+  getPlanStartMonth,
+  listMonthsInclusive,
+  planAppliesToMonth,
+} from './period'
 
 export interface MonthPlanOverview {
   targetMonth: string
@@ -7,6 +13,9 @@ export interface MonthPlanOverview {
   monthlyAmount: number
   onceAmount: number
   totalAmount: number
+  monthlySpent: number
+  onceSpent: number
+  totalSpent: number
   monthlyRemaining: number
   onceRemaining: number
   totalRemaining: number
@@ -18,6 +27,9 @@ export interface PlanOverviewTotals {
   monthlyAmount: number
   onceAmount: number
   totalAmount: number
+  monthlySpent: number
+  onceSpent: number
+  totalSpent: number
   monthlyRemaining: number
   onceRemaining: number
   totalRemaining: number
@@ -27,11 +39,26 @@ function roundMoney(value: number): number {
   return Math.round(value * 100) / 100
 }
 
-function getPlanSpentInMonth(plan: PlannedExpense, expenses: Expense[], month: string): number {
+function uniquePlans(plans: PlannedExpense[]): PlannedExpense[] {
+  const byId = new Map<string, PlannedExpense>()
+  for (const plan of plans) {
+    byId.set(plan.id, plan)
+  }
+  return Array.from(byId.values())
+}
+
+function getPlanSpentInMonth(
+  planIds: Set<string>,
+  expenses: Expense[],
+  month: string,
+  groupId?: string,
+): number {
   return expenses
     .filter(
       (expense) =>
-        expense.planId === plan.id &&
+        (!groupId || expense.groupId === groupId) &&
+        Boolean(expense.planId) &&
+        planIds.has(expense.planId!) &&
         (expense.type ?? 'expense') === 'expense' &&
         expense.date.startsWith(month),
     )
@@ -41,9 +68,11 @@ function getPlanSpentInMonth(plan: PlannedExpense, expenses: Expense[], month: s
 export function buildPlanOverviewByMonth(
   plans: PlannedExpense[],
   expenses: Expense[] = [],
+  groupId?: string,
 ): MonthPlanOverview[] {
   const byMonth = new Map<string, MonthPlanOverview>()
   const currentMonth = currentMonthValue()
+  const normalizedPlans = uniquePlans(plans)
 
   function ensureMonth(targetMonth: string): MonthPlanOverview {
     const existing = byMonth.get(targetMonth)
@@ -57,6 +86,9 @@ export function buildPlanOverviewByMonth(
       monthlyAmount: 0,
       onceAmount: 0,
       totalAmount: 0,
+      monthlySpent: 0,
+      onceSpent: 0,
+      totalSpent: 0,
       monthlyRemaining: 0,
       onceRemaining: 0,
       totalRemaining: 0,
@@ -68,33 +100,47 @@ export function buildPlanOverviewByMonth(
     return created
   }
 
-  for (const plan of plans) {
+  for (const plan of normalizedPlans) {
     const startMonth = getPlanStartMonth(plan)
 
     if (plan.recurrence === 'monthly') {
       for (const targetMonth of listMonthsInclusive(startMonth, currentMonth)) {
         const month = ensureMonth(targetMonth)
-        const spent = getPlanSpentInMonth(plan, expenses, targetMonth)
-        const remaining = Math.max(0, plan.amount - Math.min(plan.amount, spent))
-
         month.monthlyAmount += plan.amount
-        month.monthlyRemaining += remaining
         month.monthlyCount += 1
         month.totalAmount += plan.amount
-        month.totalRemaining += remaining
       }
       continue
     }
 
     const month = ensureMonth(startMonth)
-    const spent = getPlanSpentInMonth(plan, expenses, startMonth)
-    const remaining = Math.max(0, plan.amount - Math.min(plan.amount, spent))
-
     month.onceAmount += plan.amount
-    month.onceRemaining += remaining
     month.onceCount += 1
     month.totalAmount += plan.amount
-    month.totalRemaining += remaining
+  }
+
+  for (const month of byMonth.values()) {
+    const monthlyPlanIds = new Set(
+      normalizedPlans
+        .filter(
+          (plan) => plan.recurrence === 'monthly' && planAppliesToMonth(plan, month.targetMonth),
+        )
+        .map((plan) => plan.id),
+    )
+    const oncePlanIds = new Set(
+      normalizedPlans
+        .filter(
+          (plan) => plan.recurrence === 'once' && planAppliesToMonth(plan, month.targetMonth),
+        )
+        .map((plan) => plan.id),
+    )
+
+    month.monthlySpent = getPlanSpentInMonth(monthlyPlanIds, expenses, month.targetMonth, groupId)
+    month.onceSpent = getPlanSpentInMonth(oncePlanIds, expenses, month.targetMonth, groupId)
+    month.totalSpent = month.monthlySpent + month.onceSpent
+    month.monthlyRemaining = Math.max(0, month.monthlyAmount - month.monthlySpent)
+    month.onceRemaining = Math.max(0, month.onceAmount - month.onceSpent)
+    month.totalRemaining = Math.max(0, month.totalAmount - month.totalSpent)
   }
 
   return Array.from(byMonth.values())
@@ -103,6 +149,9 @@ export function buildPlanOverviewByMonth(
       monthlyAmount: roundMoney(month.monthlyAmount),
       onceAmount: roundMoney(month.onceAmount),
       totalAmount: roundMoney(month.totalAmount),
+      monthlySpent: roundMoney(month.monthlySpent),
+      onceSpent: roundMoney(month.onceSpent),
+      totalSpent: roundMoney(month.totalSpent),
       monthlyRemaining: roundMoney(month.monthlyRemaining),
       onceRemaining: roundMoney(month.onceRemaining),
       totalRemaining: roundMoney(month.totalRemaining),
@@ -116,6 +165,9 @@ export function buildPlanOverviewTotals(months: MonthPlanOverview[]): PlanOvervi
       monthlyAmount: acc.monthlyAmount + month.monthlyAmount,
       onceAmount: acc.onceAmount + month.onceAmount,
       totalAmount: acc.totalAmount + month.totalAmount,
+      monthlySpent: acc.monthlySpent + month.monthlySpent,
+      onceSpent: acc.onceSpent + month.onceSpent,
+      totalSpent: acc.totalSpent + month.totalSpent,
       monthlyRemaining: acc.monthlyRemaining + month.monthlyRemaining,
       onceRemaining: acc.onceRemaining + month.onceRemaining,
       totalRemaining: acc.totalRemaining + month.totalRemaining,
@@ -124,6 +176,9 @@ export function buildPlanOverviewTotals(months: MonthPlanOverview[]): PlanOvervi
       monthlyAmount: 0,
       onceAmount: 0,
       totalAmount: 0,
+      monthlySpent: 0,
+      onceSpent: 0,
+      totalSpent: 0,
       monthlyRemaining: 0,
       onceRemaining: 0,
       totalRemaining: 0,
@@ -134,6 +189,9 @@ export function buildPlanOverviewTotals(months: MonthPlanOverview[]): PlanOvervi
     monthlyAmount: roundMoney(totals.monthlyAmount),
     onceAmount: roundMoney(totals.onceAmount),
     totalAmount: roundMoney(totals.totalAmount),
+    monthlySpent: roundMoney(totals.monthlySpent),
+    onceSpent: roundMoney(totals.onceSpent),
+    totalSpent: roundMoney(totals.totalSpent),
     monthlyRemaining: roundMoney(totals.monthlyRemaining),
     onceRemaining: roundMoney(totals.onceRemaining),
     totalRemaining: roundMoney(totals.totalRemaining),
