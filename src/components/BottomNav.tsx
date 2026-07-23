@@ -22,9 +22,12 @@ export function BottomNav({ groupId }: BottomNavProps) {
     <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-slate-200 dark:border-slate-700 bg-white/95 dark:bg-slate-900/95 backdrop-blur">
       <div className="mx-auto flex max-w-lg gap-1.5 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
         {tabs.map((tab) => {
-          const active = tab.exact
-            ? location.pathname === tab.to
-            : location.pathname.startsWith(tab.to)
+          const active =
+            tab.to.endsWith('/summary')
+              ? location.pathname === tab.to || location.pathname.startsWith(`${tab.to}/`)
+              : tab.exact
+                ? location.pathname === tab.to
+                : location.pathname.startsWith(tab.to)
 
           return (
             <Link

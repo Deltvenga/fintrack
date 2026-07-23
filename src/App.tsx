@@ -16,6 +16,7 @@ import { LoginPage } from './pages/LoginPage'
 import { PlanningPage } from './pages/PlanningPage'
 import { PlanOverviewPage } from './pages/PlanOverviewPage'
 import { RegisterPage } from './pages/RegisterPage'
+import { BalanceChartPage } from './pages/BalanceChartPage'
 import { CategoryDetailPage } from './pages/CategoryDetailPage'
 import { SummaryPage } from './pages/SummaryPage'
 
@@ -42,6 +43,7 @@ export default function App() {
               <Route path="/groups" element={<GroupsPage />} />
               <Route path="/groups/:groupId" element={<GroupPage />} />
               <Route path="/groups/:groupId/summary" element={<SummaryPage />} />
+              <Route path="/groups/:groupId/summary/chart" element={<BalanceChartPage />} />
               <Route path="/groups/:groupId/summary/category/:categoryKey" element={<CategoryDetailPage />} />
               <Route path="/groups/:groupId/planning" element={<PlanningPage />} />
               <Route path="/groups/:groupId/planning/overview" element={<PlanOverviewPage />} />

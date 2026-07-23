@@ -246,3 +246,59 @@ export function computeOpeningBalance(expenses: Expense[], periodStart: string):
 export function computeCumulativeTotals(expenses: Expense[], endDate: string) {
   return computePeriodTotals(filterExpensesUpToDate(expenses, endDate))
 }
+
+export interface DailyBalancePoint {
+  date: string
+  day: number
+  balance: number
+  change: number
+}
+
+function parseLocalDate(isoDate: string): Date {
+  const [year, month, day] = isoDate.split('-').map(Number)
+  return new Date(year, month - 1, day)
+}
+
+export function computeDailyBalances(
+  expenses: Expense[],
+  referenceDate = new Date(),
+): DailyBalancePoint[] {
+  const { start, end } = getPeriodRange('month', referenceDate)
+  const opening = computeOpeningBalance(expenses, start)
+  const today = toDateString(new Date())
+  const lastDate = end <= today ? end : today
+
+  if (lastDate < start) {
+    return []
+  }
+
+  const dailyNet = new Map<string, number>()
+
+  for (const expense of expenses) {
+    if (expense.date < start || expense.date > end) {
+      continue
+    }
+
+    const delta = (expense.type ?? 'expense') === 'income' ? expense.amount : -expense.amount
+    const next = (dailyNet.get(expense.date) ?? 0) + delta
+    dailyNet.set(expense.date, Math.round(next * 100) / 100)
+  }
+
+  const points: DailyBalancePoint[] = []
+  let running = opening
+
+  for (let cursor = parseLocalDate(start); toDateString(cursor) <= lastDate; cursor.setDate(cursor.getDate() + 1)) {
+    const date = toDateString(cursor)
+    const change = dailyNet.get(date) ?? 0
+    running = Math.round((running + change) * 100) / 100
+
+    points.push({
+      date,
+      day: cursor.getDate(),
+      balance: running,
+      change,
+    })
+  }
+
+  return points
+}

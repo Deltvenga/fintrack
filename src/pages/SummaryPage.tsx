@@ -33,6 +33,10 @@ const PERIOD_LABELS: Record<SummaryPeriod, string> = {
   year: 'Год',
 }
 
+function toDateParam(date: Date): string {
+  return date.toISOString().slice(0, 10)
+}
+
 export function SummaryPage() {
   const { groupId } = useParams<{ groupId: string }>()
   const [expenses, setExpenses] = useState<Expense[]>([])
@@ -295,6 +299,21 @@ export function SummaryPage() {
             {formatMoney(periodTotals.net)}
           </p>
         </div>
+      </section>
+
+      <section className="mb-6">
+        <Link
+          to={`/groups/${groupId}/summary/chart?ref=${toDateParam(referenceDate)}`}
+          className="flex items-center justify-between rounded-2xl bg-white dark:bg-slate-900 p-5 shadow-sm ring-1 ring-slate-100 dark:ring-slate-800 transition hover:bg-slate-50 dark:hover:bg-slate-800"
+        >
+          <div>
+            <h3 className="font-semibold text-slate-900 dark:text-slate-100">График баланса</h3>
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+              Динамика баланса по дням месяца
+            </p>
+          </div>
+          <span className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">→</span>
+        </Link>
       </section>
 
       <section className="mb-6">
