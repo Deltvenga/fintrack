@@ -1,0 +1,497 @@
+/* Neon Genesis Evangelion — EVA-01 Berserk Mode (Unit-01 purple + neon green + NERV orange) */
+
+@keyframes eva-glow {
+  0%,
+  100% {
+    text-shadow:
+      0 0 8px rgba(139, 212, 80, 0.55),
+      0 0 16px rgba(255, 102, 0, 0.25);
+  }
+  50% {
+    text-shadow:
+      0 0 12px rgba(255, 102, 0, 0.65),
+      0 0 24px rgba(139, 212, 80, 0.35);
+  }
+}
+
+@keyframes eva-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.22;
+  }
+  50% {
+    transform: translateY(-10px) rotate(-4deg);
+    opacity: 0.5;
+  }
+}
+
+@keyframes eva-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 8px rgba(139, 212, 80, 0.35),
+      0 0 20px rgba(255, 102, 0, 0.2);
+  }
+  50% {
+    box-shadow:
+      0 0 14px rgba(255, 102, 0, 0.5),
+      0 0 28px rgba(139, 212, 80, 0.3);
+  }
+}
+
+.eva-floater {
+  animation: eva-float ease-in-out infinite;
+  filter: drop-shadow(0 0 6px rgba(139, 212, 80, 0.45));
+}
+
+.eva-toggle-icon {
+  display: inline-block;
+  animation: eva-glow 2.4s ease-in-out infinite;
+}
+
+.eva-scanlines {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.14) 2px,
+    rgba(0, 0, 0, 0.14) 4px
+  );
+  opacity: 0.35;
+}
+
+.eva-horizon-grid {
+  background-image:
+    radial-gradient(circle at 50% 50%, rgba(139, 212, 80, 0.08) 0%, transparent 55%),
+    repeating-conic-gradient(from 30deg, rgba(113, 31, 140, 0.14) 0deg 60deg, transparent 60deg 120deg);
+  background-size: 100% 100%, 56px 56px;
+  mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, black 20%, transparent 100%);
+  opacity: 0.45;
+}
+
+.eva {
+  --eva-bg: #1d1a2f;
+  --eva-surface: #251f3d;
+  --eva-surface-muted: #2d2648;
+  --eva-border: #711F8C;
+  --eva-border-soft: #523874;
+  --eva-border-strong: #8bd450;
+  --eva-text: #f0e6ff;
+  --eva-text-soft: #c9b8e8;
+  --eva-text-muted: #9d8abf;
+  --eva-glow-pink: #ff6600;
+  --eva-glow-cyan: #8bd450;
+  --eva-pixel: 2px;
+
+  color: var(--eva-text);
+  background-color: var(--eva-bg);
+  color-scheme: dark;
+  font-family: Orbitron, 'Segoe UI', sans-serif;
+
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% 100%, rgba(255, 102, 0, 0.18) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 40% at 80% 20%, rgba(139, 212, 80, 0.08) 0%, transparent 50%),
+    linear-gradient(180deg, #1d1a2f 0%, #1d1a2f 45%, #080412 100%);
+}
+
+.eva h1,
+.eva h2,
+.eva h3 {
+  letter-spacing: 0.06em;
+  color: var(--eva-glow-cyan) !important;
+  text-shadow:
+    0 0 10px rgba(139, 212, 80, 0.6),
+    0 0 20px rgba(255, 102, 0, 0.3);
+}
+
+.eva .app-logo {
+  position: relative;
+  background: linear-gradient(145deg, #1a0f3c 0%, #2d1b69 50%, #1a0f3c 100%) !important;
+  border: var(--eva-pixel) solid var(--eva-border-strong) !important;
+  border-radius: 8px !important;
+  box-shadow:
+    0 0 12px rgba(139, 212, 80, 0.45),
+    0 0 24px rgba(255, 102, 0, 0.25) !important;
+  font-size: 0 !important;
+  animation: eva-pulse 3s ease-in-out infinite;
+}
+
+.eva .app-logo::before {
+  content: '🌆';
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.eva .app-logo::after {
+  content: '⚡';
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  font-size: 0.95rem;
+  animation: eva-float 2.6s ease-in-out infinite;
+}
+
+.eva .theme-toggle {
+  border-radius: 8px !important;
+  border: var(--eva-pixel) solid var(--eva-border-strong) !important;
+  background: var(--eva-surface) !important;
+  box-shadow: 0 0 10px rgba(139, 212, 80, 0.35) !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+  color: var(--eva-text) !important;
+}
+
+.eva .theme-toggle:hover {
+  box-shadow:
+    0 0 16px rgba(139, 212, 80, 0.55),
+    0 0 28px rgba(255, 102, 0, 0.35) !important;
+}
+
+.eva :is(
+    [class*='rounded-2xl'],
+    [class*='rounded-3xl'],
+    [class*='rounded-xl']:not(.theme-toggle):not([class*='rounded-full'])
+  ) {
+  border-radius: 10px !important;
+}
+
+.eva :is(.rounded-2xl, .rounded-3xl, .rounded-xl):not(.rounded-full):not(.theme-toggle) {
+  background-color: var(--eva-surface) !important;
+  border: var(--eva-pixel) solid var(--eva-border) !important;
+  box-shadow:
+    0 0 10px rgba(113, 31, 140, 0.25),
+    inset 0 1px 0 rgba(139, 212, 80, 0.08) !important;
+  position: relative;
+}
+
+.eva .shadow-sm,
+.eva .shadow-md,
+.eva .shadow-xl {
+  box-shadow:
+    0 0 12px rgba(113, 31, 140, 0.3),
+    0 4px 16px rgba(0, 0, 0, 0.4) !important;
+}
+
+.eva .bg-slate-50 {
+  background-color: var(--eva-bg) !important;
+}
+
+.eva .bg-white,
+.eva .bg-white\/95 {
+  background-color: var(--eva-surface) !important;
+}
+
+.eva .bg-slate-100 {
+  background: var(--eva-surface-muted) !important;
+  border: 1px solid var(--eva-border-soft);
+}
+
+.eva .bg-slate-50.dark\:bg-slate-950,
+.eva .bg-white.dark\:bg-slate-900,
+.eva .bg-slate-100.dark\:bg-slate-800 {
+  background: var(--eva-surface-muted) !important;
+}
+
+.eva .text-slate-900,
+.eva .text-slate-800 {
+  color: var(--eva-text) !important;
+}
+
+.eva .text-slate-700,
+.eva .text-slate-600 {
+  color: var(--eva-text-soft) !important;
+}
+
+.eva .text-slate-500,
+.eva .text-slate-400 {
+  color: var(--eva-text-muted) !important;
+}
+
+.eva .text-emerald-700 {
+  color: var(--eva-glow-cyan) !important;
+}
+
+.eva .text-violet-700,
+.eva .text-violet-600 {
+  color: #a855f7 !important;
+}
+
+.eva .text-sky-600,
+.eva .text-sky-700 {
+  color: var(--eva-glow-cyan) !important;
+}
+
+.eva .text-rose-600,
+.eva .text-rose-700 {
+  color: var(--eva-glow-pink) !important;
+}
+
+.eva .border-slate-200,
+.eva .border-slate-300,
+.eva .ring-slate-100,
+.eva .ring-slate-200 {
+  border-color: var(--eva-border-soft) !important;
+  --tw-ring-color: var(--eva-border-soft) !important;
+}
+
+.eva .hover\:border-slate-300:hover,
+.eva .hover\:border-slate-400:hover {
+  border-color: var(--eva-border-strong) !important;
+}
+
+.eva .bg-emerald-600,
+.eva .bg-emerald-600:hover,
+.eva .hover\:bg-emerald-700:hover {
+  background: linear-gradient(135deg, #8bd450 0%, #711F8C 50%, #ff6600 100%) !important;
+  border: var(--eva-pixel) solid var(--eva-glow-cyan) !important;
+  box-shadow: 0 0 14px rgba(139, 212, 80, 0.45) !important;
+  color: #fff !important;
+  border-radius: 8px !important;
+}
+
+.eva .bg-violet-600,
+.eva .bg-violet-600:hover,
+.eva .hover\:bg-violet-700:hover {
+  background: linear-gradient(135deg, #a855f7 0%, #711F8C 50%, #ff6600 100%) !important;
+  border: var(--eva-pixel) solid #a855f7 !important;
+  box-shadow: 0 0 14px rgba(139, 212, 80, 0.45) !important;
+  color: #fff !important;
+}
+
+.eva .bg-sky-600,
+.eva .hover\:bg-sky-700:hover {
+  background: linear-gradient(135deg, #8bd450 0%, #0099cc 100%) !important;
+  border: var(--eva-pixel) solid var(--eva-glow-cyan) !important;
+  box-shadow: 0 0 14px rgba(139, 212, 80, 0.4) !important;
+  color: #1d1a2f !important;
+}
+
+.eva .bg-rose-600,
+.eva .hover\:bg-rose-700:hover {
+  background: linear-gradient(135deg, #ff6600 0%, #cc1177 100%) !important;
+  border: var(--eva-pixel) solid var(--eva-glow-pink) !important;
+  box-shadow: 0 0 14px rgba(255, 102, 0, 0.4) !important;
+  color: #fff !important;
+}
+
+.eva .bg-emerald-100,
+.eva .bg-violet-100,
+.eva .bg-sky-100,
+.eva .bg-rose-100 {
+  background: var(--eva-surface-muted) !important;
+  border: 1px solid var(--eva-border) !important;
+  border-radius: 8px !important;
+  color: var(--eva-text-soft) !important;
+}
+
+.eva .text-emerald-700,
+.eva .text-violet-700,
+.eva .text-sky-700,
+.eva .text-rose-700 {
+  color: var(--eva-text) !important;
+}
+
+.eva .bg-violet-50,
+.eva .bg-emerald-50,
+.eva .bg-sky-50,
+.eva .bg-rose-50 {
+  background: rgba(30, 20, 56, 0.8) !important;
+  border: 1px dashed var(--eva-border) !important;
+}
+
+.eva .bg-violet-600.p-5,
+.eva .from-violet-600,
+.eva .bg-gradient-to-br.from-violet-600 {
+  background: linear-gradient(135deg, #711F8C 0%, #ff6600 55%, #8bd450 100%) !important;
+  border: var(--eva-pixel) solid var(--eva-glow-cyan) !important;
+  box-shadow: 0 0 20px rgba(255, 102, 0, 0.35) !important;
+  color: #fff !important;
+}
+
+.eva .text-violet-100,
+.eva .text-violet-200 {
+  color: #f0e6ff !important;
+}
+
+.eva .bg-rose-600.p-5,
+.eva .bg-sky-600.p-5 {
+  border: var(--eva-pixel) solid var(--eva-glow-pink) !important;
+  box-shadow: 0 0 16px rgba(255, 102, 0, 0.35) !important;
+}
+
+.eva nav.fixed {
+  background: rgba(12, 6, 24, 0.92) !important;
+  border-top: var(--eva-pixel) solid var(--eva-border) !important;
+  box-shadow: 0 -4px 20px rgba(113, 31, 140, 0.25) !important;
+  backdrop-filter: blur(8px);
+}
+
+.eva nav .bg-emerald-600 {
+  background: linear-gradient(135deg, #8bd450, #ff6600) !important;
+  border: 1px solid var(--eva-glow-cyan) !important;
+  box-shadow: 0 0 10px rgba(139, 212, 80, 0.4) !important;
+  color: #1d1a2f !important;
+}
+
+.eva nav .bg-slate-100 {
+  background: var(--eva-surface-muted) !important;
+  border: 1px solid var(--eva-border-soft) !important;
+  color: var(--eva-text-soft) !important;
+}
+
+.eva input,
+.eva select,
+.eva textarea {
+  background: var(--eva-surface) !important;
+  border: var(--eva-pixel) solid var(--eva-border) !important;
+  border-radius: 8px !important;
+  color: var(--eva-text) !important;
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+.eva input:focus,
+.eva select:focus,
+.eva textarea:focus {
+  border-color: var(--eva-glow-cyan) !important;
+  outline: none !important;
+  box-shadow:
+    0 0 10px rgba(139, 212, 80, 0.35),
+    inset 0 0 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+.eva .grid .bg-white.shadow-sm {
+  background: var(--eva-surface) !important;
+  border: 1px solid var(--eva-border-strong) !important;
+  box-shadow: 0 0 10px rgba(139, 212, 80, 0.25) !important;
+  color: var(--eva-text) !important;
+}
+
+.eva .fixed.inset-0.z-50 button.absolute.inset-0 {
+  background: rgba(8, 4, 18, 0.75) !important;
+}
+
+.eva .bg-rose-100.text-xl {
+  background: var(--eva-surface-muted) !important;
+  border: 1px solid var(--eva-border) !important;
+  border-radius: 8px !important;
+}
+
+.eva .bg-slate-100.rounded-full,
+.eva .h-2.overflow-hidden.rounded-full.bg-slate-100,
+.eva .h-3.overflow-hidden.rounded-full.bg-slate-100 {
+  background: var(--eva-surface-muted) !important;
+  border: 1px solid var(--eva-border-soft) !important;
+}
+
+.eva .h-full.rounded-full[style*='backgroundColor'] {
+  background: linear-gradient(90deg, #8bd450, #ff6600) !important;
+  box-shadow: 0 0 8px rgba(139, 212, 80, 0.5);
+}
+
+.eva a.text-emerald-700,
+.eva a.text-violet-600,
+.eva a.text-violet-700 {
+  color: var(--eva-glow-cyan) !important;
+  text-shadow: 0 0 6px rgba(139, 212, 80, 0.4);
+}
+
+.eva a.text-emerald-700:hover,
+.eva a.text-violet-600:hover,
+.eva a.text-violet-700:hover {
+  color: var(--eva-glow-pink) !important;
+}
+
+.eva .hover\:bg-slate-50:hover,
+.eva .hover\:bg-slate-100:hover,
+.eva .hover\:bg-slate-200:hover {
+  background: var(--eva-surface-muted) !important;
+}
+
+.eva .hover\:bg-rose-50:hover,
+.eva .hover\:bg-violet-50:hover {
+  background: rgba(30, 20, 56, 0.9) !important;
+}
+
+.eva .category-pie-chart.rounded-2xl::before {
+  display: none !important;
+}
+
+.eva .pie-chart-ring {
+  border: 2px solid var(--eva-border) !important;
+  box-shadow:
+    0 0 16px rgba(113, 31, 140, 0.4),
+    inset 0 0 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+.eva .pie-chart-hole {
+  background: var(--eva-surface) !important;
+  border: 1px solid var(--eva-border) !important;
+  box-shadow: 0 0 8px rgba(139, 212, 80, 0.2) !important;
+}
+
+.eva .pie-chart-legend-dot {
+  box-shadow: 0 0 6px currentColor !important;
+}
+
+.eva .absolute.inset-6.rounded-full.bg-white {
+  background: var(--eva-surface) !important;
+  border: 1px solid var(--eva-border) !important;
+}
+
+.eva .border-emerald-500,
+.eva .border-violet-500,
+.eva .border-sky-500 {
+  border-color: var(--eva-glow-cyan) !important;
+  background: rgba(139, 212, 80, 0.08) !important;
+}
+
+.eva button.border-emerald-500,
+.eva button.border-violet-500,
+.eva button.border-sky-500 {
+  border-color: var(--eva-glow-cyan) !important;
+  background: linear-gradient(180deg, rgba(139, 212, 80, 0.15) 0%, rgba(113, 31, 140, 0.2) 100%) !important;
+  box-shadow: 0 0 14px rgba(139, 212, 80, 0.35) !important;
+}
+
+.eva button.border-emerald-500 .text-slate-800,
+.eva button.border-violet-500 .text-slate-800,
+.eva button.border-sky-500 .text-slate-800,
+.eva button.border-emerald-500 .text-slate-900,
+.eva button.border-violet-500 .text-slate-900,
+.eva button.border-sky-500 .text-slate-900 {
+  color: var(--eva-glow-cyan) !important;
+}
+
+.eva .ring-emerald-100,
+.eva .ring-violet-100,
+.eva .ring-sky-100,
+.eva .ring-sky-100,
+.eva .ring-rose-100,
+.eva .ring-violet-100 {
+  --tw-ring-color: var(--eva-border) !important;
+}
+
+.eva .rounded-full.bg-violet-100,
+.eva .rounded-full.bg-emerald-100,
+.eva .rounded-full.bg-slate-100,
+.eva .rounded-full.bg-sky-100,
+.eva .rounded-full.bg-rose-100 {
+  border-radius: 8px !important;
+  border: 1px solid var(--eva-border) !important;
+}
+
+.eva .rounded-full:not(.pie-chart-ring):not(.pie-chart-hole):not(.pie-chart-legend-dot) {
+  border-radius: 8px !important;
+}
+
+.eva .bg-sky-50,
+.eva .bg-rose-50,
+.eva .bg-violet-50 {
+  box-shadow: 0 0 10px rgba(113, 31, 140, 0.2) !important;
+}
+
+.eva button:active:not(:disabled),
+.eva a:active {
+  transform: scale(0.98) !important;
+  box-shadow: 0 0 6px rgba(139, 212, 80, 0.3) !important;
+}

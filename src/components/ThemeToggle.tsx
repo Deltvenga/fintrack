@@ -9,6 +9,7 @@ const LABELS = {
   girly2: 'Девчачья тема (лавандовая)',
   synth: 'Синтвейв',
   acid: 'Кислота',
+  eva: 'Неон Генезис Евангелион',
   system: 'Системная тема',
 } as const
 
@@ -19,6 +20,7 @@ const ICONS = {
   girly2: '💜',
   synth: '🌆',
   acid: '🌀',
+  eva: '🤖',
   system: '💻',
 } as const
 
@@ -27,6 +29,7 @@ const TOGGLE_ICON_CLASS: Partial<Record<DecorativeTheme, string>> = {
   girly2: 'girly2-toggle-icon',
   synth: 'synth-toggle-icon',
   acid: 'acid-toggle-icon',
+  eva: 'eva-toggle-icon',
 }
 
 export function ThemeToggle() {

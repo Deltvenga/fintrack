@@ -1,17 +1,15 @@
 import { useMemo, useState } from 'react'
-import { getCategoryInfo } from '../lib/categories'
+import { Link } from 'react-router-dom'
+import { buildCategorySlices } from '../lib/categorySlices'
+import type { SummaryPeriod } from '../lib/period'
 import type { CustomCategory, Expense } from '../lib/types'
 
-interface CategorySlice {
-  category: string
-  amount: number
-  color: string
-  icon: string
-}
-
 interface CategoryPieChartProps {
+  groupId: string
   expenses: Expense[]
   customCategories?: CustomCategory[]
+  period: SummaryPeriod
+  referenceDate: Date
   loading?: boolean
 }
 
@@ -21,27 +19,6 @@ function formatMoney(amount: number) {
     currency: 'RUB',
     maximumFractionDigits: 0,
   }).format(amount)
-}
-
-function buildSlices(expenses: Expense[], customCategories: CustomCategory[]): CategorySlice[] {
-  const expenseOnly = expenses.filter((e) => (e.type ?? 'expense') === 'expense')
-  const totals = new Map<string, number>()
-
-  for (const expense of expenseOnly) {
-    totals.set(expense.category, (totals.get(expense.category) ?? 0) + expense.amount)
-  }
-
-  return Array.from(totals.entries())
-    .map(([category, amount]) => {
-      const info = getCategoryInfo(category, 'expense', customCategories)
-      return {
-        category,
-        amount,
-        color: info.color,
-        icon: info.icon,
-      }
-    })
-    .sort((a, b) => b.amount - a.amount)
 }
 
 function buildConicGradient(slices: Array<{ color: string; percent: number }>): string {
@@ -57,15 +34,39 @@ function buildConicGradient(slices: Array<{ color: string; percent: number }>): 
   return `conic-gradient(${stops.join(', ')})`
 }
 
-export function CategoryPieChart({ expenses, customCategories = [], loading }: CategoryPieChartProps) {
+function toDateParam(date: Date): string {
+  return date.toISOString().slice(0, 10)
+}
+
+function buildCategoryLink(
+  groupId: string,
+  categoryKey: string,
+  period: SummaryPeriod,
+  referenceDate: Date,
+): string {
+  const params = new URLSearchParams({
+    period,
+    ref: toDateParam(referenceDate),
+  })
+  return `/groups/${groupId}/summary/category/${categoryKey}?${params.toString()}`
+}
+
+export function CategoryPieChart({
+  groupId,
+  expenses,
+  customCategories = [],
+  period,
+  referenceDate,
+  loading,
+}: CategoryPieChartProps) {
   const [excluded, setExcluded] = useState<Set<string>>(new Set())
 
   const slices = useMemo(
-    () => buildSlices(expenses, customCategories),
+    () => buildCategorySlices(expenses, customCategories),
     [expenses, customCategories],
   )
 
-  const activeSlices = slices.filter((slice) => !excluded.has(slice.category))
+  const activeSlices = slices.filter((slice) => !excluded.has(slice.key))
   const activeTotal = activeSlices.reduce((sum, slice) => sum + slice.amount, 0)
 
   const gradientSlices = activeSlices.map((slice) => ({
@@ -73,13 +74,15 @@ export function CategoryPieChart({ expenses, customCategories = [], loading }: C
     percent: activeTotal > 0 ? (slice.amount / activeTotal) * 100 : 0,
   }))
 
-  function toggleCategory(category: string) {
+  function toggleCategory(categoryKey: string, event: React.MouseEvent) {
+    event.preventDefault()
+    event.stopPropagation()
     setExcluded((current) => {
       const next = new Set(current)
-      if (next.has(category)) {
-        next.delete(category)
+      if (next.has(categoryKey)) {
+        next.delete(categoryKey)
       } else {
-        next.add(category)
+        next.add(categoryKey)
       }
       return next
     })
@@ -122,32 +125,30 @@ export function CategoryPieChart({ expenses, customCategories = [], loading }: C
             className="pie-chart-ring h-full w-full rounded-full shadow-inner ring-2 ring-white dark:ring-slate-900"
             style={{
               backgroundImage:
-                activeSlices.length > 0
-                  ? buildConicGradient(gradientSlices)
-                  : undefined,
+                activeSlices.length > 0 ? buildConicGradient(gradientSlices) : undefined,
               backgroundColor: activeSlices.length === 0 ? '#e2e8f0' : undefined,
             }}
           />
           <div className="pie-chart-hole absolute inset-6 flex flex-col items-center justify-center rounded-full bg-white dark:bg-slate-900 text-center shadow-sm ring-1 ring-slate-100 dark:ring-slate-800">
             <p className="text-xs text-slate-500 dark:text-slate-400">Всего</p>
-            <p className="text-sm font-bold text-slate-900 dark:text-slate-100">{formatMoney(activeTotal)}</p>
+            <p className="text-sm font-bold text-slate-900 dark:text-slate-100">
+              {formatMoney(activeTotal)}
+            </p>
           </div>
         </div>
 
         <ul className="w-full space-y-3">
           {slices.map((slice) => {
-            const isExcluded = excluded.has(slice.category)
+            const isExcluded = excluded.has(slice.key)
             const percent =
               activeTotal > 0 && !isExcluded
                 ? Math.round((slice.amount / activeTotal) * 100)
                 : 0
 
             return (
-              <li key={slice.category}>
-                <button
-                  type="button"
-                  onClick={() => toggleCategory(slice.category)}
-                  aria-pressed={!isExcluded}
+              <li key={slice.key}>
+                <Link
+                  to={buildCategoryLink(groupId, slice.key, period, referenceDate)}
                   className={`flex w-full items-center gap-3 rounded-xl px-1 py-1 text-left transition hover:bg-slate-50 dark:hover:bg-slate-800 ${
                     isExcluded ? 'opacity-40' : ''
                   }`}
@@ -168,13 +169,22 @@ export function CategoryPieChart({ expenses, customCategories = [], loading }: C
                       {slice.category}
                     </p>
                     <p className="text-xs text-slate-500 dark:text-slate-400">
-                      {isExcluded ? 'исключено' : `${percent}%`}
+                      {isExcluded ? 'исключено' : `${percent}% · подробнее`}
                     </p>
                   </div>
                   <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                     {formatMoney(slice.amount)}
                   </p>
-                </button>
+                  <button
+                    type="button"
+                    onClick={(event) => toggleCategory(slice.key, event)}
+                    aria-pressed={!isExcluded}
+                    aria-label={isExcluded ? 'Включить в диаграмму' : 'Исключить из диаграммы'}
+                    className="shrink-0 rounded-lg px-2 py-1 text-xs font-medium text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-200"
+                  >
+                    {isExcluded ? '＋' : '×'}
+                  </button>
+                </Link>
               </li>
             )
           })}

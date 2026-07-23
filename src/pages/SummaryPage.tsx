@@ -299,8 +299,11 @@ export function SummaryPage() {
 
       <section className="mb-6">
         <CategoryPieChart
+          groupId={groupId}
           expenses={periodExpenses}
           customCategories={customCategories}
+          period={period}
+          referenceDate={referenceDate}
           loading={loading}
         />
       </section>

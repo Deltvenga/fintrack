@@ -3,6 +3,7 @@
 @import './girly2-theme.css';
 @import './synth-theme.css';
 @import './acid-theme.css';
+@import './eva-theme.css';
 
 @custom-variant dark (&:where(.dark, .dark *));
 

@@ -55,6 +55,13 @@
           if (meta4) meta4.setAttribute('content', '#1a0033')
           return
         }
+        if (stored === 'eva') {
+          document.documentElement.classList.add('eva')
+          document.documentElement.style.colorScheme = 'dark'
+          var meta5 = document.querySelector('meta[name="theme-color"]')
+          if (meta5) meta5.setAttribute('content', '#1d1a2f')
+          return
+        }
         var dark =
           stored === 'dark' ||
           (stored !== 'light' &&
@@ -62,6 +69,7 @@
             stored !== 'girly2' &&
             stored !== 'synth' &&
             stored !== 'acid' &&
+            stored !== 'eva' &&
             window.matchMedia('(prefers-color-scheme: dark)').matches)
         if (dark) {
           document.documentElement.classList.add('dark')
