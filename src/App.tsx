@@ -6,6 +6,7 @@ import {
 } from './components/ProtectedRoute'
 import { ThemeProvider } from './components/ThemeProvider'
 import { GirlyAmbience } from './components/GirlyAmbience'
+import { EvaAmbience } from './components/EvaAmbience'
 import { ThemeToggle } from './components/ThemeToggle'
 import { AddExpensePage } from './pages/AddExpensePage'
 import { GroupPage } from './pages/GroupPage'
@@ -25,6 +26,7 @@ export default function App() {
         <BrowserRouter>
           <div className="min-h-dvh bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
             <GirlyAmbience />
+            <EvaAmbience />
             <ThemeToggle />
             <Routes>
             <Route path="/" element={<Navigate to="/groups" replace />} />

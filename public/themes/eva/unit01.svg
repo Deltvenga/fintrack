@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="520" viewBox="0 0 400 520" fill="none">
+  <defs>
+    <linearGradient id="body" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#523874"/>
+      <stop offset="45%" stop-color="#711F8C"/>
+      <stop offset="100%" stop-color="#2d1a45"/>
+    </linearGradient>
+    <linearGradient id="armor" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#8bd450"/>
+      <stop offset="100%" stop-color="#33ff00" stop-opacity="0.55"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <!-- abstract Unit-01 inspired silhouette -->
+  <g opacity="0.92" filter="url(#glow)">
+    <path d="M200 24 L248 72 L232 120 L168 120 L152 72 Z" fill="url(#armor)" opacity="0.85"/>
+    <path d="M176 120 L224 120 L240 180 L216 240 L184 240 L160 180 Z" fill="url(#body)"/>
+    <path d="M184 240 L216 240 L228 320 L208 400 L192 400 L172 320 Z" fill="url(#body)"/>
+    <path d="M120 160 L160 180 L152 260 L96 280 L72 220 Z" fill="url(#body)" opacity="0.9"/>
+    <path d="M280 160 L240 180 L248 260 L304 280 L328 220 Z" fill="url(#body)" opacity="0.9"/>
+    <path d="M128 280 L168 320 L160 380 L112 400 L88 340 Z" fill="url(#armor)" opacity="0.7"/>
+    <path d="M272 280 L232 320 L240 380 L288 400 L312 340 Z" fill="url(#armor)" opacity="0.7"/>
+    <path d="M176 400 L224 400 L232 460 L200 496 L168 460 Z" fill="url(#body)"/>
+    <path d="M188 132 L212 132 L220 168 L200 188 L180 168 Z" fill="#1a1028" opacity="0.8"/>
+    <path d="M188 132 L200 148 L212 132" stroke="#ff6600" stroke-width="2" fill="none"/>
+    <rect x="192" y="200" width="16" height="48" rx="2" fill="url(#armor)" opacity="0.55"/>
+  </g>
+  <path d="M200 496 L200 520" stroke="#8bd450" stroke-width="3" opacity="0.4"/>
+</svg>
